@@ -1,0 +1,176 @@
+﻿@page "/GetMMTransactionByDates"
+@inherits GetMMTransactionByDatesBase
+
+@attribute [Authorize]
+
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null)
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+
+		@*Section 1 - Title *@
+		<div class="row ">
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Search Money Market Transaction by Dates</h4></div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 2 - Parameters*@
+		<div class="row">
+			<div class="col-sm-4">
+				<table class="table table-sm table-bordered table-primary Col-Head-Left">
+					<tbody thead class="thead-light">
+						<tr>
+							<td colspan="2"><label for="Id" class="col-form-label">Operation Date</label></td>
+						</tr>
+						<tr>
+							<td><label for="Id" class="col-form-label">From</label></td>
+							<td><input type="date" class="form-control-sm" @bind="SelectedDateFrom" /></td>						
+						</tr>
+						<tr>						
+							<td><label for="Id" class="col-form-label">To</label></td>
+							<td><input type="date" class="form-control-sm" @bind="SelectedDateTo" /></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="SearchClick">Search</button>
+					<button class="btn btn-outline-info m-1 float-left btn-width-80" @onclick="CopyClick">Copy</button>
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 3 - list display*@
+		<div name="SelectedReport" class="row col-sm-12 ">
+			<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+				<thead class="table-primary Col-Head-Center">
+					<tr class="success">
+						<th>GBase RefNo</th>
+						<th>Counterpart Abbr</th>
+						<th>Counterpart Short Name</th>
+						<th>Ticket Template</th>
+						<th>Event</th>
+						<th>Typology</th>
+						<th>Portfolio Desk</th>
+						<th>Portfolio Book</th>
+						<th>Contract Version</th>
+
+						<th>Operation Date</th>
+						<th>Contract Date</th>
+						<th>Value Date</th>
+						<th>Final DueDate</th>
+						<th>Due Date</th>
+						<th>Trade Date</th>
+						<th>Payment Date</th>
+
+						<th>Currency</th>
+						<th>Principal Amount</th>
+						<th>Interest Rate</th>
+						<th>Interest Amount</th>
+
+						<th>Internal Rate</th>
+						<th>Settlement Details</th>
+
+						<!---- not for ('Call Depo', 'Call Loan') ,
+						-- not for ('CD')
+						-- but for Typology in ('Depo', 'Loan')-->
+						<th>Net Interest</th>
+						<th>Total Due</th>
+
+						<!---- not for Typology in ('Depo', 'Loan')
+						-- not for ('CD')-->
+						<th>Principal Amount Previous</th>
+						<th>Rollover Type</th>
+						<th>Rollover Type Label</th>
+						<th>Principal Amount Closing</th>
+						<th>Settlement Direction Label</th>
+
+						<!---- For ('CD')  only-->
+						<th>Buy/Sell</th>
+
+						<!---- not for ('Call Depo', 'Call Loan') ,
+						-- not for ('Depo', 'Loan')-->
+						<th>Denomination</th>
+						<th>Quantity</th>
+						<th>Face Amount</th>
+						<th>Consideration Amount</th>
+
+						<th>Status</th>
+						<th>DEPT_CD</th>
+					</tr>
+				</thead>
+				<tbody Class="table-active Row-Cell">
+					@foreach (var item in modelView)
+					{
+					<tr>
+						<td>@item.GBaseRefNo</td>
+						<th>@item.CounterpartyAbbreviation</th>
+						<th>@item.CounterpartyShortName</th>
+						<th>@item.TicketTemplate</th>
+						<th>@item.Event</th>
+						<th>@item.Typology</th>
+						<th>@item.PortfolioDesk</th>
+						<th>@item.PortfolioBook</th>
+						<th>@item.ContractVersion</th>
+
+						<th>@item.OperationDate</th>
+						<th>@item.ContractDate</th>
+						<th>@item.ValueDate</th>
+						<th>@item.FinalDueDate</th>
+						<th>@item.DueDate</th>
+						<th>@item.TradeDate</th>
+						<th>@item.PaymentDate</th>
+
+						<th>@item.Currency</th>
+						<th>@item.PrincipalAmount</th>
+						<th>@item.InterestRate</th>
+						<th>@item.InterestAmount</th>
+
+						<th>@item.InternalRate</th>
+						<th>@item.SettlementDetails</th>
+
+						<th>@item.NetInterest</th>
+						<th>@item.TotalDue</th>
+
+						<th>@item.PrincipalAmountPrevious</th>
+						<th>@item.RolloverType</th>
+						<th>@item.RolloverTypeLabel</th>
+						<th>@item.PrincipalAmountClosing</th>
+						<th>@item.SettlementDirectionLabel</th>
+
+						<th>@item.BuySell</th>
+
+						<th>@item.Denomination</th>
+						<th>@item.Quantity</th>
+						<th>@item.FaceAmount</th>
+						<th>@item.ConsiderationAmount</th>
+
+						<th>@item.TransactionStatus</th>
+						<th>@item.DEPARTMENT_CD</th>
+					</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+	}
+</div>
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"MoneyMarket Transaction")
+			ConfirmationMessage=@($"No MoneyMarket Transaction found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@

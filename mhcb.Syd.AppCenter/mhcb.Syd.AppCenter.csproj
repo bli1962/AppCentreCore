@@ -1,0 +1,165 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup Label="Globals">
+        <SccProjectName>SAK</SccProjectName>
+        <SccProvider>SAK</SccProvider>
+        <SccAuxPath>SAK</SccAuxPath>
+        <SccLocalPath>SAK</SccLocalPath>
+        <Configurations>Debug;Release;PROD;UAT</Configurations>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="Pages\LOAN\**" />
+        <Content Remove="Pages\LOAN\**" />
+        <EmbeddedResource Remove="Pages\LOAN\**" />
+        <None Remove="Pages\LOAN\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="Data\WeatherForecast.cs" />
+        <Compile Remove="Data\WeatherForecastService.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Remove="appsettings.Debug.json" />
+        <Content Remove="appsettings.FolderProfile.json" />
+        <Content Remove="appsettings.IISProfile.json" />
+        <Content Remove="appsettings.PROD.json" />
+        <Content Remove="appsettings.Release.json" />
+        <Content Remove="appsettings.UAT.json" />
+        <Content Remove="Pages\Counter.razor" />
+        <Content Remove="Pages\FetchData.razor" />
+        <Content Remove="web.config" />
+        <Content Remove="wwwroot\scripts\CustomScripts.js" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="mhcb.Syd.AppCenter.csproj.vspscc" />
+        <None Remove="Pages\commonMessageBox.html" />
+        <None Remove="Pages\commonModel.html" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="appsettings.Debug.json">
+            <IsTransformFile>true</IsTransformFile>
+            <DependentUpon>appsettings.json</DependentUpon>
+        </None>
+        <None Include="appsettings.FolderProfile.json">
+            <IsTransformFile>true</IsTransformFile>
+            <DependentUpon>appsettings.json</DependentUpon>
+        </None>
+        <None Include="appsettings.IISProfile.json">
+            <IsTransformFile>true</IsTransformFile>
+            <DependentUpon>appsettings.json</DependentUpon>
+        </None>
+        <None Include="appsettings.PROD.json">
+            <IsTransformFile>true</IsTransformFile>
+            <DependentUpon>appsettings.json</DependentUpon>
+        </None>
+        <None Include="appsettings.Release.json">
+            <IsTransformFile>true</IsTransformFile>
+            <DependentUpon>appsettings.json</DependentUpon>
+        </None>
+        <None Include="appsettings.UAT.json">
+            <IsTransformFile>true</IsTransformFile>
+            <DependentUpon>appsettings.json</DependentUpon>
+        </None>
+        <None Include="Pages\EDocument\PutEDocument.razor" />
+        <None Include="Pages\EUCDbArchive\PostFacilityType.razor" />
+        <None Include="Pages\GUIDE\AuditLog\GetAuditLogByDates.razor" />
+        <None Include="Pages\GUIDE\BankInf\GetBankInfByCustAbbr.razor" />
+        <None Include="Pages\GUIDE\BankInf\GetBankInfByStatus.razor" />
+        <None Include="Pages\GUIDE\BankInf\GetBankInfBySwiftID.razor" />
+        <None Include="Pages\GUIDE\BankInf\GetFullBankInfByStatus.razor" />
+        <None Include="Pages\GUIDE\BankInf\UpdateBankInf.razor" />
+        <None Include="Pages\GUIDE\Distribution\GetDistributionPreference.razor" />
+        <None Include="Pages\GUIDE\DomesticClearimg\UpdateDCPayment.razor" />
+        <None Include="Pages\GUIDE\FXFCust\GetFXFCustByAbbr.razor" />
+        <None Include="Pages\GUIDE\FXFCust\UpdateFXFCustAttribute.razor" />
+        <None Include="Pages\GUIDE\FXSettlementInf\GetFXDeliveryCorporate.razor" />
+        <None Include="Pages\GUIDE\FXSettlementInf\GetFXDeliveryCorporateSummary.razor" />
+        <None Include="Pages\GUIDE\FXSettlementInf\UpdateFXDelivery.razor" />
+        <None Include="Pages\GUIDE\FXTransactionExt\UpdateFXTransactionExt.razor" />
+        <None Include="Pages\GUIDE\FXTransaction\GetFullFXTransactionByDates.razor" />
+        <None Include="Pages\GUIDE\FXTransaction\GetFXTransactionByDates.razor" />
+        <None Include="Pages\GUIDE\FXTransaction\GetFXTransactionByDatesCustAbbr.razor" />
+        <None Include="Pages\GUIDE\FXTransaction\UpdateFXTransaction.razor" />
+        <None Include="Pages\GUIDE\GAS\UpdateGasPendingTransaction.razor" />
+        <None Include="Pages\GUIDE\MoneyMarketTicket\GetMMTransactionByDates.razor" />
+        <None Include="Pages\GUIDE\MoneyMarketTicket\UpdateMoneyMarketTicket.razor" />
+        <None Include="Pages\GUIDE\MxInboundEvent\GetMxEucBalanceEventByCustAbbr.razor" />
+        <None Include="Pages\GUIDE\MxInboundEvent\GetMxEucBalanceEventByRefNo.razor" />
+        <None Include="Pages\GUIDE\MxInboundEvent\GetMxInboundEventLogBySender.razor" />
+        <None Include="Pages\GUIDE\MxInboundEvent\UpdaeMxEucBalanceEvent.razor" />
+        <None Include="Pages\GUIDE\PaymentControl\DeleteSwiftPayment.razor" />
+        <None Include="Pages\GUIDE\PaymentControl\UpdatePayment.razor" />
+        <None Include="Pages\GUIDE\SettlementInf\GetSettlementInfByCustAbbr.razor" />
+        <None Include="Pages\GUIDE\SettlementInf\GetSettlementInfById.razor" />
+        <None Include="Pages\GUIDE\SettlementInf\GetSettlementInfsByStatus.razor" />
+        <None Include="Pages\GUIDE\SettlementInf\GetSIFInstructionsByStatus.razor" />
+        <None Include="Pages\GUIDE\SettlementInf\UpdateSettlementInf.razor" />
+        <None Include="Pages\GUIDE\User\GetUserByRecStatus.razor" />
+        <None Include="Pages\GUIDE\User\GetUserByUserId.razor" />
+        <None Include="Pages\GUIDE\User\UpdateUser.razor" />
+        <None Include="Pages\LoanMaster\GetCovenantRatio.razor" />
+        <None Include="Pages\LoanMaster\GetLoanRfrInterest.razor" />
+        <None Include="Pages\LoanMaster\UpdateSpecialRate.razor" />
+        <None Include="Pages\LoanTransaction\GetLoanTransactionByCcyDates.razor" />
+        <None Include="Pages\LoanTransaction\GetLoanTransactionByDates.razor" />
+        <None Include="Pages\LoanMaster\GetSwapRfrInterest.razor" />
+        <None Include="Pages\Menu\AuditReport.razor" />
+        <None Include="Pages\Menu\EDocument.razor" />
+        <None Include="Pages\Menu\ELCS.razor" />
+        <None Include="Pages\Menu\ELCSReport.razor" />
+        <None Include="Pages\Menu\GUIDE.razor" />
+        <None Include="Pages\Menu\GUIDEReport.razor" />
+        <None Include="Pages\Menu\GUIDEUser.razor" />
+        <None Include="Pages\Menu\MxInbound.razor" />
+        <None Include="Pages\Menu\PaymentControl.razor" />
+        <None Include="Pages\Menu\Test.razor" />
+        <None Include="wwwroot\scripts\site.js" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.17" />
+        <PackageReference Include="Microsoft.AspNetCore.Blazor.HttpClient" Version="3.2.0-preview3.20168.3" />
+        <PackageReference Include="Microsoft.AspNetCore.Cors" Version="2.2.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.17" />
+        <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.17" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.17" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.17">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.14.1" />
+        <PackageReference Include="Microsoft.VisualStudio.SlowCheetah" Version="4.0.8">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.14.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\mhcb.Syd.Business\mhcb.Syd.Business.csproj" />
+        <ProjectReference Include="..\mhcb.Syd.Interface\mhcb.Syd.Interface.csproj" />
+        <ProjectReference Include="..\mhcb.Syd.Models\mhcb.Syd.Models.csproj" />
+        <ProjectReference Include="..\MizuhoRazorComponent\MizuhoRazorComponent.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Data\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="appsettings.json">
+            <TransformOnBuild>true</TransformOnBuild>
+        </Content>
+    </ItemGroup>
+
+</Project>

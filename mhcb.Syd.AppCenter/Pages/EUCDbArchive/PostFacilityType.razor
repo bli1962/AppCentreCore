@@ -1,0 +1,109 @@
+﻿@page "/PostFacilityType"
+@inherits PostFacilityTypeBase
+
+@attribute [Authorize]
+
+
+<div class="container-fluid">
+
+	@*Section 1 - Title *@
+	<div class="row ">
+		<div class="col-sm-12">
+			<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+				<div class="panel-body"><h4>Add Murex Credit Facility Type</h4></div>
+			</div>
+		</div>
+	</div>
+
+	@*Section 4 - Update Form*@
+	<div class="row ">
+		<div class="col-sm-4">
+
+			<EditForm Model="@facilityTypeAttr" OnValidSubmit="UpdateStatusClickAsync">
+				<table class="table table-sm table-bordered table-primary Col-Head-Left">
+					<tbody>
+						<tr>
+							<td><label for="Id" class="col-form-label">GID Reference No</label></td>
+							<td><InputText id="RefNo" @bind-Value="facilityTypeAttr.RefNo" class="form-control-sm" placeholder="GID Reference No" /></td>
+						</tr>
+						<tr>
+							<td><label for="Id" class="col-form-label">Facility Type</label></td>
+							<td>
+								<InputSelect @bind-Value="facilityTypeAttr.FacilityType" class="form-control-sm form-select-sm">
+									<option value="Committed">Committed</option>
+									<option value="Uncommitted">Uncommitted</option>
+									<option value="Liquidity">Liquidity</option>
+								</InputSelect>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="Id" class="col-form-label">Authorized By</label></td>
+							<td><InputText id="authorizeBy" @bind-Value="facilityTypeAttr.AuthorizeBy" class="form-control-sm" readonly /></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left " type="submit">Add GID</button>
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+					<br />
+				</div>
+			</EditForm>
+
+		</div>
+	</div>
+
+	@*Section 5 - Notes *@
+	@*<div class="row ">
+		<div class="col-sm-6">
+			<div class="panel" style="color: red; border-color: #ffffff; ">
+				<div class="panel-body">
+					<ul>
+						<li>The only <b>pending</b> status can be sent to finalized status.</li>
+						<li>You must be the last <b>authorizer</b> of the transaction.</li>
+						<li>No GIP will be generated to the operation, so no GBASE data will be updated.</li>
+						<li>The execution can be tracked in our audit log table.</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>*@
+
+</div>
+
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Add Facility Type")
+			ConfirmationMessage=@($"No Facility Type found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveSuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Add Facility Type")
+			ConfirmationMessage=@($"Save successfully!")
+			BtnClass=@($"btn btn-success float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveUnsuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Add Facility Type")
+			ConfirmationMessage=@($"Unsuccessfully save.")
+			BtnClass=@($"btn btn-danger float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentBadRequest"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Add Facility Type")
+			ConfirmationMessage=@($"Bad internet request.")
+			BtnClass=@($"btn btn-info float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentError"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Add Facility Type")
+			ConfirmationMessage=@($"Error retrieving data from the database.")
+			BtnClass=@($"btn btn-warning float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@

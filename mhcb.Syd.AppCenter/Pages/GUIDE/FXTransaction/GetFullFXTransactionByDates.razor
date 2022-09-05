@@ -1,0 +1,190 @@
+﻿
+@page "/GetFullFXTransactionByDates"
+@inherits GetFullFXTransactionByDatesBase
+
+@attribute [Authorize]
+
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null)
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		<div class="row ">
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>FX Transactions by Date</h4></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-1">
+				<table class="table table-sm table-bordered table-primary Col-Head-Left">
+					<tbody thead class="thead-light">
+						<tr>
+							<td colspan="2"><label for="Id" class="col-form-label">Date Type</label></td>
+							<td colspan="2">
+								<select class="form-control-sm form-select-sm" @bind="SelectedDateType">
+									<option value="ContractValueDate">Contract Value Date</option>
+									<option value="DelivaryDate">Delivery Date</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="4"><label for="Id" class="col-form-label">Contract Date</label></td>
+						</tr>
+						<tr>
+							<td><label for="Id" class="col-form-label">From</label></td>
+							<td><input type="date" class="form-control-sm" @bind="SelectedDateFrom" /></td>
+							<td><label for="Id" class="col-form-label">To</label></td>
+							<td><input type="date" class="form-control-sm" @bind="SelectedDateTo" /></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="SearchClick">Search</button>
+					<button class="btn btn-outline-info m-1 float-left btn-width-80" @onclick="CopyClick">Copy</button>
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+				</div>
+			</div>
+		</div>
+
+
+		<div name="SelectedReport" class="row col-sm-12 ">
+			<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+				<thead class="table-primary Col-Head-Center">
+
+					<tr class="success">
+						<th>RefNo</th>
+						<th>ActCd</th>
+						<th>ActAbbr</th>
+						<th>CustAbbr</th>
+						<th>BranchNo</th>
+						<th>SchemeNo</th>
+						<th>Authorized</th>
+						<th>Revise</th>
+						<th>CoverPoFlg</th>
+
+						<th>ContractDateOpe</th>
+						<th>ContractDateValue</th>
+						<th>DelivaryDate</th>
+						<th>DelivaryThru</th>
+						<th>AccrualFrom</th>
+						<th>AccrualTo</th>
+						<th>SettlementValueDate</th>
+
+						@*<th>CcyCd</th>*@
+						<th>ContractCcyCd</th>
+						@*<th>ContractCcyAbbr</th>*@
+						<th>ContractCcyAmt</th>
+						<th>ContractCcyBal</th>
+						<th>ContractCcyTtb</th>
+
+						<th>EquivCcyCd</th>
+						@*<th>EquivCcyAbbr</th>*@
+						<th>EquivCcyAmt</th>
+						<th>EquivCcyBal</th>
+						<th>EquivCcyTtb</th>
+						<th>ExchangeRate</th>
+
+						<th>InternalRate</th>
+						<th>Spread</th>
+						<th>AccountEntry</th>
+						<th>Broker</th>
+						<th>Remarks</th>
+						<th>RemarksTrd</th>
+						<th>SwapRefNo</th>
+						<th>StatusCd</th>
+						<th>Addressee</th>
+						<th>Code56</th>
+						<th>Code57</th>
+						<th>Code57a</th>
+						<th>Code58</th>
+						<th>SetInstruction</th>
+						<th>Dealer</th>
+						<th>OptionsFlag</th>
+						<th>ExecutionRefNo</th>
+						<th>AuthorizeBy</th>
+						<th>Status</th>
+						<th>DeletionStatus</th>
+						<th>TranNo</th>
+					</tr>
+				</thead>
+				<tbody Class="table-active Row-Cell">
+					@foreach (var item in modelView)
+					{
+						<tr>
+							<td>@item.RefNo</td>
+							<td>@item.ActCd</td>
+							<td>@item.ActAbbr</td>
+							<td>@item.CustAbbr</td>
+							<td>@item.BranchNo</td>
+							<td>@item.SchemeNo</td>
+							<td>@item.Authorized</td>
+							<td>@item.Revise</td>
+							<td>@item.CoverPoFlg</td>
+
+							<td>@item.ContractDateOpe</td>
+							<td>@item.ContractDateValue</td>
+							<td>@item.DelivaryDate</td>
+							<td>@item.DelivaryThru</td>
+							<td>@item.AccrualFrom</td>
+							<td>@item.AccrualTo</td>
+							<td>@item.SettlementValueDate</td>
+
+							@*<td>@item.CcyCd</td>*@
+							<td>@item.ContractCcyCd</td>
+							@*<td>@item.ContractCcyAbbr</td>*@
+							<td>@item.ContractCcyAmt</td>
+							<td>@item.ContractCcyBal</td>
+							<td>@item.ContractCcyTtb</td>
+
+							<td>@item.EquivCcyCd</td>
+							@*<td>@item.EquivCcyAbbr</td>*@
+							<td>@item.EquivCcyAmt</td>
+							<td>@item.EquivCcyBal</td>
+							<td>@item.EquivCcyTtb</td>
+							<td>@item.ExchangeRate</td>
+
+							<td>@item.InternalRate</td>
+							<td>@item.Spread</td>
+							<td>@item.AccountEntry</td>
+							<td>@item.Broker</td>
+							<td>@item.Remarks</td>
+							<td>@item.RemarksTrd</td>
+							<td>@item.SwapRefNo</td>
+							<td>@item.StatusCd</td>
+							<td>@item.Addressee</td>
+							<td>@item.Code56</td>
+							<td>@item.Code57</td>
+							<td>@item.Code57a</td>
+							<td>@item.Code58</td>
+							<td>@item.SetInstruction</td>
+							<td>@item.Dealer</td>
+							<td>@item.OptionsFlag</td>
+							<td>@item.ExecutionRefNo</td>
+							<td>@item.AuthorizeBy</td>
+							<td>@item.Status</td>
+							<td>@item.DeletionStatus</td>
+							<td>@item.TranNo</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+	}
+</div>
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Transaction")
+			ConfirmationMessage=@($"No FX Transaction found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@

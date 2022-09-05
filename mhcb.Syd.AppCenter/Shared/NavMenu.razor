@@ -1,0 +1,130 @@
+﻿@*<div class="top-row pl-4 navbar navbar-dark">
+	<a class="navbar-brand" href="">AppCenter</a>
+	<button class="navbar-toggler" @onclick="ToggleNavMenu">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+</div>*@
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+	<ul class="nav flex-column">
+		<li class="nav-item px-3">
+			<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+				<span class="oi oi-home" aria-hidden="true"></span> Home
+			</NavLink>
+		</li>
+
+		@*<AuthorizeView Roles="Manager">
+				<Authorized>
+					<li class="nav-item px-3">
+						<NavLink class="nav-link" href="PaymentControl">
+							<span class="oi oi-plus" aria-hidden="true"></span>RoleBase authorize
+						</NavLink>
+					</li>
+				</Authorized>
+				<NotAuthorized>
+				</NotAuthorized>
+			</AuthorizeView>*@
+
+		<AuthorizeView>
+			<Authorized>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="GUIDE">
+						<span class="oi oi-plus" aria-hidden="true"></span>GUIDE Status
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="EDocument">
+						<span class="oi oi-plus" aria-hidden="true"></span>eDocument Status
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="PaymentControl">
+						<span class="oi oi-plus" aria-hidden="true"></span>Payment Control Status
+					</NavLink>
+				</li>
+
+
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="GUIDEReport">
+						<span class="oi oi-plus" aria-hidden="true"></span>GUIDE Reports
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="ELCS">
+						<span class="oi oi-plus" aria-hidden="true"></span>ELCS & LOAN
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="ELCSReport">
+						<span class="oi oi-plus" aria-hidden="true"></span>ELCS Reports
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="MxInbound">
+						<span class="oi oi-plus" aria-hidden="true"></span>MxInbound Events
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="GUIDEUser">
+						<span class="oi oi-plus" aria-hidden="true"></span>GUIDE User
+					</NavLink>
+				</li>
+			</Authorized>
+			<NotAuthorized>
+			</NotAuthorized>
+		</AuthorizeView>
+
+		<li class="nav-item px-3">
+			<NavLink class="nav-link" href="AuditReport">
+				<span class="oi oi-plus" aria-hidden="true"></span>Audit Data Reports
+			</NavLink>
+		</li>
+		<li class="nav-item px-3">
+			<NavLink class="nav-link" href="GetAuditLogByDates">
+				<span class="oi oi-plus" aria-hidden="true"></span>AppCenter Log
+			</NavLink>
+		</li>
+
+		<AuthorizeView>
+			<NotAuthorized>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="/identity/account/login" Match="NavLinkMatch.All">
+						<span class="oi oi-lock-locked" aria-hidden="true"></span> Login
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="/identity/account/Register" Match="NavLinkMatch.All">
+						<span class="oi oi-power-standby" aria-hidden="true"></span> Register
+					</NavLink>
+				</li>
+			</NotAuthorized>
+			<Authorized>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="/identity/account/logout" Match="NavLinkMatch.All">
+						<span class="oi oi-power-standby" aria-hidden="true"></span>  Logout (@context.User.Identity.Name.ToUpper())
+					</NavLink>
+				</li>
+			</Authorized>
+		</AuthorizeView>
+
+
+
+
+		@*<li class="nav-item px-3">
+				<NavLink class="nav-link" href="Test">
+					<span class="oi oi-bolt" aria-hidden="true"></span>Development
+				</NavLink>
+			</li>*@
+	</ul>
+</div>
+
+@code {
+	private bool collapseNavMenu = true;
+
+	private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+	private void ToggleNavMenu()
+	{
+		collapseNavMenu = !collapseNavMenu;
+	}
+}

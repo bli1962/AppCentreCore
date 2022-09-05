@@ -1,0 +1,146 @@
+﻿@page "/UpdateFXFCustAttribute"
+@inherits UpdateFXFCustAttributeBase
+
+@attribute [Authorize]
+
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null && UpdateStatus.Abbreviation != "")
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		@*Section 1 - Title *@
+		<div class="row ">
+			<div class="col-sm-12">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Update Customer Attributes - Tax code, Dept code and Status</h4></div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 4 - Update Form*@
+		<div class="row ">
+			<div class="col-sm-4">
+
+				<EditForm Model="@UpdateStatus" OnValidSubmit="UpdateStatusClickAsync">
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody>
+							<tr>
+								<td><label for="Id" class="col-form-label">Customer Abbreviation</label></td>
+								<td><InputText id="custAbbr" @bind-Value="UpdateStatus.Abbreviation" class="form-control-sm" placeholder="Customer Abbrivation" /></td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Status</label></td>
+								<td>
+									<InputSelect @bind-Value="UpdateStatus.Status" class="form-control-sm form-select-sm">
+										<option value="F">Finalized</option>
+										<option value="A">To be Authorized</option>
+										<option value="V">Verified</option>
+										<option value="D">Deleted</option>
+									</InputSelect>
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">TAX Code</label></td>
+								<td>
+									<InputSelect @bind-Value="UpdateStatus.TaxCode" class="form-control-sm form-select-sm">
+										<option value="NA">No change</option>
+										<option value="01">01</option>
+										<option value="02">02</option>
+										<option value="03">03</option>
+										<option value="04">04</option>
+										<option value="">Empty</option>
+									</InputSelect>
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Department Code</label></td>
+								<td>
+									<InputSelect @bind-Value="UpdateStatus.DeptCode" class="form-control-sm form-select-sm">
+										<option value="NA">No Change</option>
+										<option value="20">20</option>
+										<option value="30">30</option>
+										<option value="31">31</option>
+										<option value="32">32</option>
+										<option value="40">40</option>
+										<option value="50">50</option>
+										<option value="70">70</option>
+										<option value="90">90</option>
+										<option value="">Empty</option>
+									</InputSelect>
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Authorized By</label></td>
+								<td><InputText id="authorizeBy" @bind-Value="UpdateStatus.AuthorizeBy" class="form-control-sm" readonly /></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left " type="submit">Update attributes</button>
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+						<br />
+					</div>
+				</EditForm>
+
+			</div>
+		</div>
+
+		@*Section 5 - Notes *@
+		<div class="row ">
+			<div class="col-sm-6">
+				<div class="panel" style="color: red; border-color: #ffffff; ">
+					<div class="panel-body">
+						<ul>
+							<li>The only <b>pending</b> status can be sent to finalized status.</li>
+							<li>You must be the last <b>authorizer</b> of the transaction.</li>
+							<li>No GIP will be generated to the operation, so no GBASE data will be updated.</li>
+							<li>The execution can be tracked in our audit log table.</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Customer")
+			ConfirmationMessage=@($"No FX Customer found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveSuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Customer")
+			ConfirmationMessage=@($"Save successfully!")
+			BtnClass=@($"btn btn-success float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveUnsuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Customer")
+			ConfirmationMessage=@($"Unsuccessfully save.")
+			BtnClass=@($"btn btn-danger float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentBadRequest"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Customer")
+			ConfirmationMessage=@($"Bad internet request.")
+			BtnClass=@($"btn btn-info float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentError"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Customer")
+			ConfirmationMessage=@($"Error retrieving data from the database.")
+			BtnClass=@($"btn btn-warning float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@

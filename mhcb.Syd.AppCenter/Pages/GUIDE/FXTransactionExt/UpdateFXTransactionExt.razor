@@ -1,0 +1,162 @@
+﻿@page "/UpdateFXTransactionExt"
+@inherits UpdateFXTransactionExtBase
+
+@attribute [Authorize]
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null)
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		@*Section 1 - Title *@
+		<div class="row ">
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Reset GID Upload for FX Transaction</h4></div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Parameters*@
+		<div class="row">
+			<div class="col-sm-4">
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left " @onclick="SearchClick">Get Today's GID of FX Transaction</button>
+				</div>
+			</div>
+		</div>
+
+		@*Section 3 - list display*@
+		<div name="SelectedReport">
+			<div class="row ">
+				<div class="col-sm-12">
+					<div id="divData" class="hidden">
+						<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+							<thead class="table-primary Col-Head-Center">
+								<tr class="success">
+									<th>Ref No</th>
+									<th>Contract Id</th>
+									<th>Trade Id</th>
+									<th>Event</th>
+									<th>Portfolio Group</th>
+									<th>Portfolio Desk</th>
+									<th>Portfolio Book</th>
+									<th>Dealer</th>
+									<th>Contract CCY</th>
+									<th>EQUIV CCY</th>
+									<th>Printed</th>
+									<th>DateTime</th>
+									<th>GID Upload</th>
+								</tr>
+							</thead>
+							<tbody Class="table-active Row-Cell">
+								@foreach (var item in modelView)
+								{
+									<tr>
+										<td>@item.REF_NO</td>
+										<th>@item.ContractId</th>
+										<th>@item.TradeId</th>
+										<th>@item.Event</th>
+										<th>@item.PortfolioGroup</th>
+										<th>@item.PortfolioDesk</th>
+										<th>@item.PortfolioBook</th>
+										<th>@item.AuthorisedDealer</th>
+										<th>@item.CONTRACT_CCY_ABBR_ORIG</th>
+										<th>@item.EQUIV_CCY_ABBR_ORIG</th>
+										<th>@item.Printed</th>
+										<th>@item.PrintDateTime</th>
+										<th>@item.GIDUpload</th>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 4 - Update Form*@
+		<div class="row ">
+			<div class="col-sm-4">
+				<EditForm Model="@UpdateStatus" OnValidSubmit="UpdateStatusClick">
+					<DataAnnotationsValidator />
+					<ValidationSummary />
+
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody>
+							<tr>
+								<td><label for="Id" class="col-form-label">GBASE Ref No</label></td>
+								<td>
+									<InputText id="RefNo" @bind-Value="UpdateStatus.RefNo" class="form-control-sm" placeholder="Gbase Ref No" />
+									<ValidationMessage For="@(() => UpdateStatus.RefNo)" />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Operation Date</label></td>
+								<td>
+									<InputDate id="optDate" @bind-Value="UpdateStatus.optDate" class="form-control-sm" placeholder="Operation Date" />
+									<ValidationMessage For="@(() => UpdateStatus.optDate)" />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="operator" class="col-form-label">Operated By</label></td>
+								<td>
+									<InputText id="AuthorizeBy" @bind-Value="UpdateStatus.AuthorizeBy" class="form-control-sm" disabled />
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left " type="submit">Set GID Upload</button>
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+						<br />
+					</div>
+				</EditForm>
+			</div>
+		</div>
+	}
+</div>
+
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Transaction GID")
+			ConfirmationMessage=@($"No FX GIP found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveSuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Transaction GID")
+			ConfirmationMessage=@($"Save successfully!")
+			BtnClass=@($"btn btn-success float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveUnsuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Transaction GID")
+			ConfirmationMessage=@($"Unsuccessfully save.")
+			BtnClass=@($"btn btn-danger float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentBadRequest"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Transaction GID")
+			ConfirmationMessage=@($"Bad internet request.")
+			BtnClass=@($"btn btn-info float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentError"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Transaction GID")
+			ConfirmationMessage=@($"Error retrieving data from the database.")
+			BtnClass=@($"btn btn-warning float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@
+

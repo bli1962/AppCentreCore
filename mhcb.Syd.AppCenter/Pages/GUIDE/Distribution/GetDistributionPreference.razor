@@ -1,0 +1,77 @@
+﻿@page "/GetDistributionPreference"
+@inherits GetDistributionPreferenceBase
+
+@attribute [Authorize]
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null)
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		@*Section 1 - Title *@
+		<div class="row ">
+
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Get Distribution Preferences</h4></div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Parameters*@
+		<div class="row">
+			<div class="col-sm-4">
+
+				@*<EditForm Model="@searchModel" OnValidSubmit="@SearchClick">*@
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="SearchClick">Search</button>
+					<button class="btn btn-outline-info m-1 float-left btn-width-80" @onclick="CopyClick">Copy</button>
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+				</div>
+				@*</EditForm>*@
+
+			</div>
+		</div>
+
+		@*Section 3 - list display*@
+		<div name="SelectedReport" class="row col-sm-12 ">
+			<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+				<thead class="table-primary Col-Head-Center">
+					<tr>
+						<th>Cust_Abbr</th>
+						<th>Cust_Name</th>
+						<th>System</th>
+						<th>Distribution_Type</th>
+						<th>Emails</th>
+						<th>Status</th>
+					</tr>
+				</thead>
+				<tbody Class="table-active Row-Cell">
+					@foreach (var item in modelView)
+					{
+						<tr>
+							<td>@item.CUST_ABBR</td>
+							<th>@item.CUST_NAME</th>
+							<th>@item.VisableToSystem</th>
+							<th>@item.DistributionType</th>
+							<th>@item.Address</th>
+							<th>@item.Status</th>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
+</div>
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Distribution Preference")
+			ConfirmationMessage=@($"No Distribution Preference found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@

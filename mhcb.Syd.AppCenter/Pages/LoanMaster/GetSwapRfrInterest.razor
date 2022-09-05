@@ -1,0 +1,128 @@
+﻿
+@page "/GetSwapRfrInterest"
+@inherits GetSwapRfrInterestBase
+
+@attribute [Authorize]
+
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null && searchModel.CustAbbr != "")
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		@*Section 1 - Title *@
+		<div class="row ">
+
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Swap Loan Transaction RFR by Report Date</h4></div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 2 - Parameters*@
+		<div class="row">
+			<div class="col-sm-4">
+
+				<EditForm Model="@searchModel" OnValidSubmit="@SearchClick">
+					<DataAnnotationsValidator />
+					<ValidationSummary />
+
+
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody thead class="thead-light">
+							<tr>
+								<td><label for="Id" class="col-form-label">Report Date</label></td>
+								<td><input type="date" class="form-control-sm" @bind="SelectedOptDate" /> </td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Customer Abbreviation</label></td>
+								<td>
+									<InputText class="form-control-sm" placeholder="Customer Abbreviatation" @bind-Value="searchModel.CustAbbr" />
+									<ValidationMessage For="@(() => searchModel.CustAbbr)" />
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" type="submit">Search</button>
+						<button class="btn btn-outline-info m-1 float-left btn-width-80" @onclick="CopyClick">Copy</button>
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+					</div>
+				</EditForm>
+			</div>
+		</div>
+
+
+		@*Section 3 - list display*@
+		<div name="SelectedReport" class="row col-sm-12 ">
+			<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+				<thead class="table-primary Col-Head-Center">
+					<tr>
+						<th>REPORT DATE</th>
+						<th>REFERENCE_NO</th>
+						<th>CUST_ABBR</th>
+						<th>CUSTOMER_FULL_NAME</th>
+
+						<!--<th>SWAP_TERM</th>-->
+						<th>START_DATE</th>
+						<th>CONTRACT_DATE</th>
+						<th>MATURITY_DATE</th>
+
+						<th>CCY</th>
+						<th>BALANCE</th>
+
+						<th>Mizuho PAY/REV</th>
+						<th>FLOATING /FIXED</th>
+						<!--<th>INT_ACCRUAL</th>-->
+
+						<th>Accrued Interest(Up to and including Report Date)</th>
+						<th>Effective /Interest Rate (%P.A.)</th>
+
+						<th>MxData Download Date</th>
+					</tr>
+				</thead>
+				<tbody Class="table-active Row-Cell">
+					@foreach (var item in modelView)
+					{
+						<tr>
+							<td>@item.DATA_DATE</td>
+							<th>@item.REF_NO</th>
+							<th>@item.CUST_ABBR</th>
+							<th>@item.CUST_NAME</th>
+							<th>@item.START_VALUE</th>
+							<th>@item.CONTRACT_DATE_VALUE</th>
+							<th>@item.MATURITY</th>
+							<th>@item.CCY_ABBR</th>
+							<th>@item.BALANCE</th>
+
+							<th>@item.PAY_REV</th>
+							<th>@item.FIXED_FLOAT</th>
+
+							@*<th>@item.INT_ACCRUAL</th>*@
+							<th>@item.IntAccrual_RFR</th>
+							<th>@item.IntRate_RFR</th>
+							<th>@item.IntAccrualCreatedDate</th>
+
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+	}
+</div>
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Swap RFR Interest")
+			ConfirmationMessage=@($"No Swap RFR Interest found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@

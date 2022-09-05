@@ -1,0 +1,132 @@
+﻿@page "/GetCovenantRatio"
+@inherits GetCovenantRatioBase
+
+@attribute [Authorize]
+
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null && SelectedCovenantType != "")
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		@*Section 1 - Title *@
+		<div class="row ">
+
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Covenant Ratio Transaction</h4></div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Parameters*@
+		<div class="row">
+			<div class="col-sm-4">
+				<table class="table table-sm table-bordered table-primary Col-Head-Left">
+					<tbody thead class="thead-light">
+						<tr>
+							<td colspan="2"><label for="Id" class="col-form-label">Covenant Type</label></td>
+							<td colspan="2">
+								<select class="form-control-sm  text-180" @bind="SelectedCovenantType">
+									<option value="Covenant">Covenant</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2"><label for="Id" class="col-form-label">Date Type</label></td>
+							<td  colspan="2">
+								<select class="form-control-sm form-select-sm text-180" @bind="SelectedDateType">
+									<option value="CovStartDate">Covenant Start Date</option>
+									<option value="CovEndDate">Covenant End Date</option>
+									<option value="CovRecReptDate">Record Report Date</option>
+									<option value="CovRecDueDate">Record Due Date</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="4"><label for="Id" class="col-form-label">Operation Date</label></td>
+						</tr>
+						<tr>
+							<td><label for="Id" class="col-form-label">From</label></td>
+							<td><input type="date" class="form-control-sm" @bind="SelectedDateFrom" /></td>
+							<td><label for="Id" class="col-form-label">To</label></td>
+							<td><input type="date" class="form-control-sm" @bind="SelectedDateTo" /></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="SearchClick">Search</button>
+					<button class="btn btn-outline-info m-1 float-left btn-width-80" @onclick="CopyClick">Copy</button>
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 3 - list display*@
+		<div name="SelectedReport" class="row col-sm-12 ">
+			<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+				<thead class="table-primary Col-Head-Center">
+					<tr>
+						<th>Covenant No</th>
+						<th>Record No</th>
+						<th>Cust. Abbr</th>
+						<th>CCIF Nname</th>
+						<th>Type</th>
+						<th>Condition Group</th>
+
+						<th>Cov Start Date</th>
+						<th>Cov End Date</th>
+
+						<th>Rate</th>
+						<th>Rate Adj</th>
+
+						<th>Adj Date</th>	
+						<th>Report Date</th>
+						<th>Due Date</th>
+						<th>Received Date</th>
+					</tr>
+				</thead>
+				<tbody Class="table-active Row-Cell">
+					@foreach (var item in modelView)
+					{
+					<tr>
+						<td>@item.COVENANT_NO</td>
+						<th>@item.RECORD_NO</th>
+						<th>@item.CUST_ABBR</th>
+						<th>@item.CCIF_NAME</th>
+						<th>@item.CONDITION_DESC</th>
+						<th>@item.CONDITION_GROUP_DESC</th>
+
+						<th>@item.COV_START_DATE</th>
+						<th>@item.COV_END_DATE</th>
+
+						<th>@item.RATE</th>
+						<th>@item.RATE_ADJ</th>
+
+						<th>@item.DATE_RECIEVED_ADJ</th>
+						<th>@item.REPORT_DATE</th>
+						<th>@item.DUE_DATE</th>
+						<th>@item.DATE_RECIEVED</th>
+
+					</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+	}
+</div>
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Covenant Transaction")
+			ConfirmationMessage=@($"No Covenant Transaction found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@

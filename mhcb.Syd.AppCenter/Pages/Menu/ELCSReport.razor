@@ -1,0 +1,60 @@
+﻿@page "/ELCSReport"
+
+<div class="container-sm container-fluid">
+	<div class="card-header">
+		<h2><span class="badge badge-info">ELCS Data Reports</span></h2>
+	</div>
+
+
+	<div class="list-group">
+		<ul class="nav flex-column nav-tabs">
+			<li><h4><span class="badge badge-light">Loan Transaction Reports</span></h4></li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetLoanTransactionByDates">
+					Loan Transaction Report By Dates
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-secondary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetLoanTransactionByCcyDates">
+					Loan Transaction Report By CCY and Dates
+				</a>
+			</li>
+
+			<li><h4><span class="badge badge-light">Covenant Transaction Report</span></h4></li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetCovenantRatio">
+					Covenant Ratio Report
+				</a>
+			</li>
+
+
+			<li><h4><span class="badge badge-light">RFR Interest Report</span></h4></li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetLoanRfrInterest">
+					Loan Transaction RFR Report
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-secondary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetSwapRfrInterest">
+					Swap Loan Transaction RFR Report
+				</a>
+			</li>
+
+		</ul>
+	</div>
+
+
+	<div class="card-footer">
+		<div class="text-sm-center footer" style="margin-bottom:0">
+			<p>&copy; @DateTime.Now.Year - MIZUHO Bank Sydney</p>
+		</div>
+	</div>
+</div>
+
+
+
+@*<div id="navbar2" class="container tab-pane active" style="padding: 0px 0px 0px 0px;">
+	<div class="col-sm-12" id="myScrollspy">
+	</div>
+</div>*@
+

@@ -1,0 +1,170 @@
+﻿@page "/PutEDocument"
+@inherits PutEDocumentBase
+
+@attribute [Authorize]
+
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null && SelectedReportType != "")
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		@*Section 1 - Title *@
+		<div class="row ">
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Set EDocument for Reprint</h4></div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Parameters*@
+		<div class="row">
+			<div class="col-sm-4">				
+				<table class="table table-sm table-bordered table-primary Col-Head-Left">
+					<tbody thead class="thead-light">
+						<tr>
+							<td><label for="Id" class="col-form-label">Processed Date</label></td>
+							<td>
+								<input type="date" class="form-control-sm" @bind="SelectedOptDate" />
+							</td>
+						</tr>
+						<tr>
+							<td><label for="Id" class="col-form-label">Document type</label></td>
+							<td>
+								<select class="form-control-sm form-select-sm" @bind="SelectedReportType">
+									<option value="CurrentAndSavingsStatement">Current & Savings Statement</option>
+									<option value="MoneyMarketLoanConfirmation">MoneyMarket Loan Confirmation</option>
+									<option value="MoneyMarketDepositConfirmation">MoneyMarket Deposit Confirmation</option>
+									<option value="ForeignExchangeConfirmation">ForeignExchange Confirmation</option>
+								</select>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left" @onclick="SearchClick">Search eDocuments</button>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 3 - list display*@
+		<div name="SelectedReport">
+			<div class="row ">
+				<div class="col-sm-12">
+					<div id="divData" class="hidden">
+						<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+							<thead class="table-primary Col-Head-Center">
+								<tr class="success">
+									<th>eDocument ID</th>
+									<th>Report Type</th>
+									<th>Company Name</th>
+									<th>Account No</th>
+									<th>Account Type</th>
+									<th>Processed</th>
+									<th>Date Processed</th>
+									<th>Error</th>
+									<th>Error Message</th>
+								</tr>
+							</thead>
+							<tbody Class="table-active Row-Cell">
+								@foreach (var item in modelView)
+								{
+									<tr>
+										<td>@item.Id</td>
+										<th>@item.ReportType</th>
+										<th>@item.CompanyName</th>
+										<th>@item.AccountNo</th>
+										<th>@item.AccountType</th>
+										<th>@item.Processed</th>
+										<th>@item.DateProcessed</th>
+										<th>@item.Errored</th>
+										<th>@item.ErrorMessage</th>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 4 - Update Form*@
+		<div class="row ">
+			<div class="col-sm-4">
+				<EditForm Model="@UpdateStatus" OnValidSubmit="UpdateStatusClick">
+					<DataAnnotationsValidator />
+					<ValidationSummary />
+
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody>
+							<tr>
+								<td><label for="Id" class="col-form-label">eDocument ID :</label></td>
+								<td>
+									<InputNumber class="form-control-sm" placeholder="eDocument ID" @bind-Value="UpdateStatus.Id" />
+									<ValidationMessage For="@(() => UpdateStatus.Id)" />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Operated By :</label></td>
+								<td><input type="text" class="form-control-sm" @bind="UpdateStatus.AuthorizeBy" readonly /></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left" type="submit">Set Reprint</button>
+						<button class="btn btn-outline-primary m-1 float-left" @onclick="BackClick">Back</button>
+						<br />
+					</div>
+				</EditForm>
+			</div>
+		</div>
+
+		@*Section 5 - Notes *@
+
+	}
+</div>
+
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"EDocument")
+			ConfirmationMessage=@($"No EDocument found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveSuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"EDocument")
+			ConfirmationMessage=@($"Set Print successfully!")
+			BtnClass=@($"btn btn-success float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveUnsuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"EDocument")
+			ConfirmationMessage=@($"Unsuccessfully Set Print.")
+			BtnClass=@($"btn btn-danger float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentBadRequest"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"EDocument")
+			ConfirmationMessage=@($"Bad internet request.")
+			BtnClass=@($"btn btn-info float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentError"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"EDocument")
+			ConfirmationMessage=@($"Error retrieving data from the database.")
+			BtnClass=@($"btn btn-warning float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+

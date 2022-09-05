@@ -1,0 +1,211 @@
+﻿@page "/UpdateDCPayment"
+@inherits UpdateDCPaymentBase
+
+@attribute [Authorize]
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null)
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		@*Section 1 - Title *@
+		<div class="row ">
+
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Update Domestic Clearing Payment Transaction Status</h4></div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Parameters*@
+		<div class="row">
+			<div class="col-sm-4">
+				<table class="table table-sm table-bordered table-primary Col-Head-Left">
+					<tbody thead class="thead-light">
+						<tr>
+							<td><label for="Id" class="col-form-label">Date type</label></td>
+							<td>
+								<select class="form-control-sm form-select-sm" @bind="SelectedDateType">
+									<option value="ValueDate">Value Date</option>
+									<option value="ProcessedDate">Process Date</option>
+									<option value="UpdatedDate">Update Date</option>
+									<option value="CreatedDate">Create Date</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="Id" class="col-form-label">Date Value</label></td>
+							<td>
+								<input type="date" class="form-control-sm" @bind="SelectedOptDate" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left" @onclick="SearchClick">Get DC Payment Transaction</button>
+				</div>
+			</div>
+		</div>
+
+		@*Section 3 - list display*@
+		<div name="SelectedReport">
+			<div class="row ">
+				<div class="col-sm-12">
+					<div id="divData" class="hidden">
+						<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+							<thead class="table-primary Col-Head-Center">
+								<tr class="success">
+									<th>Payment Id</th>
+									<th>Value Date</th>
+									<th>Total Amount</th>
+									<th>Currency Code</th>
+									<th>Current Account</th>
+									<th>Abbreviation</th>
+									<th>Account Name</th>
+									<th>Status Id</th>
+									<th>Process Date</th>
+									<th>Updated When</th>
+									<th>Updated Who</th>
+									<th>Created When</th>
+								</tr>
+							</thead>
+							<tbody Class="table-active Row-Cell">
+								@foreach (var item in modelView)
+								{
+									<tr>
+										<td>@item.PaymentId</td>
+										<th>@item.ValueDate</th>
+										<th>@item.TotalAmount</th>
+										<th>@item.CurrencyCode</th>
+										<th>@item.CustomerCurrentAccount</th>
+										<th>@item.CustomerAbbreviation</th>
+										<th>@item.AccountName</th>
+										<th>@item.StatusId</th>
+										<th>@item.ProcessDate</th>
+										<th>@item.UpdatedWhen</th>
+										<th>@item.UpdatedWho</th>
+										<th>@item.CreatedWhen</th>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 4 - Update Form*@
+		<div class="row ">
+			<div class="col-sm-4">
+				<EditForm Model="@UpdateStatus" OnValidSubmit="UpdateStatusClick">
+					<DataAnnotationsValidator />
+					<ValidationSummary />
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody>
+							<tr>
+								<td><label for="Id" class="col-form-label">Payment Id</label></td>
+								<td>
+									<InputNumber id="PaymentId" @bind-Value="UpdateStatus.PaymentId"
+												 class="form-control-sm" placeholder="Payment Id" />
+									<ValidationMessage For="@(()=>UpdateStatus.PaymentId)" />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Status Id</label></td>
+								<td>
+									<InputSelect @bind-Value="UpdateStatus.StatusId" class="form-control-sm form-select-sm">
+										<option value="1">1.Imported</option>
+										<option value="2">2.Validated</option>
+										<option value="3">3.GO Posted</option>
+										<option value="4">4.Exported</option>
+										<option value="5">5.Completed</option>
+										<option value="6">6.Returned</option>
+										<option value="8">8.Error</option>
+										<option value="9">9.Deleted</option>
+										<option value="10">10.Fee Calculated</option>
+										<option value="22">22.Authorise Pending</option>
+										<option value="24">24.Authorise Deletion</option>
+										<option value="28">28.Authorise Cancel</option>
+										<option value="29">29.Authorise Sent Manually</option>
+										<option value="31">31.Sent Manually</option>
+										<option value="32">32.Cancelled</option>
+										<option value="33">33.Return Completed</option>
+										<option value="34">34.Fee Error</option>
+										<option value="36">36.Verify</option>
+										<option value="37">37.Authorise Return</option>
+										<option value="38">38.PreError</option>
+										<option value="39">39.Acknowledge</option>
+										<option value="40">40.Authorise Acknowledge</option>
+										<option value="41">41.Acknowledge Completed</option>
+									</InputSelect>
+								</td>							
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Comment</label></td>
+								<td>
+									<InputText id="Comment" @bind-Value="UpdateStatus.Comment"
+											   class="form-control-sm" placeholder="Your comments" />
+									<ValidationMessage For="@(()=>UpdateStatus.Comment)" />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Operated By</label></td>
+								<td><InputText id="authorizeBy" @bind-Value="UpdateStatus.AuthorizeBy" class="form-control-sm" disabled /></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left " type="submit">Change Domestic Clearing Status</button>
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+						<br />
+					</div>
+				</EditForm>
+			</div>
+		</div>
+	}
+</div>
+
+
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Domestic Clearing")
+			ConfirmationMessage=@($"No Domestic Clearing Payment found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveSuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Domestic Clearing")
+			ConfirmationMessage=@($"Save successfully!")
+			BtnClass=@($"btn btn-success float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveUnsuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Domestic Clearing")
+			ConfirmationMessage=@($"Unsuccessfully save.")
+			BtnClass=@($"btn btn-danger float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentBadRequest"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Domestic Clearing")
+			ConfirmationMessage=@($"Bad internet request.")
+			BtnClass=@($"btn btn-info float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentError"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Domestic Clearing")
+			ConfirmationMessage=@($"Error retrieving data from the database.")
+			BtnClass=@($"btn btn-warning float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@
+

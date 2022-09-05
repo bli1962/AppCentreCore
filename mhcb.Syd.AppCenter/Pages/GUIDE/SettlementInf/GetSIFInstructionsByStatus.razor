@@ -1,0 +1,184 @@
+﻿@page "/GetSIFInstructionsByStatus"
+@inherits GetSIFInstructionsByStatusBase
+
+@attribute [Authorize]
+
+<div class="container-fluid">
+
+	@if (settlementInfView == null)
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		@*Section 1 - Title *@
+		<div class="row ">
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>FX Settlement Report with Instructions</h4></div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Parameters*@
+		<div class="row">
+			<div class="col-md-1">
+				<table class="table table-sm table-bordered table-primary Col-Head-Left">
+					<tbody thead class="thead-light">
+						<tr>
+							<td><label for="Id" class="col-form-label">Settlement Inf Status</label></td>
+							<td>
+								<select class="form-control-sm form-select-sm text-150" @bind="SelectedStatus">
+									<option value="All">All</option>
+									<option value="F">Finalized</option>
+									<option value="A">Authorized</option>
+									<option value="V">Verified</option>
+									<option value="S">Submitted</option>									
+									<option value="D">Closed</option>
+								</select>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="SearchClick">Search</button>
+					<button class="btn btn-outline-info m-1 float-left btn-width-80" @onclick="CopyClick">Copy</button>
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+				</div>
+			</div>
+		</div>
+
+		@*Section 3 - list display*@
+		<div name="SelectedReport" class="row col-sm-12 ">
+			<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+				<thead class="table-primary Col-Head-Center">
+					<tr class="success">
+						<th>SIF_ID </th>
+						<th>CUST_ABBR </th>
+						<th>RECORD_KIND </th>
+						<th>CCY </th>
+
+						<th>REC_SETTL_CODE </th>
+						<th>REC_ACT_CD </th>
+						<th>REC_METHOD </th>
+						<th>PAY_SETTL_CODE </th>
+						<th>PAY_ACT_CD </th>
+						<th>PAY_METHOD </th>
+						<th>REC_BANK_ID </th>
+						<th>REC_CUST_ABBR </th>
+						<th>INTERMEDIARY_BANK </th>
+						<th>ACC_BANK </th>
+						<th>ACC_BANK_ACTNO </th>
+						<th>BENE_BANK </th>
+						<th>BENE_BANK_ACTNO </th>
+						<th>CONFIRMATION_SWIFT </th>
+						<th>CONFIRMATION_FLG </th>
+						<th>REC_BANK_BR_ACTNO </th>
+						<th>REC_BANK_HO_ACTNO </th>
+						<th>BANK_INF </th>
+
+						<th>Status </th>
+						<th>DELETION_STATUS </th>
+						@*<th>TRAN_NO </th>
+							<th>GIP_STATUS </th>
+							<th>GIP_DESCRIPTION </th>*@
+						<th>AUTHORIZE_BY </th>
+
+						<th>Addresse </th>
+						<th>PartyIdentifier56 </th>
+						<th>BIC56_1 </th>
+						<th>PartyIdentifier57 </th>
+						<th>FXALM_PartyIdentifier57 </th>
+						<th>BIC57_1 </th>
+						<th>BIC57_2 </th>
+						<th>BIC57_3 </th>
+						<th>BIC57_4 </th>
+						<th>PartyIdentifier58 </th>
+						<th>FXALM_PartyIdentifier58 </th>
+						<th>BIC58_1 </th>
+						<th>PartyIdentifier59 </th>
+						<th>BIC59_1 </th>
+						<th>BIC59_2 </th>
+						<th>BIC59_3 </th>
+						<th>BIC59_4 </th>
+						<th>Instruction_1 </th>
+						<th>Instruction_2 </th>
+						<th>Instruction_3 </th>
+						<th>Instruction_4 </th>
+					</tr>
+				</thead>
+				<tbody Class="table-active Row-Cell">
+					@foreach (var item in settlementInfView)
+					{
+						<tr>
+							<td>@item.SIF_ID </td>
+							<td>@item.CUST_ABBR </td>
+							<td>@item.RECORD_KIND </td>
+							<td>@item.CCY </td>
+
+							<td>@item.REC_SETTL_CODE </td>
+							<td>@item.REC_ACT_CD </td>
+							<td>@item.REC_METHOD </td>
+							<td>@item.PAY_SETTL_CODE </td>
+							<td>@item.PAY_ACT_CD </td>
+							<td>@item.PAY_METHOD </td>
+							<td>@item.REC_BANK_ID </td>
+							<td>@item.REC_CUST_ABBR </td>
+							<td>@item.INTERMEDIARY_BANK_ID </td>
+							<td>@item.ACC_BANK_ID </td>
+							<td>@item.ACC_BANK_ACTNO </td>
+							<td>@item.BENE_BANK_ID </td>
+							<td>@item.BENE_BANK_ACTNO </td>
+							<td>@item.CONFIRMATION_SWIFT_ID </td>
+							<td>@item.CONFIRMATION_FLG </td>
+							<td>@item.REC_BANK_BR_ACTNO </td>
+							<td>@item.REC_BANK_HO_ACTNO </td>
+							<td>@item.BANK_INF </td>
+
+							<td>@item.STATUS </td>
+							<td>@item.DELETION_STATUS </td>
+							@*<td>@item.TRAN_NO </td>
+								<td>@item.GIP_STATUS </td>
+								<td>@item.GIP_DESCRIPTION </td>*@
+							<td>@item.AUTHORIZE_BY </td>
+
+							<td>@item.Addresse </td>
+							<td>@item.PartyIdentifier56 </td>
+							<td>@item.BIC56_1 </td>
+							<td>@item.PartyIdentifier57 </td>
+							<td>@item.FXALM_PartyIdentifier57 </td>
+							<td>@item.BIC57_1 </td>
+							<td>@item.BIC57_2 </td>
+							<td>@item.BIC57_3 </td>
+							<td>@item.BIC57_4 </td>
+							<td>@item.PartyIdentifier58 </td>
+							<td>@item.FXALM_PartyIdentifier58 </td>
+							<td>@item.BIC58_1 </td>
+							<td>@item.PartyIdentifier59 </td>
+							<td>@item.BIC59_1 </td>
+							<td>@item.BIC59_2 </td>
+							<td>@item.BIC59_3 </td>
+							<td>@item.BIC59_4 </td>
+							<td>@item.SpecialInstruction_1 </td>
+							<td>@item.SpecialInstruction_2 </td>
+							<td>@item.SpecialInstruction_3 </td>
+							<td>@item.SpecialInstruction_4 </td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+	}
+</div>
+
+
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Settlement Information")
+			ConfirmationMessage=@($"No Settlement Information found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>

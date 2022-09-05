@@ -1,0 +1,216 @@
+﻿@page "/UpdateFXDelivery"
+@inherits UpdateFXDeliveryBase
+
+@attribute [Authorize]
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null)
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		@*Section 1 - Title *@
+		<div class="row ">
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Send FX Settlement To Finalized Status</h4></div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Parameters*@
+		<div class="row">
+			<div class="col-sm-4">
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left" @onclick="SearchClick">Get Pending Delivery</button>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 3 - list display*@
+		<div name="SelectedReport">
+			<div class="row ">
+				<div class="col-sm-12">
+					<div id="divData" class="hidden">
+						<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+							<thead class="table-primary Col-Head-Center">
+								<tr class="success">
+									<th>REF NO</th>
+									<th>CUST ABBR</th>
+									<th>REC SETTL CODE</th>
+									<th>REC CUST ABBR</th>
+									<th>REC CCY CD</th>
+									<th>PAY SETTL CODE</th>
+									<th>PAY CUST ABBR</th>
+									<th>PAY CCY CD</th>
+									<th>Status</th>
+									<th>Deletion Status</th>
+									<th>GIP Status</th>
+									<th>GIP Description</th>
+									<th>AUTHORIZE BY</th>
+									<th>TRAN NO</th>
+								</tr>
+							</thead>
+							<tbody Class="table-active Row-Cell">
+								@foreach (var item in modelView)
+								{
+									<tr>
+										<td>@item.REF_NO</td>
+										<th>@item.CUST_ABBR</th>
+										<th>@item.REC_SETTL_CODE</th>
+										<th>@item.REC_CUST_ABBR</th>
+										<th>@item.REC_CCY_CD</th>
+
+										<th>@item.PAY_SETTL_CODE</th>
+										<th>@item.PAY_CUST_ABBR</th>
+										<th>@item.PAY_CCY_CD</th>
+
+										<th>@item.STATUS</th>
+										<th>@item.DELETION_STATUS</th>
+										<th>@item.GIP_STATUS</th>
+										<th>@item.GIP_DESCRIPTION</th>
+										<th>@item.AUTHORIZE_BY</th>
+										<th>@item.TRAN_NO</th>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 4 - Update Form*@
+		<div class="row ">
+			<div class="col-sm-4">
+				<EditForm Model="@UpdateStatus" OnValidSubmit="UpdateStatusClick">
+					<DataAnnotationsValidator />
+					<ValidationSummary />
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody>
+							<tr>
+								<td>
+									<label for="Id" class="col-form-label">GBASE Ref No</label>
+								</td>
+								<td>
+									<InputText id="refNo" @bind-Value="UpdateStatus.RefNo" class="form-control-sm" placeholder="Gbase Reference No" />
+									<ValidationMessage For="@(()=>UpdateStatus.RefNo)" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<label for="Id" class="col-form-label">Authorized By</label>
+								</td>
+								<td>
+									<InputText id="authorizeBy" @bind-Value="UpdateStatus.AuthorizeBy" class="form-control-sm" disabled />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Status</label></td>
+								<td>
+									<InputText id="status" @bind-Value="UpdateStatus.Status" class="form-control-sm" disabled />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Deletion Status</label></td>
+								<td>
+									<InputSelect @bind-Value="UpdateStatus.DeletionStatus" class="form-control-sm form-select-sm" @onclick="SetGipStatus">
+										<option value="">N/A - Upload</option>
+										<option value="D">D - Deletion</option>
+									</InputSelect>
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">GIP Status</label></td>
+								<td>
+									<InputSelect @bind-Value="UpdateStatus.GipStatus" class="form-control-sm form-select-sm" disabled>
+										<option value="15">15 - Upload</option>
+										<option value="8">8 - Deletion</option>
+									</InputSelect>
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">GIP Description</label></td>
+								<td>
+									<InputText id="gipDescription" @bind-Value="UpdateStatus.GipDescription" class="form-control-sm" disabled />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Tran No</label></td>
+								<td>
+									<InputText id="tranNo" @bind-Value="UpdateStatus.TranNo" class="form-control-sm" placeholder="Transaction No" />
+									<ValidationMessage For="@(()=>UpdateStatus.TranNo)" />
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left " type="submit">Set to finalized status</button>
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+						<br />
+					</div>
+				</EditForm>
+
+			</div>
+		</div>
+
+		@*Section 5 - Notes *@
+		<div class="row ">
+			<div class="col-sm-6">
+				<div class="panel" style="color: red; border-color: #ffffff; ">
+					<div class="panel-body">
+						<ul>
+							<li>The only <b>pending</b> status can be sent to finalized status.</li>
+							<li>You must be the last <b>authorizer</b> of the transaction.</li>
+							<li>No GIP will be generated to the operation, so no GBASE data will be updated.</li>
+							<li>The execution can be tracked in our audit log table.</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Delivery")
+			ConfirmationMessage=@($"No Bank Information found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveSuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Delivery")
+			ConfirmationMessage=@($"Save successfully!")
+			BtnClass=@($"btn btn-success float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveUnsuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Delivery")
+			ConfirmationMessage=@($"Unsuccessfully save.")
+			BtnClass=@($"btn btn-danger float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentBadRequest"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Delivery")
+			ConfirmationMessage=@($"Bad internet request.")
+			BtnClass=@($"btn btn-info float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentError"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"FX Delivery")
+			ConfirmationMessage=@($"Error retrieving data from the database.")
+			BtnClass=@($"btn btn-warning float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@
+

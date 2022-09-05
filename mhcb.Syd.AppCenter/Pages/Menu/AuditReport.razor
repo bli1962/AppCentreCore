@@ -1,0 +1,54 @@
+﻿@page "/AuditReport"
+
+
+<div class="container-sm container-fluid">
+	<div class="card-header">
+		<h2><span class="badge badge-info">Audit Data Reports</span></h2>
+	</div>
+
+	<div class="list-group">
+		<ul class="nav flex-column nav-tabs">
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetFullFXTransactionByDates">
+					FX Transaction & Delivery Reports
+				</a>
+			</li>
+
+			<li class="list-group-item list-group-item-action list-group-item-secondary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetFullBankInfByStatus">
+					Bank Information Reports
+				</a>
+			</li>
+
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetSIFInstructionsByStatus">
+					FX Settlement Instruction Reports
+				</a>
+			</li>
+
+			<li class="list-group-item list-group-item-action list-group-item-secondary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetMMTransactionByDates">
+					Money Market Transaction Reports
+				</a>
+			</li>
+
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetDistributionPreference">
+					Distribution Preference Reports
+				</a>
+			</li>
+
+			
+		</ul>
+	</div>
+
+
+	<div class="card-footer">
+		<div class="text-sm-center footer" style="margin-bottom:0">
+			<p>&copy; @DateTime.Now.Year - MIZUHO Bank Sydney</p>
+		</div>
+	</div>
+</div>
+
+
+

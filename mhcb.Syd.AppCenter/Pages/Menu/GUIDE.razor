@@ -1,0 +1,68 @@
+﻿@page "/GUIDE"
+
+
+<div class="container-sm container-fluid">
+	<div class="card-header">
+		<h2><span class="badge badge-info">GUIDE Status Update</span></h2>
+	</div>
+
+	<div class="list-group">
+		<ul class="nav flex-column nav-tabs">
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="UpdateBankInf">
+					Send Bank Information To Finalized Status
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-secondary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="UpdateSettlementInf">
+					Send Settlement Information To Finalized Status
+				</a>
+			</li>
+			<li class="nav-item list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="UpdateFXTransaction">
+					Send FX Transaction To Finalized Status
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-secondary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="UpdateFXDelivery">
+					Send FX Settlement To Finalized Status
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="UpdateFXTransactionExt">
+					Set FX Transaction's' GID to Upload
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-secondary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="UpdateMoneyMarketTicket">
+					Set Money Market Transaction's' GID to Upload
+				</a>
+			</li>
+
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="UpdateGasPendingTransaction">
+					Change GUIDE-DCS GAS Transaction Status
+				</a>
+			</li>
+
+			<li class="list-group-item list-group-item-action list-group-item-secondary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="UpdaeMxEucBalanceEvent">
+					Set Closing Date for CASA Closing Account
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="UpdateFXFCustAttribute">
+					Change FX Customer Attributes
+				</a>
+			</li>
+		</ul>
+	</div>
+
+	<div class="card-footer">
+		<div class="text-sm-center footer" style="margin-bottom:0">
+			<p>&copy; @DateTime.Now.Year - MIZUHO Bank Sydney</p>
+		</div>
+	</div>
+</div>
+
+

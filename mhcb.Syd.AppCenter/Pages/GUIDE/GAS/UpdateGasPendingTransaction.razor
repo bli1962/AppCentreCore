@@ -1,0 +1,196 @@
+﻿
+@page "/UpdateGasPendingTransaction"
+@inherits UpdateGasPendingTransactionBase
+
+@attribute [Authorize]
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null)
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		@*Section 1 - Title *@
+		<div class="row ">
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Reset GAS Transactions</h4></div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Parameters*@
+		<div class="row">
+			<div class="col-sm-4">
+
+				<table class="table table-sm table-bordered table-primary Col-Head-Left">
+					<tbody thead class="thead-light">
+						<tr>
+							<td><label for="Id" class="col-form-label">Value Date</label></td>
+							<td>
+								<input type="date" class="form-control-sm" @bind="SelectedOptDate" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left " @onclick="SearchClick">Search GAS Transactions By Value Date</button>
+				</div>
+			</div>
+		</div>
+
+		@*Section 3 - list display*@
+		<div name="SelectedReport" class="row col-sm-12 ">
+			<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+				<thead class="table-primary Col-Head-Center">
+					<tr class="success">
+						<th>MIN_NO</th>
+						<th>VALUEDATE_DT</th>
+						<th>STATUS_INT</th>
+						<th>DREAMS_REF_CODE</th>
+						<th>REMARKS_TX</th>
+						<th>CCY_TX</th>
+						<th>AMOUNT_AMT</th>
+						<th>CUSTID_TX</th>
+						<th>ACC_CD_TX</th>
+						<th>ACCNUM_TX</th>
+						<th>DESCRIPTION_TX</th>
+						<th>CREATED_BY</th>
+						<th>CREATED_DATE</th>
+						<th>UPLOADED_BY</th>
+						<th>UPLOADED_DATE</th>
+						<th>TRANSNO_TX</th>
+					</tr>
+				</thead>
+				<tbody Class="table-active Row-Cell">
+					@foreach (var item in modelView)
+					{
+						<tr>
+							<td>@item.MIN_NO</td>
+							<th>@item.VALUEDATE_DT</th>
+							<th>@item.STATUS_INT</th>
+							<th>@item.DREAMS_REF_CODE</th>
+							<th>@item.REMARKS_TX</th>
+							<th>@item.CCY_TX</th>
+							<th>@item.AMOUNT_AMT</th>
+							<th>@item.CUSTID_TX</th>
+							<th>@item.ACC_CD_TX</th>
+							<th>@item.ACCNUM_TX</th>
+							<th>@item.DESCRIPTION_TX</th>
+							<th>@item.CREATED_BY</th>
+							<th>@item.CREATED_DATE</th>
+							<th>@item.UPLOADED_BY</th>
+							<th>@item.UPLOADED_DATE</th>
+							<th>@item.TRANSNO_TX</th>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+
+		@*Section 4 - Update Form*@
+		<div class="row ">
+			<div class="col-sm-4">
+				<EditForm Model="@UpdateStatus" OnValidSubmit="UpdateStatusClick">
+					<DataAnnotationsValidator />
+					<ValidationSummary />
+
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody>
+							<tr>
+								<td><label for="Id" class="col-form-label">MIN No</label></td>
+								<td>
+									<InputText id="MinNo" @bind-Value="UpdateStatus.MinNo"
+											   class="form-control-sm" placeholder="Min Number" />
+									<ValidationMessage For="@(()=>UpdateStatus.MinNo)" />
+								</td>	
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Operation Date</label></td>
+								<td>
+									<InputDate id="valueDate" @bind-Value="UpdateStatus.valueDate"
+											   class="form-control-sm" placeholder="Value Date" />
+									<ValidationMessage For="@(()=>UpdateStatus.valueDate)" />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Operated By</label></td>
+								<td>
+									<InputText id="AuthorizeBy" @bind-Value="UpdateStatus.AuthorizeBy"
+											   class="form-control-sm" disabled />
+									<ValidationMessage For="@(()=>UpdateStatus.AuthorizeBy)" />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Has DCS Payments</label></td>
+								<td>
+									<InputSelect @bind-Value="UpdateStatus.HasDCSPayment" class="form-control-sm form-select-sm">
+										<option value="Yes">Yes</option>
+										<option value="No">No</option>
+									</InputSelect>
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">GAS Status</label></td>
+								<td>
+									<InputSelect @bind-Value="UpdateStatus.StatusId" class="form-control-sm form-select-sm">
+										<option value="8">8.Success</option>
+										<option value="10">10.Delete</option>
+									</InputSelect>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left " type="submit">@lblUpdateButton</button>
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+						<br />
+					</div>
+				</EditForm>
+			</div>
+		</div>
+	}
+</div>
+
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"GAS Transaction")
+			ConfirmationMessage=@($"No GAS Transaction found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveSuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"GAS Transaction")
+			ConfirmationMessage=@($"Save successfully!")
+			BtnClass=@($"btn btn-success float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveUnsuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"GAS Transaction")
+			ConfirmationMessage=@($"Unsuccessfully save.")
+			BtnClass=@($"btn btn-danger float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentBadRequest"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"GAS Transaction")
+			ConfirmationMessage=@($"Bad internet request.")
+			BtnClass=@($"btn btn-info float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentError"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"GAS Transaction")
+			ConfirmationMessage=@($"Error retrieving data from the database.")
+			BtnClass=@($"btn btn-warning float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@
+

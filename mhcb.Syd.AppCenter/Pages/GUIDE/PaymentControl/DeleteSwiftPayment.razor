@@ -1,0 +1,178 @@
+﻿@page "/DeleteSwiftPayment"
+@inherits DeleteSwiftPaymentBase
+
+@attribute [Authorize]
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null)
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		@*Section 1 - Title *@
+		<div class="row ">
+
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Delete Swift Payment Records</h4></div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Parameters*@
+		<div class="row">
+			<div class="col-sm-4">
+
+				<table class="table table-sm table-bordered table-primary Col-Head-Left">
+					<tbody thead class="thead-light">
+						<tr>
+							<td><label for="Id" class="col-form-label">Date type</label></td>
+							<td>
+								<select class="form-control-sm form-select-sm" @bind="SelectedDateType">
+									<option value="CreatedDate">Created Date</option>
+									<option value="PaymentDate">Payment Date</option>
+									<option value="ValueDate">Value Date</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="Id" class="col-form-label">Date Value</label></td>
+							<td>
+								<input type="date" class="form-control-sm" @bind="SelectedOptDate" />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left " @onclick="SearchClick">Get Swift Payment Records</button>
+				</div>
+			</div>
+		</div>
+
+		@*Section 3 - list display*@
+		<div name="SelectedReport">
+			<div class="row ">
+				<div class="col-sm-12">
+					<div id="divData" class="hidden">
+						<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+							<thead class="table-primary Col-Head-Center">
+								<tr class="success">
+									<th>Payment ID</th>
+									<th>Swift P'Id</th>
+									<th>GRef No</th>
+									<th>Customer Abbr.</th>
+									<th>Status</th>
+									<th>Processed</th>
+
+									<th>Value Date</th>
+									<th>Payment Date</th>
+									<th>CCY</th>
+									<th>Amount</th>
+									<th>Sender Bank</th>
+									<th>Receiver Bank</th>
+									<th>Created Date</th>
+								</tr>
+							</thead>
+							<tbody Class="table-active Row-Cell">
+								@foreach (var item in modelView)
+								{
+									<tr>
+										<td>@item.PaymentId</td>
+										<th>@item.SwiftPaymentId</th>
+										<th>@item.GBaseRefNo</th>
+										<th>@item.CustomerAbbreviation</th>
+										<th>@item.StatusDescription</th>
+										<th>@item.Processed</th>
+										<th>@item.ValueDate</th>
+										<th>@item.PaymentDate</th>
+										<th>@item.Currency</th>
+
+										<th>@item.Amount</th>
+										<th>@item.SenderBank</th>
+										<th>@item.ReceiverBank</th>
+										<th>@item.CreatedWhen</th>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 4 - Update Form*@
+		<div class="row ">
+			<div class="col-sm-4">
+
+				<EditForm Model="@UpdateStatus" OnValidSubmit="DeleteClick">
+					<DataAnnotationsValidator />
+					<ValidationSummary />
+
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody>
+							<tr>
+								<td ><label for="Id" class="col-form-label">Swift Payment Id:</label></td>
+								<td>
+									<InputNumber class="form-control-sm" placeholder="Payment ID" @bind-Value="UpdateStatus.SwiftPaymentId" />
+									<ValidationMessage For="@(() => UpdateStatus.SwiftPaymentId)" />
+								</td>
+							</tr>
+							<tr>
+								<td>Operated By :</td>
+								<td><input type="text" class="form-control-sm" @bind="UpdateStatus.AuthorizeBy" readonly /></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left" type="submit">Delete Swift Payment Records</button>
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+						<br />
+					</div>
+				</EditForm>
+			</div>
+		</div>
+	}
+</div>
+
+
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Swift Payment")
+			ConfirmationMessage=@($"No Swift Payment Records found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveSuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Swift Payment")
+			ConfirmationMessage=@($"Delete successfully!")
+			BtnClass=@($"btn btn-success float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveUnsuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Swift Payment")
+			ConfirmationMessage=@($"Unsuccessfully delete.")
+			BtnClass=@($"btn btn-danger float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentBadRequest"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Swift Payment")
+			ConfirmationMessage=@($"Bad internet request.")
+			BtnClass=@($"btn btn-info float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentError"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Swift Payment")
+			ConfirmationMessage=@($"Error retrieving data from the database.")
+			BtnClass=@($"btn btn-warning float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@
+

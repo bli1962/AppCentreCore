@@ -1,0 +1,39 @@
+﻿@inherits ConfirmYesNoBase
+
+
+@if (ShowConfirmation)
+{
+	<div class="modal fade show d-block" id="diagalModal" tabindex="-1" data-keyboard="false" data-backdrop="static" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h5 class="modal-title align-content-sm-center text-info" id="ModalLabel">@ConfirmationTitle</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"
+							@onclick="() => OnConfirmationChange(false)">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="modal-body">
+
+					<form>
+						<h4 class="modal-title">@ConfirmationMessage</h4>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal" style="width: 100px"
+							@onclick="() => OnConfirmationChange(false)">
+						@NoTitle
+					</button>
+					<button type="button" class=@BtnClass style="width: 100px"
+							@onclick="() => OnConfirmationChange(true)">
+						@YesTitle
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+}

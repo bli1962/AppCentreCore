@@ -1,0 +1,96 @@
+﻿@page "/GetSettlementInfByCustAbbr"
+@inherits GetSettlementInfByCustAbbrBase
+
+@attribute [Authorize]
+
+<div class="container-fluid">
+
+	@if (settlementInfView == null && searchModel.CustAbbr != "")
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		<div class="row ">
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Search Settlement Information by Customer Abbr.</h4></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-4">
+				<EditForm Model="@searchModel" OnValidSubmit="@SearchClick">
+					<DataAnnotationsValidator />
+					<ValidationSummary />
+
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody thead class="thead-light">
+							<tr>
+								<td><label for="Id" class="col-form-label">Customer Abbr</label></td>
+								<td>
+									<InputText class="form-control-sm" placeholder="Customer Abbrivation" @bind-Value="searchModel.CustAbbr" />
+									<ValidationMessage For="@(() => searchModel.CustAbbr)" />
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" type="submit">Search</button>
+						<button class="btn btn-outline-info m-1 float-left btn-width-80" @onclick="CopyClick">Copy</button>
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+					</div>
+				</EditForm>
+			</div>
+		</div>
+
+		<div name="SelectedReport" class="row col-sm-12 ">
+			<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+				<thead class="table-primary Col-Head-Center">
+					<tr>
+						<th>ID</th>
+						<th>CUST ABBR</th>
+						<th>RECORD KIND</th>
+						<th>CCY</th>
+						<th>Status</th>
+						<th>Deletion Status</th>
+						<th>GIP Status</th>
+						<th>GIP Description</th>
+						<th>AUTHORIZE BY</th>
+						<th>TRAN NO</th>
+					</tr>
+				</thead>
+				<tbody Class="table-active Row-Cell">
+					@foreach (var item in settlementInfView)
+					{
+						<tr>
+							<td>@item.SIF_ID</td>
+							<th>@item.CUST_ABBR</th>
+							<th>@item.RECORD_KIND</th>
+							<th>@item.CCY</th>
+							<th>@item.STATUS</th>
+							<th>@item.DELETION_STATUS</th>
+							<th>@item.GIP_STATUS</th>
+							<th>@item.GIP_DESCRIPTION</th>
+							<th>@item.AUTHORIZE_BY</th>
+							<th>@item.TRAN_NO</th>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+
+	}
+</div>
+
+
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"Settlement Information")
+			ConfirmationMessage=@($"No Settlement Information found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>

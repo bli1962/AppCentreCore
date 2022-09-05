@@ -1,0 +1,151 @@
+﻿@page "/UpdateSpecialRate"
+@inherits UpdateSpecialRateBase
+
+@attribute [Authorize]
+
+@*<body style="padding-top:20px">*@
+<div class="container-fluid">
+
+	@if (modelView == null)
+	{
+		<div class="spinner"></div>
+	}
+	else
+	{
+		@*Section 1 - Title *@
+		<div class="row ">
+			<div class="col-sm-6">
+				<div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+					<div class="panel-body"><h4>Upload MIZUHO Special Rates</h4></div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Parameters*@
+		<div class="row">
+			<div class="col-sm-4">
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left " @onclick="SearchClick">Get Current MIZUHO special rates</button>
+				</div>
+			</div>
+		</div>
+
+		@*Section 3 - list display*@
+		<div name="SelectedReport">
+			<div class="row ">
+				<div class="col-sm-4">
+					<div id="divData" class="hidden">
+						<table class="table table-sm table-striped table-hover table-primary" id="tblData">
+							<thead class="table-primary Col-Head-Center">
+								<tr class="success">
+									<th>CCY Code</th>
+									<th>Special Rates</th>
+								</tr>
+							</thead>
+							<tbody Class="table-active Row-Cell">
+								@foreach (var item in modelView)
+								{
+									<tr>
+										<td>@item.CCY_CODE</td>
+										<th>@item.DKB_SPECIAL_RATE_USD</th>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 4 - Update Form*@
+		<div class="row ">
+			<div class="col-sm-4">
+				<table class="table table-sm table-bordered table-primary Col-Head-Left">
+					<tbody>
+						<tr>
+							<td><label for="Id" class="col-form-label">CCY</label></td>
+							<td>
+								<select class="form-control-sm form-select-sm" @bind="SelectedCcyCode">
+									<option value="AUD">AUD</option>
+									<option value="NZD">NZD</option>
+									<option value="SGD">SGD</option>
+									<option value="JPY">JPY</option>
+									<option value="EUR">EUR</option>
+									<option value="HKD">HKD</option>
+									<option value="GBP">GBP</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="Id" class="col-form-label">Special Rate</label></td>
+							<td><input type="text" class="form-control-sm" @bind="SelectedRate" /></td>
+						</tr>
+						<tr>
+							<td><label for="Id" class="col-form-label">Operated By</label></td>
+							<td><input type="text" class="form-control-sm" @bind="SelectedAuthoriser" readonly /></td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left " @onclick="UpdateStatusClick">Update Special Rate</button>
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="BackClick">Back</button>
+					<br />
+				</div>
+			</div>
+		</div>
+
+		@*Section 5 - Notes *@
+		<div class="row ">
+			<div class="col-sm-6">
+				<div class="panel" style="color: red; border-color: #ffffff; ">
+					<div class="panel-body">
+						<ul>
+							<li>The updated special rate is available today after change.</li>
+							<li>The rate will be overwritten by EUC overnight process.</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+
+@*the component take two parameters*@
+<ConfirmYes @ref="ComfirmationComponent"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"MIZUHO Special Rates")
+			ConfirmationMessage=@($"No MIZUHO Special Rates found.")
+			BtnClass=@($"btn btn-primary float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveSuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"MIZUHO Special Rates")
+			ConfirmationMessage=@($"Save successfully!")
+			BtnClass=@($"btn btn-success float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentSaveUnsuccess"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"MIZUHO Special Rates")
+			ConfirmationMessage=@($"Unsuccessfully save.")
+			BtnClass=@($"btn btn-danger float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentBadRequest"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"MIZUHO Special Rates")
+			ConfirmationMessage=@($"Bad internet request.")
+			BtnClass=@($"btn btn-info float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+<ConfirmYes @ref="ComfirmationComponentError"
+			ConfirmationChanged="ConfirmClick"
+			ConfirmationTitle=@($"MIZUHO Special Rates")
+			ConfirmationMessage=@($"Error retrieving data from the database.")
+			BtnClass=@($"btn btn-warning float-left")
+			YesTitle=@($"Ok")>
+</ConfirmYes>
+@*</body>*@
+

@@ -1,0 +1,24 @@
+<CascadingAuthenticationState>
+	<Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
+		<Found Context="routeData">
+			<AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+				<NotAuthorized>
+					<p>
+						<h2><span class="badge badge-danger mt-4 p-5" style="width: 80%">Sorry, you're not authorized to reach this page.</span></h2>
+					</p>
+					<p>
+						<h4><span class="badge badge-info " style="width: 80%">You may need to log in as a different user.</span></h4>
+					</p>
+				</NotAuthorized>
+			</AuthorizeRouteView>
+			@*<RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />*@
+		</Found>
+		<NotFound>
+			<LayoutView Layout="@typeof(MainLayout)">
+				<p>
+					<h2><span class="badge badge-warning mt-4 p-5" style="width: 80%">Sorry, 404 error - Invalid Page Found.</span></h2>
+				</p>
+			</LayoutView>
+		</NotFound>
+	</Router>
+</CascadingAuthenticationState>

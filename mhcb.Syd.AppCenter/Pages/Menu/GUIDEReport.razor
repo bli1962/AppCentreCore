@@ -1,0 +1,87 @@
+﻿@page "/GUIDEReport"
+
+<div class="container-sm container-fluid">
+	<div class="card-header">
+		<h2><span class="badge badge-info">GUIDE Data Reports</span></h2>
+	</div>
+
+	<div class="list-group">
+		<ul class="nav flex-column nav-tabs">
+			<li><h4><span class="badge badge-light">FX Transactions</span></h4></li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetFXTransactionByDatesCustAbbr">
+					Search FX Transaction by Dates & Customer Name
+				</a>
+			</li>
+
+			<li><h4><span class="badge badge-light">FX Delivery</span></h4></li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetFXTransactionByDates">
+					Search FX Delivery by Contract Dates
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-secondary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetFXDeliveryCorporateSummary">
+					Search Corporate Delivery Summary
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetFXDeliveryCorporate">
+					Search Corporate Delivery Details
+				</a>
+			</li>
+
+
+			<li><h4><span class="badge badge-light">Bank Informations</span></h4></li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetBankInfByCustAbbr">
+					Search BIF Report by Customer Abbreviation
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-secondary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetBankInfBySwiftID">
+					Search BIF by Swift ID
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetBankInfByStatus">
+					Search BIF by Status
+				</a>
+			</li>
+
+			<li><h4><span class="badge badge-light">Settlement Informations</span></h4></li>
+			<li class="list-group-item list-group-item-action list-group-item-secondary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetSettlementInfByCustAbbr">
+					Search SIF by Customer Abbreviation
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetSettlementInfById">
+					Search SIF by ID
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-secondary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetSettlementInfsByStatus">
+					Search SIF by Status
+				</a>
+			</li>
+
+
+
+			<li><h4><span class="badge badge-light">GUIDE Customer</span></h4></li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="GetFXFCustByAbbr">
+					Search Customer by Customer Abbreviation
+				</a>
+			</li>
+
+			
+		</ul>
+	</div>
+
+	<div class="card-footer">
+		<div class="text-sm-center footer" style="margin-bottom:0">
+			<p>&copy; @DateTime.Now.Year - MIZUHO Bank Sydney</p>
+		</div>
+	</div>
+</div>
