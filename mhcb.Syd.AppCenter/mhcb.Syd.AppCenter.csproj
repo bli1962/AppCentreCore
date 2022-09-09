@@ -9,16 +9,9 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Compile Remove="Pages\LOAN\**" />
-        <Content Remove="Pages\LOAN\**" />
-        <EmbeddedResource Remove="Pages\LOAN\**" />
-        <None Remove="Pages\LOAN\**" />
-    </ItemGroup>
 
     <ItemGroup>
         <Compile Remove="Data\WeatherForecast.cs" />

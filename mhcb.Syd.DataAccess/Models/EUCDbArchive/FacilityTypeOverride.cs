@@ -8,12 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace mhcb.Syd.DataAccess.Models.EUCDbArchive
 {
-    //[Keyless]
+    [Keyless]
     [Table("Facility_Type_Override")]
     [Index(nameof(RefNo), Name = "UQ__Facility__2D35E3905E4ADDA8", IsUnique = true)]
     public partial class FacilityTypeOverride
     {
-        [Key]
         [Column("ID")]
         public int Id { get; set; }
         [Required]

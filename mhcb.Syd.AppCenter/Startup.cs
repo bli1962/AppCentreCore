@@ -290,12 +290,6 @@ namespace mhcb.Syd.AppCenter
             services.AddHttpClient<IDomesticClearingService, DomesticClearingService>(
                          client => { client.BaseAddress = new Uri(RemoteApiAddress); }
             );
-            services.AddHttpClient<IFacilityTypeService, FacilityTypeService>(
-                         client => { client.BaseAddress = new Uri(RemoteApiAddress); }
-            );
-            services.AddHttpClient<IDistributionPreferenceService, DistributionPreferenceService>(
-                                client => { client.BaseAddress = new Uri(RemoteApiAddress); }
-         );
 
 
             // *********************************************

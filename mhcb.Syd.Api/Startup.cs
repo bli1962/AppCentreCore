@@ -92,7 +92,6 @@ namespace mhcb.Syd.Api
             services.AddScoped<IMoneyMarketTicket, MoneyMarketTicketRepository>();
 
             services.AddScoped<IPaymentControl, PaymentControlRepository>();
-            services.AddScoped<IDomesticClearing, DomesticClearingRepository>();
             services.AddScoped<IRFRInterest, RFRInterestRepository>();
             services.AddScoped<ISettlementInf, SettlementInfRepository>();
             services.AddScoped<ISpecialRate, SpecialRateRepository>();
@@ -100,6 +99,7 @@ namespace mhcb.Syd.Api
             services.AddScoped<IUserSecurity, UserSecurityRepository>();
             services.AddScoped<IFacilityTypeOverride, FacilityTypeOverrideRepository>();
             services.AddScoped<IDistributionPreference, DistributionPreferenceRepository>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
