@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using mhcb.syd.Encryption;
+//using mhcb.syd.Encryption;
 using mhcb.Syd.DataAccess.Models.GUIDE;
 using mhcb.Syd.DataAccess.Repository;
 using mhcb.Syd.Interface;
@@ -107,16 +107,16 @@ namespace mhcb.Syd.Business.Repository
                     //var v12 = entry.GBASE_UPLOADED_DATE;
 
 
-                    if (!string.IsNullOrEmpty(status.Password))
-                    {
-                        var enccPassword1 = Krypting.Encrypt(status.Password.ToUpper());
-                        var enccPassword2 = Krypting.Encrypt(status.Password.ToUpper());
-                        var enccPassword3 = Krypting.Encrypt(status.Password.ToUpper());
+                    //if (!string.IsNullOrEmpty(status.Password))
+                    //{
+                    //    var enccPassword1 = Krypting.Encrypt(status.Password.ToUpper());
+                    //    var enccPassword2 = Krypting.Encrypt(status.Password.ToUpper());
+                    //    var enccPassword3 = Krypting.Encrypt(status.Password.ToUpper());
 
-                        entry.Password = enccPassword1;
-                        entry.RacfPreviousPwd = enccPassword2;
-                        entry.GbasePreviousPwd = enccPassword3;
-                    }
+                    //    entry.Password = enccPassword1;
+                    //    entry.RacfPreviousPwd = enccPassword2;
+                    //    entry.GbasePreviousPwd = enccPassword3;
+                    //}
 
 
                     //AuditLog auditLog  = new()

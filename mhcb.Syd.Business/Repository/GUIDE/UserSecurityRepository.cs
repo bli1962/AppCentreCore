@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using mhcb.syd.Encryption;
+//using mhcb.syd.Encryption;
 using mhcb.Syd.DataAccess.Models.GUIDE;
 using mhcb.Syd.DataAccess.Repository;
 using mhcb.Syd.Interface;
@@ -31,58 +31,58 @@ namespace mhcb.Syd.Business.Repository
 
         public User GetGUser(string userid, string decPassword)
 		{
-            //using GUIDEDbContext appDbContext  = new();
-            var queryUser = appDbContext.Users.Where(x => x.UserId.Equals(userid, StringComparison.OrdinalIgnoreCase))
-                            .Select(s => s.Password)
-                            .FirstOrDefault();
 
-            if (queryUser != null)
-            {
-                var queryPW = appDbContext.Users.FirstOrDefault(x =>
-                            x.UserId.Equals(userid, StringComparison.OrdinalIgnoreCase)).Password.ToString();
+            //var queryUser = appDbContext.Users.Where(x => x.UserId.Equals(userid, StringComparison.OrdinalIgnoreCase))
+            //                .Select(s => s.Password)
+            //                .FirstOrDefault();
 
-                var decPassword2 = Krypting.Decrypt(queryPW);
+            //if (queryUser != null)
+            //{
+            //    var queryPW = appDbContext.Users.FirstOrDefault(x =>
+            //                x.UserId.Equals(userid, StringComparison.OrdinalIgnoreCase)).Password.ToString();
 
-                if (decPassword == decPassword2)
-                {
-                    User user = appDbContext.Users.Where(x => x.UserId.Equals(userid, StringComparison.OrdinalIgnoreCase))
-                                .FirstOrDefault();
-                    return user;
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            //    var decPassword2 = Krypting.Decrypt(queryPW);
+
+            //    if (decPassword == decPassword2)
+            //    {
+            //        User user = appDbContext.Users.Where(x => x.UserId.Equals(userid, StringComparison.OrdinalIgnoreCase))
+            //                    .FirstOrDefault();
+            //        return user;
+            //    }
+            //    else
+            //    {
+            //        return null;
+            //    }
+            //}
             return null;
 
         }
 
 		public bool Login(string userid, string decPassword)
 		{
-            //using GUIDEDbContext appDbContext  = new();
-            var queryUser = appDbContext.Users.Where(x => x.UserId.Equals(userid, StringComparison.OrdinalIgnoreCase))
-                        .Select(s => s.Password)
-                        .FirstOrDefault();
 
-            if (queryUser != null)
-            {
-                var queryPW = appDbContext.Users.FirstOrDefault(x =>
-                            x.UserId.Equals(userid, StringComparison.OrdinalIgnoreCase)).Password.ToString();
+            //var queryUser = appDbContext.Users.Where(x => x.UserId.Equals(userid, StringComparison.OrdinalIgnoreCase))
+            //            .Select(s => s.Password)
+            //            .FirstOrDefault();
 
-                var decPassword2 = Krypting.Decrypt(queryPW);
+            //if (queryUser != null)
+            //{
+            //    var queryPW = appDbContext.Users.FirstOrDefault(x =>
+            //                x.UserId.Equals(userid, StringComparison.OrdinalIgnoreCase)).Password.ToString();
 
-                if (decPassword == decPassword2)
-                {
-                    return appDbContext.Users.Any(x =>
-                        x.UserId.Equals(userid, StringComparison.OrdinalIgnoreCase) &&
-                        x.Password == queryUser);
-                }
-                else
-                {
-                    return false;
-                }
-            }
+            //    var decPassword2 = Krypting.Decrypt(queryPW);
+
+            //    if (decPassword == decPassword2)
+            //    {
+            //        return appDbContext.Users.Any(x =>
+            //            x.UserId.Equals(userid, StringComparison.OrdinalIgnoreCase) &&
+            //            x.Password == queryUser);
+            //    }
+            //    else
+            //    {
+            //        return false;
+            //    }
+            //}
             return false;
         }
 
