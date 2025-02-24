@@ -1,0 +1,157 @@
+﻿<style>
+    .checkbox-checked {
+        accent-color: blue;              /* #4CAF50 Green color for checked state */
+        background-color: red;
+    }
+
+    .checkbox-unchecked {
+        accent-color: darkgray;         /*#F44336;*/ /* Red color for unchecked state */
+        background-color: darkgray;
+    }
+
+    .checkbox-none {
+        accent-color: grey;             /*#F44336;*/ /* Red color for unchecked state */
+        background: grey;
+    }
+
+</style>
+
+<td>@ViewModel.DataDate</td>
+@* <td>@ViewModel.RateType</td>  *@
+<td>
+    @* <NavLink href="./ListFxRate/2025-01-02">@ViewModel.RateType</NavLink> *@
+    <NavLink href=@ViewModel.NavigatorLink>@ViewModel.RateType</NavLink>
+</td>
+
+<AuthorizeView Roles="FX_RATE_Authorise">
+    <Authorized>
+        <td>
+            <button class="btn btn-outline-success btn-sm" @onclick="(()=>Upload())"><i class="oi oi-arrow-thick-top"></i></button>
+        </td>
+        <td>
+            <button class="btn-outline-danger btn-sm" @onclick="(()=>Refresh())"><i class="oi oi-loop-circular"></i></button>
+        </td>
+    </Authorized>
+</AuthorizeView>
+<td>@ViewModel.Branch</td>
+
+
+<td><input type="checkbox" checked=@ViewModel.ARS class="@CheckboxClass(@ViewModel.JPY)" /></td>
+<td><input type="checkbox" checked=@ViewModel.BRL class="@CheckboxClass(@ViewModel.BRL)" /></td>
+<td><input type="checkbox" checked=@ViewModel.CAD class="@CheckboxClass(@ViewModel.CAD)" /></td>
+<td><input type="checkbox" checked=@ViewModel.CHF class="@CheckboxClass(@ViewModel.CHF)" /></td>
+<td><input type="checkbox" checked=@ViewModel.CLP class="@CheckboxClass(@ViewModel.CLP)" /></td>
+<td><input type="checkbox" checked=@ViewModel.CNY class="@CheckboxClass(@ViewModel.CNY)" /></td>
+<td><input type="checkbox" checked=@ViewModel.COP class="@CheckboxClass(@ViewModel.COP)" /></td>
+<td><input type="checkbox" checked=@ViewModel.EUR class="@CheckboxClass(@ViewModel.EUR)" /></td>
+<td><input type="checkbox" checked=@ViewModel.GBP class="@CheckboxClass(@ViewModel.GBP)" /></td>
+<td><input type="checkbox" checked=@ViewModel.HKD  class="@CheckboxClass(@ViewModel.HKD)" /></td>
+<td><input type="checkbox" checked=@ViewModel.IDR  class="@CheckboxClass(@ViewModel.IDR)" /></td>
+<td><input type="checkbox" checked=@ViewModel.INR  class="@CheckboxClass(@ViewModel.INR)" /></td>
+
+<td><input type="checkbox" checked=@ViewModel.JPY class="@CheckboxClass(@ViewModel.JPY)" /></td>
+
+<td><input type="checkbox" checked=@ViewModel.KRW  class="@CheckboxClass(@ViewModel.KRW)" /></td>
+<td><input type="checkbox" checked=@ViewModel.MXN  class="@CheckboxClass(@ViewModel.MXN)" /></td>
+<td><input type="checkbox" checked=@ViewModel.MYR  class="@CheckboxClass(@ViewModel.MYR)" /></td>
+<td><input type="checkbox" checked=@ViewModel.NOK  class="@CheckboxClass(@ViewModel.NOK)" /></td>
+<td><input type="checkbox" checked=@ViewModel.NZD  class="@CheckboxClass(@ViewModel.NZD)" /></td>
+<td><input type="checkbox" checked=@ViewModel.PEN  class="@CheckboxClass(@ViewModel.PEN)" /></td>
+<td><input type="checkbox" checked=@ViewModel.PHP  class="@CheckboxClass(@ViewModel.PHP)" /></td>
+<td><input type="checkbox" checked=@ViewModel.SEK  class="@CheckboxClass(@ViewModel.SEK)" /></td>
+<td><input type="checkbox" checked=@ViewModel.SGD  class="@CheckboxClass(@ViewModel.SGD)" /></td>
+<td><input type="checkbox" checked=@ViewModel.THB  class="@CheckboxClass(@ViewModel.THB)" /></td>
+<td><input type="checkbox" checked=@ViewModel.TWD  class="@CheckboxClass(@ViewModel.TWD)" /></td>
+<td><input type="checkbox" checked=@ViewModel.USD  class="@CheckboxClass(@ViewModel.USD)" /></td>
+<td><input type="checkbox" checked=@ViewModel.VND  class="@CheckboxClass(@ViewModel.VND)" /></td>
+<td><input type="checkbox" checked=@ViewModel.ZAR  class="@CheckboxClass(@ViewModel.ZAR)" /></td>
+
+
+
+@* <td><input type="checkbox" @bind=@ViewModel.ARS /></td>
+<td><input type="checkbox" @bind=@ViewModel.BRL /></td>
+<td><input type="checkbox" @bind=@ViewModel.CAD /></td>
+<td><input type="checkbox" @bind=@ViewModel.CHF /></td>
+<td><input type="checkbox" @bind=@ViewModel.CLP /></td>
+<td><input type="checkbox" @bind=@ViewModel.CNY /></td>
+<td><input type="checkbox" @bind=@ViewModel.COP /></td>
+<td><input type="checkbox" @bind=@ViewModel.EUR /></td>
+<td><input type="checkbox" @bind=@ViewModel.GBP /></td>
+<td><input type="checkbox" @bind=@ViewModel.HKD /></td>
+<td><input type="checkbox" @bind=@ViewModel.IDR /></td>
+<td><input type="checkbox" @bind=@ViewModel.INR /></td>
+<td><input type="checkbox" @bind=@ViewModel.JPY  /></td>
+<td><input type="checkbox" @bind=@ViewModel.KRW  /></td>
+<td><input type="checkbox" @bind=@ViewModel.MXN  /></td>
+<td><input type="checkbox" @bind=@ViewModel.MYR  /></td>
+<td><input type="checkbox" @bind=@ViewModel.NOK  /></td>
+<td><input type="checkbox" @bind=@ViewModel.NZD  /></td>
+<td><input type="checkbox" @bind=@ViewModel.PEN  /></td>
+<td><input type="checkbox" @bind=@ViewModel.PHP  /></td>
+<td><input type="checkbox" @bind=@ViewModel.SEK  /></td>
+<td><input type="checkbox" @bind=@ViewModel.SGD  /></td>
+<td><input type="checkbox" @bind=@ViewModel.THB  /></td>
+<td><input type="checkbox" @bind=@ViewModel.TWD  /></td>
+<td><input type="checkbox" @bind=@ViewModel.USD  /></td>
+<td><input type="checkbox" @bind=@ViewModel.VND  /></td>
+<td><input type="checkbox" @bind=@ViewModel.ZAR  /></td>
+ *@
+
+@using mhcb.Syd.AppCenter.Services.RoleBase.API;
+@using mhcb.Syd.AppCenter.Services.RoleBase.Interface;
+@using mhcb.Syd.Models;
+@using mhcb.Syd.DataAccess.Models.GUIDE;
+
+@inject NavigationManager _navigationManager;
+@inject IJSRuntime jsRuntime;
+@*@inject IFxRateService _rateService;*@
+
+@code {
+    //Parameter value is start with Upper case
+    [Parameter]
+    public CcyListOfRateUpload ViewModel { get; set; }
+
+    [Parameter]
+    public EventCallback<CcyListOfRateUpload> CallBackMethodFresh { get; set; }
+
+    [Parameter]
+    public EventCallback<CcyListOfRateUpload> CallBackMethodUpload { get; set; }
+
+
+    // Click Upload button
+    private void Upload()
+    {
+        //  Use call back
+        CallBackMethodUpload.InvokeAsync(ViewModel);
+        //_navigationManager.NavigateTo($"UpdateFxRate/{ViewModel.DataDate.ToString("yyyy-MM-dd")}/{ViewModel.Ccy}");
+    }
+
+    // Click Refresh button
+    private void Refresh()
+    {
+        // Use call back
+        CallBackMethodFresh.InvokeAsync(ViewModel);
+    }
+
+    [Parameter]
+    public bool IsChecked { get; set; } = false; // Set the default state to checked
+
+    private string CheckboxClass(bool value)
+    {
+        //return IsChecked ? "checkbox-checked" : "checkbox-unchecked";
+
+        if (value)
+        {
+            //return "checked";
+            // IsChecked = value;
+            return "checkbox-checked";
+        }
+        else
+        {
+            //return "unchecked";
+            // IsChecked = value;
+            return "checkbox-unchecked";
+
+        }
+    }
+}

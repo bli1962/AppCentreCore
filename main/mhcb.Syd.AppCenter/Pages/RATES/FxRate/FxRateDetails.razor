@@ -1,0 +1,77 @@
+﻿@*<h3>DepositsRateDetails</h3>*@
+
+
+<td>
+    @ViewModel.DataDate.ToString("yyyy-MM-dd")
+</td>
+<td>
+    @ViewModel.Ccy
+</td>
+<td>
+    @ViewModel.Bid
+</td>
+<td>
+    @ViewModel.Offer
+</td>
+<td>
+    @ViewModel.Rate
+</td>
+<td>
+    @ViewModel.ImportedBy
+</td>
+<td>
+    @ViewModel.RecStatus
+</td>
+<td>
+    @ViewModel.ImportedTime.ToString("yyyy-MM-dd")
+</td>
+
+<AuthorizeView Roles = "FX_RATE_Authorise">
+    <Authorized>
+        <td>
+            <button class="btn btn-outline-success btn-sm" @onclick="(()=>Edit())"><i class="oi oi-pencil"></i></button>
+        </td>
+        <td>
+            <button class="btn-outline-danger btn-sm" @onclick="(()=>Delete())"><i class="oi oi-trash"></i></button>
+        </td>
+    </Authorized>
+</AuthorizeView>
+
+@using Microsoft.JSInterop;
+@using mhcb.Syd.AppCenter.Services.RoleBase.API;
+@using mhcb.Syd.AppCenter.Services.RoleBase.Interface;
+@using mhcb.Syd.Models;
+@using mhcb.Syd.DataAccess.Models.GUIDE;
+
+@inject NavigationManager _navigationManager;
+@inject IJSRuntime jsRuntime;
+@*@inject IFxRateService _rateService;*@
+
+
+@code {
+    //Parameter value is start with Upcase
+    [Parameter]
+    public FxRateViewModel ViewModel { get; set; }
+
+    [Parameter]
+    public EventCallback<FxRateViewModel> CallBackMethod { get; set; }
+
+    // Delete button
+    private void Delete()
+    {
+        // No call back way to delete BisRate, but the screen won't refresh.
+        //await _bisRateService.DeleteBisRate(bisRateViewModel.DataDate.ToString(),
+        //                                               bisRateViewModel.Ccy,
+        //                                               bisRateViewModel.Duration,
+        //                                               bisRateViewModel.DurationUnit);
+
+        // Use callback
+        CallBackMethod.InvokeAsync(ViewModel);
+    }
+
+    // Edit botton
+    private void Edit()
+    {
+        _navigationManager.NavigateTo($"UpdateFxRate/{ViewModel.DataDate.ToString("yyyy-MM-dd")}/{ViewModel.Ccy}");
+    }
+}

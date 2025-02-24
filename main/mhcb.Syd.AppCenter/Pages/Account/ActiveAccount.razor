@@ -1,0 +1,188 @@
+﻿@page "/ActiveAccount"
+
+<div class="container-fluid">
+
+    <div class="card">
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h3 style="font-weight:normal; color:white;font-family: verdana;">Active Account by Email</h3>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <section>
+                        <EditForm Model="@Input" OnValidSubmit="@Resend">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+                            <div class="col-6 row">
+                                <label for="Email" class="col-form-label">Email</label><br />
+                                <input type="text" id="emailaddress" class="form-control col-12" @bind="Input.Email" placeholder="Email address" />
+                            </div>
+                            <br />
+                            <div class="col-6 row">
+                                <span class="col-12"></span>
+                                <div class="well">
+                                    <button class="btn btn-primary btn-width-200 m-1 float-left" type="submit">Send</button>
+                                </div>
+                            </div>
+                        </EditForm>
+                    </section>
+                </div>
+            </div>
+
+            @*<div id="divStatusMessage" class="col-12 alert alert-info">
+            </div>*@
+            <br />
+            <MessageStatusBar IsVisible="IsVisible" IsSuccess="IsSuccess">
+                @StatusMessage
+            </MessageStatusBar>
+        </div>
+        <br />
+        <SpinLoader IsLoading="IsLoading">
+            <LoadingTemplate>
+                <div class="col-12 bg-primary" style="height:150px; vertical-align:middle">
+                    <br />
+                    <Chase Center="true" Color="#c21f13" Size="70px"></Chase>
+                    <br />
+                </div>
+                <div class="top-row px-4">
+                    <span><h5 class="text-primary"> Please wait ... </h5></span>
+                </div>
+            </LoadingTemplate>
+        </SpinLoader>
+        @* @if (IsLoading)
+        {
+        <div class="spinner"></div>
+        } *@
+        <div class="card-footer">
+            <div class="container">
+                &copy; 2022 - MIZUHO Sydney AppCenter - <a href="http://confluence/display/DEV/AppCenter">AppCenter Help</a>
+            </div>
+        </div>
+       
+    </div>
+</div>
+
+
+@using Microsoft.AspNetCore.Identity;
+@using Microsoft.AspNetCore.Identity.UI.Services;
+@using mhcb.Syd.AppCenter.Services;
+@using mhcb.Syd.Models.Account;
+@using mhcb.Syd.AppCenter.Services.Identity;
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IEmailSender _emailSender;
+@inject IConfiguration _configuration;
+@inject IJSRuntime jsRuntime;
+
+@* No long use UserManager directly rather than API call *@
+@* @inject UserManager<IdentityUser> _userManager; *@
+@inject IAccountHttpService _accountHttpService;
+
+@code {
+
+    private PasswordInput Input;
+    private string ConfirmationMessage { get; set; }
+    private string StatusMessage { get; set; }
+    private string ErrorMessage { get; set; }
+    //private bool CompleteSubmission = true;
+    private bool IsLoading = false;
+
+    public bool IsVisible { get; set; }
+    public bool IsSuccess { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Input = new PasswordInput();
+        Input.Email = "";
+        StatusMessage = StatusMessage ?? "";
+        ErrorMessage = "";
+        IsVisible = false;
+        IsSuccess = false;
+
+        base.OnInitialized();
+    }
+
+    private async Task<bool> Resend()
+    {
+
+        IsLoading = true;
+
+        if (Input.Email == "")
+        {
+            IsLoading = false;
+            IsSuccess = false; IsSuccess = false;
+            StatusMessage = "Invalid user name or email address";
+            IsVisible = true;
+            return await Task.FromResult(false);
+        }
+
+        // ** the first version, which get roles information from Web client side. Now it is from server side.
+        //var user = await _userManager.FindByEmailAsync(Input.Email);
+
+        var user = await _accountHttpService.FindByEmailAsync(Input.Email);
+        if (user == null)
+        {
+            StatusMessage = "Invaild email, please check it.";
+            IsSuccess = false;
+            IsLoading = false;
+            IsVisible = true;
+            return await Task.FromResult(false);
+        }
+
+        try
+        {
+            // ** the first version, which get roles information from Web client side. Now it is from server side.
+            //var userId = await _userManager.GetUserIdAsync(user);
+
+            string userId = await _accountHttpService.GetUserIdByEmailAsync(user.Email);
+
+            // Retrieve the token again via MS build-in method.  B. Li
+            // ** the first version, which get roles information from Web client side. Now it is from server side.
+            //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var token = await _accountHttpService.GenerateEmailConfirmationTokenAsync(user.Email);
+
+            //string returnUrl = "~/";
+            string clientAddress = _configuration["ClientAddress"];
+            var callbackUrl = clientAddress
+                            + "/ActiveAccountConfirmation"
+                            + "/" + user.Id;
+            //+ "?userId=" + user.Id;
+            //+ "&code=" + token
+            //+ "&returnUrl=" + returnUrl;
+
+            await _emailSender.SendEmailAsync(
+                   Input.Email,
+                   "Active your account by email",
+                   $"Please active your account by clicking here " + callbackUrl);
+
+            IsSuccess = true;
+            StatusMessage = "Please check your email to active your account";
+        }
+        catch
+        {
+            IsSuccess = false;
+            ErrorMessage = "Error in sending email.";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+
+
+        if (!IsSuccess) StatusMessage = ErrorMessage;
+
+        // Version I - use JavaScript to set html value
+        //await jsRuntime.InvokeVoidAsync("showMessage", "divStatusMessage", StatusMessage);
+
+        // Version II - use childComponent
+        IsVisible = true;
+
+        return await Task.FromResult(true);
+    }
+}

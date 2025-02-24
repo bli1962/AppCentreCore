@@ -1,0 +1,57 @@
+﻿@page "/ConfirmEmail"
+@page "/ConfirmEmail/{InputMessage}"
+
+<div class="container-fluid">
+
+    <div class="card">
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h3 style="font-weight:normal; color:white;font-family: verdana;">Confirmation of account</h3>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4">
+                    <div>
+                        <p class="text-primary font-weight-bold">@StatusMessage</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="container">
+                &copy; 2022 - MIZUHO Sydney AppCenter - <a href="http://confluence/display/DEV/AppCenter">AppCenter Help</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using Microsoft.AspNetCore.Identity;
+@using mhcb.Syd.AppCenter.Data;
+@using mhcb.Syd.Models.Account;
+@using mhcb.Syd.AppCenter.Services.Identity;
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject UserManager<IdentityUser> _userManager;
+@inject IAccountHttpService _accountHttpService;
+
+@code {
+
+    private LoginInput Input;
+    private string ConfirmationMessage { get; set; }
+    private string StatusMessage { get; set; }
+    private string ErrorMessage { get; set; }
+
+    [Parameter]
+    public string InputMessage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        StatusMessage = InputMessage;
+
+        await
+        base.OnInitializedAsync();
+    }
+}

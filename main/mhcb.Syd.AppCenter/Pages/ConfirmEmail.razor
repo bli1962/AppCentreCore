@@ -1,0 +1,60 @@
+﻿@page "/ConfirmEmail"
+@page "/ConfirmEmail/{Message}"
+
+<div class="container-fluid">
+
+    <div class="card">
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h3 style="font-weight:normal; color:white;font-family: verdana;">Confirm account & email</h3>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4">
+                    <section>
+                        <font></font>@Message
+                    </section>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+        </div>
+    </div>
+</div>
+
+
+@using Microsoft.AspNetCore.Identity;
+@using mhcb.Syd.AppCenter.Data;
+@using mhcb.Syd.Models.Account;
+@using mhcb.Syd.AppCenter.Services.Identity;
+@*@using mhcb.Syd.AppCenter.Services.Interface;
+@using mhcb.Syd.AppCenter.Services.Generic;*@
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject UserManager<IdentityUser> _userManager;
+@inject IAccountHttpService _accountHttpService;
+
+@code {
+
+    public LoginInput Input;
+    public string status;
+
+    [Parameter]
+    public string Message { get; set; }
+
+    //protected override Task OnInitializedAsync()
+    //{
+    //    Message = Message ?? "Unexpected Error.";
+
+    //    //base.OnInitializedAsync();
+    //}
+
+    private async Task<bool> DoSomething()
+    {
+        return true;
+    }
+
+}

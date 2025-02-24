@@ -1,0 +1,59 @@
+﻿@page "/EDistribution"
+
+<div class="container-sm container-fluid">
+	<div class="card bg-primary text-white">
+		<div class="card-header">
+			<h3>EDistribution Preference</h3>
+		</div>
+	</div>
+
+	<div class="card-body">
+		@* To stop menu items before RoleClaims complete*@
+		@if (!isVisable)
+		{
+			@* <div class="spinner"></div>*@
+		}
+		else
+		{
+			<div class="list-group">
+				<ul class="nav flex-column nav-tabs">
+
+					<li class="list-group-item list-group-item-action list-group-item-primary">
+						<a class="nav-link oi oi-plus nav-mhcb-list" href="GetDistributionPreference">
+							Distribution Preference Reports
+						</a>
+					</li>
+
+					<li class="list-group-item list-group-item-action list-group-item-secondary">
+						<a class="nav-link oi oi-plus nav-mhcb-list" href="GetDistributionPassword">
+							Get Distribution Password
+						</a>
+					</li>
+				</ul>
+			</div>
+		}
+
+		
+	</div>
+
+	@* <div class="card-footer">
+		<div class="text-sm-center footer" style="margin-bottom:0">
+			<p>&copy; @DateTime.Now.Year - MIZUHO Bank Sydney</p>
+		</div>
+	</div> *@
+	<RoleClaims Value="isAuthorised" CallBackMethod="ChangeStatus"></RoleClaims>
+</div>
+
+
+@code {
+	bool isVisable;
+	bool isAuthorised { get; set; }
+
+	private void ChangeStatus(bool isAuthorised)
+	{
+		isVisable = isAuthorised;
+	}
+
+}
+
+

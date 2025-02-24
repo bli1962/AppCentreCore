@@ -1,0 +1,173 @@
+﻿@page "/GetFXTransactionByDates"
+@attribute [Authorize]
+
+<div class="container-fluid">
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>Search FX Delivery by Contract Date</h4>
+			</div>
+		</div>
+
+		@*Section 2 - Search*@
+		<div class="card-body">
+			@*Section 2 - Parameters*@
+			<div class="row">
+				<div class="col-sm-4">
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody thead class="thead-light">
+							<tr>
+								<td colspan="4"><label for="Id" class="col-form-label">Contract Date</label></td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">From</label></td>
+								<td><input type="date" class="form-control" @bind="SelectedDateFrom" /></td>
+								<td><label for="Id" class="col-form-label">To</label></td>
+								<td><input type="date" class="form-control" @bind="SelectedDateTo" /></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="(()=>SearchClick())">Search</button>
+						<button class="btn btn-outline-info m-1 float-left btn-width-80"  @onclick="(()=>CopyClick())">Copy</button>
+						<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 3 - list display*@
+		<div class="card-footer">
+			@if (modelView == null)
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+				<div class="row">
+					<div class="col-sm-12">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:700px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>REF NO</th>
+									<th>CUST ABBR</th>
+									<th>CUST NAME</th>
+									<th>BUY AMOUNT</th>
+									<th>BUY CCY</th>
+									<th>SELL AMOUNT</th>
+									<th>SELL CCY</th>
+									<th>FX RATE</th>
+									<th>OPERATION DATE</th>
+									<th>CONTRACT DATE</th>
+									<th>DELIVARY DATE</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.REF_NO</td>
+									<td>@item.CUST_ABBR</td>
+									<td>@item.CUST_NAME</td>
+									<td>@item.BuyAmt.ToString("0,0.00")</td>
+									<td>@item.BuyCCY</td>
+									<td>@item.SellAmt.ToString("0,0.00")</td>
+									<td>@item.SellCCY</td>
+									<td>@item.EXCHANGE_RATE</td>
+
+									<td>@item.CONTRACT_DATE_OPE.ToString("dd/MM/yyyy")</td>
+									<td>@item.CONTRACT_DATE_VALUE.ToString("dd/MM/yyyy")</td>
+									<td>@item.DELIVARY_DATE.ToString("dd/MM/yyyy")</td>
+								</RowTemplate>
+								<TableFooter>
+									<th>REF NO</th>
+									<th>CUST ABBR</th>
+									<th>CUST NAME</th>
+									<th>BUY AMOUNT</th>
+									<th>BUY CCY</th>
+									<th>SELL AMOUNT</th>
+									<th>SELL CCY</th>
+									<th>FX RATE</th>
+									<th>OPERATION DATE</th>
+									<th>CONTRACT DATE</th>
+									<th>DELIVARY DATE</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>				
+			}
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+
+@inject IHttpService<FxDeliveryView> _httpService;
+@inject IJSRuntime IJSRuntime;
+@inject NavigationManager navigationManager;
+
+@code {
+	public IEnumerable<FxDeliveryView> modelView { get; set; } = new List<FxDeliveryView>();
+	public DateTime SelectedDateFrom { get; set; } = DateTime.Today;
+	public DateTime SelectedDateTo { get; set; } = DateTime.Today;
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+
+	protected override void OnInitialized()
+	{
+		Title = "FX Transaction";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+	}
+	protected void Save(bool IsSave) { IsVisible = IsSave; }
+	protected void OkClick() => IsVisible = false;
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		string dateFrom = SelectedDateFrom.ToString("yyyy-MM-dd");
+		string dateTo = SelectedDateTo.ToString("yyyy-MM-dd");
+		//modelView = (await _httpService2.GetFxDeliveryByDates(dateFrom, dateTo)).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/FXDeliverys/GetFxDeliveryByDates/{dateFrom}/{dateTo}", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			//ConfirmationComponent.Show();
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No records found.";
+		}
+	}
+	protected async Task CopyClick()
+	{
+
+		await IJSRuntime.InvokeAsync<object>("selectElementContents", "SelectedReport");
+		await IJSRuntime.InvokeVoidAsync("alert", "Now you can paste the context to excel file.");
+	}
+	protected void BackClick() => navigationManager.NavigateTo($"/GUIDEReport");
+
+}

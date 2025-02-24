@@ -1,0 +1,155 @@
+﻿@page "/RegisterConfirmation"
+@page "/RegisterConfirmation/{UserId}"
+
+<div class="container-fluid">
+
+    <div class="card">
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h3 style="font-weight:normal; color:white;font-family: verdana;">Register Confirmation</h3>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <section>
+                        @{
+                            if (@UserId != "" && @UserId != "2b3c8f99-a395-4831-ac6c-c7bd506515a2")
+                            {
+                                <a id="confirm-link" href="/RegisterConfirmation" @onclick="(()=>Submit())">Click here to active your account.</a>
+                                <br />
+                            }
+                            else
+                            {
+
+                                <p class="text-info">You registered your account successfully! Please check your email to active account.</p>
+                                <br />
+                            }
+                        }
+                    </section>
+                </div>
+            </div>
+            <MessageStatusBar IsVisible="IsVisible" IsSuccess="IsSuccess">
+                @StatusMessage
+            </MessageStatusBar>
+        </div>
+        <div class="card-footer">
+            <div class="container">
+                &copy; 2022 - MIZUHO Sydney AppCenter - <a href="http://confluence/display/DEV/AppCenter">AppCenter Help</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using Microsoft.AspNetCore.Identity;
+@using mhcb.Syd.AppCenter.Services;
+@using mhcb.Syd.Models.Account;
+@using mhcb.Syd.AppCenter.Services.Identity;
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IConfiguration _configuration;
+
+@* No long use UserManager directly rather than API call *@
+@* @inject UserManager<IdentityUser> _userManager; *@
+@inject IAccountHttpService _accountHttpService;
+
+
+@code {
+
+    [Parameter]
+    public string UserId { get; set; }
+
+    //private LoginInput Input;
+    //private string callbackUrl;
+    private string ConfirmationMessage { get; set; }
+
+    private string StatusMessage { get; set; }
+    private string ErrorMessage { get; set; }
+
+    public bool IsVisible { get; set; }
+    public bool IsSuccess { get; set; }
+
+    protected override async Task<bool> OnInitializedAsync()
+    {
+        StatusMessage = "";
+        UserId = UserId ?? "";
+
+        if (UserId != "2b3c8f99-a395-4831-ac6c-c7bd506515a2")
+        {
+            if (UserId == "")
+            {
+                IsVisible = true;
+                StatusMessage = "Invalid user name.";
+                return await Task.FromResult(false); ;
+            }
+
+            IsVisible = false;
+            IsSuccess = false;
+
+            //var user = await _userManager.FindByNameAsync(UserName);
+            var user = await _accountHttpService.FindByIdAsync(UserId);
+            if (user == null)
+            {
+                IsVisible = true;
+                StatusMessage = "Invalid user name.";
+                return await Task.FromResult(false);
+            }
+        }
+
+        // ** the first version, which get roles information from Web client side. Now it is from server side.
+        //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        //base.OnInitializedAsync();
+        return await Task.FromResult(true);
+        
+    }
+
+    private async Task<bool> Submit()
+    {
+        // ** the first version, which get roles information from Web client side. Now it is from server side.
+        //var user = await _userManager.FindByNameAsync(UserName);
+        var user = await _accountHttpService.FindByIdAsync(UserId);
+
+        if (user != null)
+        {
+            //var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            //var token = await _accountHttpService.GenerateEmailConfirmationTokenAsync(user.Email);
+            try
+            {
+                // ** the first version, which get roles information from Web client side. Now it is from server side.
+                //var result = await _userManager.ConfirmEmailAsync(user, token);
+                var result = await _accountHttpService.ConfirmEmailAsync(user.Email);
+
+                if (result == MessageValue.msgSuccess)
+                {
+                    IsSuccess = true;
+                    StatusMessage = "Active account successfully.";
+                }
+                else
+                {
+                    IsSuccess = false;
+                    StatusMessage = "Active account Unsuccessfully. Please contact administrator.";
+                }
+            }
+            catch
+            {
+                IsSuccess = false;
+                StatusMessage = "Error in activing your account. Please contact administrator.";
+            }
+            finally
+            { }
+        }
+        else
+        {
+            IsSuccess = false;
+            StatusMessage = "Invalid user name.";
+        }
+
+        IsVisible = true;
+        //NavigationManager.NavigateTo("/ConfirmEmail/" + ConfirmationMessage);
+        return await Task.FromResult(true);
+        
+    }
+
+}

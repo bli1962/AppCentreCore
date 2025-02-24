@@ -1,0 +1,138 @@
+﻿@*<h3>DepositsRateEditedForm</h3>*@
+
+
+
+<EditForm Model="ViewModel" OnValidSubmit="Save"
+          OnInvalidSubmit="Error">
+
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ValidationSummary></ValidationSummary>
+
+    <div class="form-group row">
+        <lable for="DataDate" class="col-sm-2 col-form-label font-weight-bold text-primary">
+            Data Date
+        </lable>
+        <div class="col-sm-4">
+            <InputDate id="DataDate" class="form-control" readonly=@IsEdit placeholder="Data Date" @bind-Value="@ViewModel.DataDate"></InputDate>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <lable for="Ccy" class="col-sm-2 col-form-label font-weight-bold text-primary">
+            Currency
+        </lable>
+        <div class="col-sm-4">
+            <InputSelect id="Ccy" class="form-control" disabled=@IsEdit placeholder="Currency" @bind-Value="@ViewModel.Ccy">
+                @foreach (var ccy in Enum.GetValues(typeof(RateCcy)))
+                {
+                    <option value="@ccy">@ccy</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <lable for="Period" class="col-sm-2 col-form-label font-weight-bold text-primary">
+            Period
+        </lable>
+        <div class="col-sm-4">
+            <InputSelect id="Period" class="form-control" placeholder="Period" @bind-Value="@ViewModel.Period">
+                @foreach (var Period in lstRateDurition)
+                {
+                    <option value="@Period">@Period</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+
+  @*  <div class="form-group row">
+        <lable for="Bid" class="col-sm-2 col-form-label font-weight-bold text-primary">
+            Bid
+        </lable>
+        <div class="col-sm-4">
+            <InputNumber id="Bid" class=" form-control" placeholder="Bid" @bind-Value="@ViewModel.Bid"></InputNumber>
+            <ValidationMessage For="(() => ViewModel.Bid)"></ValidationMessage>
+        </div>
+    </div>*@
+
+    @*<div class="form-group row">
+        <lable for="Offer" class="col-sm-2 col-form-label font-weight-bold text-primary">
+            Offer
+        </lable>
+        <div class="col-sm-4">
+            <InputNumber id="Offer" class=" form-control" placeholder="Offer" @bind-Value="@ViewModel.Offer"></InputNumber>
+            <ValidationMessage For="(() => ViewModel.Offer)"></ValidationMessage>
+        </div>
+    </div>*@
+
+    <div class="form-group row">
+        <lable for="Rate" class="col-sm-2 col-form-label font-weight-bold text-primary">
+            Rate
+        </lable>
+        <div class="col-sm-4">
+            <InputNumber id="Rate" class=" form-control" placeholder="Rate" @bind-Value="@ViewModel.Rate"></InputNumber>
+            <ValidationMessage For="(() => ViewModel.Rate)"></ValidationMessage>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <lable for="ImportedBy" class="col-sm-2 col-form-label font-weight-bold text-primary">
+            Imported By
+        </lable>
+        <div class="col-sm-4">
+            <InputText id="ImportedBy" class="form-control" readonly=@IsEdit placeholder ="Imported By" @bind-Value="@ViewModel.ImportedBy"></InputText>
+        </div>
+    </div>
+    <div class="form-group row">
+        <lable for="RecStatus" class="col-sm-2 col-form-label font-weight-bold text-primary">
+            Rec Status
+        </lable>
+        <div class="col-sm-4">
+            <InputText id="Rec Status" class="form-control" readonly=@IsEdit placeholder ="Rec Status" @bind-Value="@ViewModel.RecStatus"></InputText>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <lable for="ImportedTime" class="col-sm-2 col-form-label font-weight-bold text-primary">
+            Imported Time
+        </lable>
+        <div class="col-sm-4">
+            <InputDate id="ImportedTime" class="form-control" readonly=@IsEdit placeholder="Imported Time" @bind-Value="@ViewModel.ImportedTime"></InputDate>
+        </div>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Save</button>
+</EditForm>
+
+
+@using mhcb.Syd.Models;
+@using mhcb.Syd.DataAccess.Models.GUIDE;
+
+
+@code {
+    public static readonly List<string> lstRateDurition =
+                new List<string> { "1M", "2M", "3M", "4M", "5M" };
+
+    // Note: Parameter value is start with Upcase
+    [Parameter]
+    public DepositsRateViewModel ViewModel { get; set; }
+
+    [Parameter]
+    public EventCallback<DepositsRateViewModel> CallBackOnSave { get; set; }
+
+    [Parameter]
+    public EventCallback<DepositsRateViewModel> CallBackOnError { get; set; }
+
+    [Parameter]
+    public bool IsEdit { get; set; }
+
+    private void Save()
+    {
+        CallBackOnSave.InvokeAsync(ViewModel);
+    }
+
+    private void Error()
+    {
+        CallBackOnError.InvokeAsync(ViewModel);
+    }
+}

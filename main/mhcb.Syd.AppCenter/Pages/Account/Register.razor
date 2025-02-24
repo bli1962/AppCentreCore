@@ -1,0 +1,172 @@
+﻿@page "/Register"
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h3 style="font-weight:normal; color:white;font-family: verdana;">Register AppCenter</h3>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <section>
+                        <ul>
+                            <li>
+                                Any MIZUHO staffs can register <strong>AppCenter</strong> if you have Mizuho's email address;
+                            </li>
+                            <li>
+                                If you are a GUIDE user, please register with your <strong>GUIDE USER ID</strong> to binding GUIDE related functions, such as "Reset GUIDE password";
+                                Non-GUIDE users can register with their <strong>LAN ID</strong> by appending "00" at the end, in order to make user id's' length 8;
+                            </li>
+                            <li>
+                                AppCenter password could be between 8 to 20 characters in length. It must contain at least one UPPERCASE letter,
+                                one NUMERIC character and one Special character;
+                            </li>
+                            <li>
+                                AppCenter password is not synchronised with your GUIDE or LAN user credentials;
+                            </li>
+                        </ul>
+                    </section>
+                </div>
+                <div class="col-6">
+                    <section>
+                        <EditForm Model="@Input" OnValidSubmit="@RegisterUser">
+                            <DataAnnotationsValidator />
+                           @* <ValidationSummary />*@
+
+                            <div class="col-6 row">
+                                <label for="Id" class="col-form-label">AppCenter ID</label><br />
+                                <input type="text" id="username" class="form-control col-12" @bind="Input.UserName" placeholder="AppCenter ID" />
+                                 &nbsp;<ValidationMessage For="@(()=> Input.UserName)" />
+                            </div>
+                       
+                            <div class="col-6 row">
+                                <label for="Email" class="col-form-label">Email</label><br />
+                                <input type="text" id="emailaddress" class="form-control col-12" @bind="Input.Email" placeholder="Email address" />
+                                &nbsp;<ValidationMessage For="@(()=> Input.Email)" />
+                            </div>
+
+                            <div class="col-6 row">
+                                <label for="Password" class="col-form-label">Password</label><br />
+                                <input type="password" id="password" class="form-control col-12" @bind="Input.Password" placeholder="Password" />
+                                &nbsp;<ValidationMessage For="@(()=> Input.Password)" />
+                            </div>
+                     
+                            <div class="col-6 row">
+                                <label for="ConfirmPassword" class="col-form-label">Confirm password</label><br />
+                                <input type="password" id="confirmpassword"  class="form-control col-12" @bind="Input.ConfirmPassword" placeholder="Confirm password" />
+                                &nbsp;<ValidationMessage For="@(()=> Input.ConfirmPassword)" />
+                            </div>
+                      
+                            <div class="col-6 row">
+                                <span class="col-12"></span>
+                                <div class="well">
+                                    <button class="btn btn-primary btn-width-200 m-1 float-left " type="submit">Register</button>
+                                    @*<span class="col-12"><a href="/Login" class="col-6">Already an user?</a></span>      *@
+                                </div>
+                            </div>
+                            <br />
+                            <div>
+                                <p class="alert-warning font-weight-bold">@StatusMessage</p>
+                            </div>
+                        </EditForm>                      
+                    </section>
+                </div>
+             
+               
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <div class="col-6 row">
+                
+              @*  <ul>
+                    <li><a href="/Login">Login as a user</a><br /><br /></li>
+                    <li><a href="/ForgotPassword">Forgot AppCenter Password</a><br /><br /></li>
+                    <li><a href="/ResendEmail">Active Account by Email</a></li>
+                </ul>*@
+            </div>
+        </div>
+
+        <br />
+        <SpinLoader IsLoading="IsLoading">
+            <LoadingTemplate>
+                <div class="col-12 bg-primary" style="height:150px; vertical-align:middle">
+                    <br /> 
+                    <Chase Center="true" Color="#c21f13" Size="70px"></Chase>
+                    <br /> 
+                </div>
+                <div class="top-row px-4">
+                    <span><h5 class="text-primary"> Please wait ... </h5></span>
+                </div>
+            </LoadingTemplate>
+        </SpinLoader>
+        @* @if (IsLoading)
+        {
+            <div class="spinner"></div>
+        } *@
+    </div>
+</div>
+
+@using Microsoft.AspNetCore.Identity;
+@using mhcb.Syd.AppCenter.Services;
+@using mhcb.Syd.Models.Account;
+@using mhcb.Syd.AppCenter.Services.Identity;
+@*@using mhcb.Syd.AppCenter.Services.RoleBase.Interface;
+@using mhcb.Syd.AppCenter.Services.Generic;*@
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+@* No long use UserManager directly rather than API call *@
+@* @inject UserManager<IdentityUser> _userManager; *@
+@inject IAccountHttpService _accountHttpService;
+
+@code {
+    private RegisterInput Input;
+    public string ConfirmationMessage { get; set; }
+    private string StatusMessage { get; set; }
+    private string ErrorMessage { get; set; }
+
+    // private bool CompleteSubmission = true;
+    private bool IsLoading = false;
+
+    protected override Task OnInitializedAsync()
+    {
+        Input = new RegisterInput();
+        Input.AccessToken = "";
+        Input.RefreshToken = "";
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task<bool> RegisterUser()
+    {
+        // Register
+        IsLoading = true;
+        var returnedUser = await _accountHttpService.RegisterAsync(Input);
+
+        if (returnedUser != null)
+        {
+            IsLoading = false;
+        }
+
+        if (returnedUser == MessageValue.msgRegisterSuccess)   
+        {
+            var user = await _accountHttpService.FindByNameAsync(Input.UserName);
+            //NavigationManager.NavigateTo("/RegisterConfirmation/" + user.Id);
+
+            // Pass a dummy id = 2b3c8f99-a395-4831-ac6c-c7bd506515a2
+            NavigationManager.NavigateTo("/RegisterConfirmation/2b3c8f99-a395-4831-ac6c-c7bd506515a2");
+            return await Task.FromResult(true);
+        }
+        else
+        {
+            StatusMessage = MessageValue.msgInvalidUserNamePassword;
+            return await Task.FromResult(false);
+        }
+
+    }
+}

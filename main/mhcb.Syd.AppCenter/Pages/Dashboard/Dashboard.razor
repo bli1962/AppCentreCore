@@ -1,0 +1,588 @@
+﻿@page "/Dashboard"
+@using mhcb.Syd.Models.Dashboard
+@using Blazored.SessionStorage;
+@using Blazored.LocalStorage; 
+
+@* @attribute [Authorize] *@
+
+<div class="container-fluid">
+
+    <div class="card">
+
+        @*Section 1 - Title *@
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h4 style="text-align: center">OPERATIONS DASHBOARD</h4>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+
+                <table border="0">
+                    <tr>
+                        <td>
+                            <div id="FXTransaction" class="round-corner" style="width: 250px; height: 270px;">
+                                <div class="categoryHeadings">
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="(()=>RefreshFx())">
+                                        FX TRANSACTION
+                                    </button>
+                                </div>
+                                <div class="categoryHeadings">
+                                    <a href="http://guide.mhcb.com.au/GUIDE.WebApp/FX_Transaction_Inquiry.aspx?Token=<%= Session["Token"] %">Inquiry</a>
+                                    <a href="http://guide.mhcb.com.au/GUIDE.WebApp/FX_Transaction_Queue.aspx?Token=<%= Session["Token"] %"> / Queue</a>
+                                    <table class="tableContent">
+                                        <TableNoHeaderTemplate Items="FxUploadViewModels">
+                                            <RowTemplate Context="ViewModel">
+                                                <ThreeFieldsDetails ViewModel="ViewModel"></ThreeFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                    </table>
+                                </div>
+                                <div id="FXTransactionQueues" class="queueContainer">
+                                    <div id="lastUpdateTime" class="lastUpdateTime">Last updated time: @UpdatedTimeFX</div>
+                                </div> 
+                            </div>
+                        </td>
+                        <td>
+                            <div id="FXDeliveries" class="round-corner" style="width: 250px; height: 270px;">
+                                <div class="categoryHeadings">
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="(()=>RefreshFxDelivery())">
+                                        FX DELIVERY
+                                    </button>
+                                </div>
+                                <div class="categoryHeadings">
+                                    <a href="http://guide.mhcb.com.au/GUIDE.WebApp/FX_DELIVERY_Inquiry.aspx?Token=<%= Session["Token"] %">Inquiry</a>
+                                    <a href="http://guide.mhcb.com.au/GUIDE.WebApp/FX_DELIVERY_Queue.aspx?Token=<%= Session["Token"] %"> / Queue</a>
+                                    <table class="tableContent">
+                                        <TableNoHeaderTemplate Items="FxDeliveryViewModels">
+                                            <RowTemplate Context="ViewModel">
+                                                <TwoFieldsDetails ViewModel="ViewModel"></TwoFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                    </table>
+                                </div>
+                                <div id="FXDeliveriesQueues" class="queueContainer" >
+                                    <div id="lastUpdateTime" class="lastUpdateTime">Last updated time: @UpdatedTimeDelivery</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td rowspan="2">
+                            <div id="PaymentControl" class="round-corner" style="width: 250px; height: 465px;">
+                                <div class="categoryHeadings">
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="(()=>RefreshPaymentControl())">
+                                        Payment Control
+                                    </button>
+                                </div>
+                                <div class="categoryHeadings">
+                                    <a href="http://guide.mhcb.com.au/GUIDE.Web/Payments/Queue?Token=<%= Session["Token"] %">Queue</a>
+                                    <table class="tableContent">
+                                        <TableNoHeaderTemplate Items="PaymentControlViewModels">
+                                            <RowTemplate Context="ViewModel">
+                                                <ThreeFieldsDetails ViewModel="ViewModel"></ThreeFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                    </table>
+                                </div>
+                                <div id="PaymentControlQueues" class="queueContainer" >
+                                    <div id="lastUpdateTime" class="lastUpdateTime">Last updated time: @UpdatedTimePayment</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td rowspan="2">
+                            <div id="DomesticClearing" class="round-corner" style="width: 250px; height: 465px;">
+                                <div class="categoryHeadings">
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="(()=>RefreshDomesticClearing())">
+                                        Domestic Clearing
+                                    </button>
+                                </div>
+                                <div class="categoryHeadings">
+                                    <a href="http://guide.mhcb.com.au/Guide.Web/ClearingBecsPayment?Token=<%= Session["Token"] %">Inquiry</a>
+                                    <table class="tableContent">
+                                        BECS Value Today
+                                        <TableNoHeaderTemplate Items="DCViewModels1">
+                                            <RowTemplate Context="ViewModel">
+                                                <TwoFieldsDetails ViewModel="ViewModel"></TwoFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                        BECS Created Today
+                                        <TableNoHeaderTemplate Items="DCViewModels2">
+                                            <RowTemplate Context="ViewModel">
+                                                <TwoFieldsDetails ViewModel="ViewModel"></TwoFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                        Return Processed Today
+                                        <TableNoHeaderTemplate Items="DCViewModels3">
+                                            <RowTemplate Context="ViewModel">
+                                                <TwoFieldsDetails ViewModel="ViewModel"></TwoFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                        Pending Prior to Today
+                                        <TableNoHeaderTemplate Items="DCViewModels4">
+                                            <RowTemplate Context="ViewModel">
+                                                <TwoFieldsDetails ViewModel="ViewModel"></TwoFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                        Static Data
+                                        <TableNoHeaderTemplate Items="DCViewModels5">
+                                            <RowTemplate Context="ViewModel">
+                                                <TwoFieldsDetails ViewModel="ViewModel"></TwoFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                    </table>
+                                </div>
+                                <div id="DomesticClearing" class="queueContainer">
+                                    <div id="lastUpdateTime" class="lastUpdateTime">Last updated time: @UpdatedTimeDCL</div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div id="MoneyMarket" class="round-corner" style="width: 250px; height: 200px;">
+                                <div class="categoryHeadings">
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="(()=>RefreshMM())">
+                                        MM TRANSACTION
+                                    </button>
+                                </div>
+                                <div class="categoryHeadings">
+                                    <div class="categoryHeadings">
+                                        <a href="http://guide.mhcb.com.au/Guide.Web/MoneyMarket/Queue?search=Token=<%= Session["Token"] %>Queue</a>
+                                    </div>
+                                    <table class="tableContent">
+                                        <TableNoHeaderTemplate Items="MMViewModels">
+                                            <RowTemplate Context="ViewModel">
+                                                <ThreeFieldsDetails ViewModel="ViewModel"></ThreeFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                    </table>
+                                </div>
+                                <div id="MoneyMarketQueues" class="queueContainer" />
+                            </div>
+                        </td>
+                        <td>
+                            <div id="CustomerMaster" class="round-corner" style="width: 250px; height: 200px;">
+                                <div class="categoryHeadings">
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="(()=>RefreshCustomer())">
+                                        Fx & Mx Customer
+                                    </button>
+                                </div>
+                                <div class="categoryHeadings">
+                                    <a href="http://guide.mhcb.com.au/GUIDE.WebApp/CUSTOMER_Inquiry.aspx?Token=<%= Session["Token"] %">Inquiry</a>
+                                    <a href="http://guide.mhcb.com.au/GUIDE.WebApp/CUSTOMER_Queue.aspx?Token=<%= Session["Token"] %"> / Queue</a>
+                                    <table class="tableContent">
+                                        <TableNoHeaderTemplate Items="CustomerViewModels">
+                                            <RowTemplate Context="ViewModel">
+                                                <TwoFieldsDetails ViewModel="ViewModel"></TwoFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                    </table>
+                                </div>
+
+                                <div id="CustomerQueues" class="queueContainer" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div id="SettlementInf" class="round-corner" style="width: 250px; height: 200px;">
+                                <div class="categoryHeadings">
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="(()=>RefreshSif())">
+                                        SETTLEMENT INFO FILE (SIF)
+                                    </button>
+                                </div>
+                                <div class="categoryHeadings">
+                                    <a href="http://guide.mhcb.com.au/GUIDE.WebApp/SIF_Inquiry.aspx?Token=<%= Session["Token"] %">Inquiry</a>
+                                    <a href="http://guide.mhcb.com.au/GUIDE.WebApp/SIF_Queue.aspx?Token=<%= Session["Token"] %"> / Queue</a>
+                                    <table class="tableContent">
+                                        <TableNoHeaderTemplate Items="SifViewModels">
+                                            <RowTemplate Context="ViewModel">
+                                                <TwoFieldsDetails ViewModel="ViewModel"></TwoFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="eDistribution" class="round-corner" style="width: 250px; height: 200px;">
+                                <div class="categoryHeadings">
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="(()=>RefreshDistributions())">
+                                        e-DISTRIBUTION
+                                    </button>
+                                </div>
+                                <div class="categoryHeadings">
+                                    <a href="http://guide.mhcb.com.au/GUIDE.WebApp/Distributuon_Inquiry.aspx?Token=<%= Session["Token"] %">Inquiry</a>
+                                    <a href="http://guide.mhcb.com.au/GUIDE.WebApp/Distributuon_Queue.aspx?Token=<%= Session["Token"] %"> / Queue</a>
+                                    <table class="tableContent">
+                                        <TableNoHeaderTemplate Items="DistributionsViewModels">
+                                            <RowTemplate Context="ViewModel">
+                                                <TwoFieldsDetails ViewModel="ViewModel"></TwoFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                    </table>
+                                </div>
+                                <div id="eDistributionQueues" class="queueContainer" />
+                            </div>
+                        </td>
+                        <td>
+                            <div id="BankInf" class="round-corner" style="width: 250px; height: 200px;">
+                                <div class="categoryHeadings">
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="(()=>RefreshBif())">
+                                        BANK INFO FILE (BIF)
+                                    </button>
+                                </div>
+                                <div class="categoryHeadings">
+                                    <a href="http://guide.mhcb.com.au/GUIDE.WebApp/BIF_Inquiry.aspx?Token=<%= Session["Token"] %">Inquiry</a>
+                                    <a href="http://guide.mhcb.com.au/GUIDE.WebApp/BIF_Queue.aspx?Token=<%= Session["Token"] %"> / Queue</a>
+                                    <table class="tableContent">
+                                        <TableNoHeaderTemplate Items="BifViewModels">
+                                            <RowTemplate Context="ViewModel">
+                                                <TwoFieldsDetails ViewModel="ViewModel"></TwoFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div id="BankInf" class="round-corner" style="width: 250px; height: 200px;">
+                                <div class="categoryHeadings">
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="(()=>RefreshFXConfirmation())">
+                                        Mgeb FX Confirmation
+                                    </button>
+                                </div>
+                                <div class="categoryHeadings">
+                                    <a href="http://guide.mhcb.com.au/GUIDE.Web/FxTransaction/Confirmation?Token=<%= Session["Token"] %">Inquiry</a>
+                                    <table class="tableContent">
+                                        <TableNoHeaderTemplate Items="FXConfirmationViewModels">
+                                            <RowTemplate Context="ViewModel">
+                                                <ThreeFieldsDetails ViewModel="ViewModel"></ThreeFieldsDetails>
+                                            </RowTemplate>
+                                        </TableNoHeaderTemplate>
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" align="center">
+                            <table width="100%">
+                                <tr>
+                                    <td>
+                                        <div id="RATES" class="round-corner" style="width: 300px; height: 170px;">
+                                            <div class="categoryHeadings">
+                                                <button class="btn btn-outline-danger btn-sm" @onclick="(()=>RefreshRates())">
+                                                    @* <a href="Rates.aspx">RATES</a> *@RATES
+                                                </button>
+                                            </div>
+                                            <div class="categoryHeadings">
+                                                <table class="tableContent">
+                                                    <TableNoHeaderTemplate Items="RateViewModels">
+                                                        <RowTemplate Context="ViewModel">
+                                                            <RatesFielddDetails ViewModel="ViewModel"></RatesFielddDetails>
+                                                        </RowTemplate>
+                                                    </TableNoHeaderTemplate>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @* <div id="RAMGAS" class="round-container">
+                                        <div style="border-bottom: 1px solid #2779aa; height: 45px; padding-top: 10px">
+                                        <div class="categoryHeadings">RAM)</div>
+                                        <h4>
+                                        <a href="../GUIDESG/RAM/RAM_Process.aspx?Token=<%=Session[" Token"]%>">RAM</a>RAM
+                                        </h4>
+                                        </div>
+                                        <br />
+                                        <div style="height: 45px">
+                                        <h4>
+                                        <a href="../GUIDESG/GAS/GAS_SearchTransaction.aspx?Token=<%=Session[" Token"]%>">GAS</a>GAS
+                                        </h4>
+                                        </div>
+                                        <br />
+                                        </div> *@
+                                    </td>
+                                    <td>
+                                        @*  <div id="ReportsPasswordLogout" class="round-container">
+                                        <div style="border-bottom: 1px solid #2779aa; height: 35px; width: 100%;
+                                        padding-top: 2px; padding-bottom: 2px">
+                                        <h4>
+                                        <a href="Reports.aspx">REPORTS</a>REPORTS
+                                        </h4>
+                                        </div>
+                                        <div style="border-bottom: 1px solid #2779aa; height: 35px; width: 100%;
+                                        padding-top: 2px; padding-bottom: 2px">
+                                        <h4>
+                                        <a href="../GUIDESG/ChangePassword.aspx?Token=<%=Session[" Token"]%>">CHANGE PASSWORD</a>CHANGE PASSWORD
+                                        </h4>
+                                        </div>
+                                        <div style="height: 35px; width: 100%; padding-top: 2px; padding-bottom: 2px">
+                                        <h4>
+                                        <a href="Logout.aspx">LOGOUT</a> LOGOUT
+                                        </h4>
+                                        </div>
+                                        </div> *@
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <div class="panel-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@inject IHttpService<StatusCounterDTO> _httpService;
+@inject IHttpService<StatusCounterSameDayDTO> _httpService2;
+@inject IJSRuntime IJSRuntime;
+@inject NavigationManager navigationManager;
+@inject IHttpService<RatesAvailablityStatus> _httpService3;
+
+@* @inject Blazored.SessionStorage.ISessionStorageService sessionStorage; *@
+
+@inject Blazored.LocalStorage.ILocalStorageService sessionStorage;
+
+@inject SessionStorageHelper _storageHelper
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    public List<StatusCounterDTO> RateViewModels = new List<StatusCounterDTO>();
+
+    public List<StatusCounterDTO> BifViewModels = new List<StatusCounterDTO>();
+    public List<StatusCounterDTO> SifViewModels = new List<StatusCounterDTO>();
+    public List<StatusCounterDTO> CustomerViewModels = new List<StatusCounterDTO>();
+    public List<StatusCounterDTO> FxDeliveryViewModels = new List<StatusCounterDTO>();
+    public List<StatusCounterDTO> DistributionsViewModels = new List<StatusCounterDTO>();
+
+    public List<StatusCounterDTO> DomesticClearingViewModels = new List<StatusCounterDTO>();
+
+    public List<StatusCounterDTO> DCViewModels1 = new List<StatusCounterDTO>();
+    public List<StatusCounterDTO> DCViewModels2 = new List<StatusCounterDTO>();
+    public List<StatusCounterDTO> DCViewModels3 = new List<StatusCounterDTO>();
+    public List<StatusCounterDTO> DCViewModels4 = new List<StatusCounterDTO>();
+    public List<StatusCounterDTO> DCViewModels5 = new List<StatusCounterDTO>();
+
+
+    public List<StatusCounterSameDayDTO> FxUploadViewModels = new List<StatusCounterSameDayDTO>();
+    public List<StatusCounterSameDayDTO> MMViewModels = new List<StatusCounterSameDayDTO>();
+    public List<StatusCounterSameDayDTO> PaymentControlViewModels = new List<StatusCounterSameDayDTO>();
+    public List<StatusCounterSameDayDTO> FXConfirmationViewModels = new List<StatusCounterSameDayDTO>();
+
+    public DateTime SelectedOptDate { get; set; } = DateTime.Today;
+    public string optionalDate { get; set; }
+
+    public string UpdatedTimeFX { get; set; }
+    public string UpdatedTimeDelivery { get; set; }
+    public string UpdatedTimePayment { get; set; }
+    public string UpdatedTimeDCL { get; set; }
+
+    public RatesAvailablityStatus ratesAvailablity = new RatesAvailablityStatus();
+    public bool isCheckedFX { get; set; } = false;
+    public bool isCheckedRevalution { get; set; } = false;
+    public bool isCheckedSwap { get; set; } = false;
+    public bool isCheckedDeposits { get; set; } = false;
+    public bool isCheckedBIS { get; set; } = false;
+
+    public int FXCounter { get; set; } = 0;
+    public int RevalutionCounter { get; set; } = 0;
+    public int SwapCounter { get; set; } = 0;
+    public int DepositsCounter { get; set; } = 0;
+    public int BISCounter { get; set; } = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await authenticationStateTask;
+
+        // ?? at the moment we are not using the token
+        //var data = await _storageHelper.GetItemAsync("Token");
+        //var data = await sessionStorage.GetItemAsync<string>("Token");
+
+        optionalDate = SelectedOptDate.ToString("yyyy-MM-dd");
+
+        await SearchClick();
+       
+        await base.OnInitializedAsync();
+    }
+
+    protected async Task SearchClick()
+    {    
+        RateViewModels = null;
+
+        BifViewModels = null;
+        SifViewModels = null;
+        CustomerViewModels = null;
+
+        FxDeliveryViewModels = null;
+        DomesticClearingViewModels = null;
+        DistributionsViewModels = null;
+
+        FxUploadViewModels = null;
+        MMViewModels = null;
+        PaymentControlViewModels = null;
+        FXConfirmationViewModels = null;
+
+        DCViewModels1 = null;
+        DCViewModels2 = null;
+        DCViewModels3 = null;
+        DCViewModels4 = null;
+        DCViewModels5 = null;
+
+        await RefreshFx();
+        await RefreshFxDelivery();
+        await RefreshPaymentControl();
+        await RefreshDomesticClearing();
+        await RefreshMM();
+        await RefreshCustomer();
+       
+        await RefreshSif();
+        await RefreshDistributions();
+        await RefreshBif();
+      
+        await RefreshFXConfirmation();
+        await RefreshRates();
+
+        if (BifViewModels.Count() == 0)
+        {
+           // do something else
+        }
+    }
+
+    protected async Task RefreshDomesticClearing()
+    {
+        DomesticClearingViewModels = null;
+
+        DCViewModels1 = null;
+        DCViewModels2 = null;
+        DCViewModels3 = null;
+        DCViewModels4 = null;
+        DCViewModels5 = null;
+
+        DomesticClearingViewModels = (await _httpService.GetAllAsync($"api/Dashboard/GetDomesticClearingCount/{optionalDate}", null)).ToList();
+        DCViewModels1 = DomesticClearingViewModels.Where(x => x.Status == "BECS Value Today").ToList();
+        DCViewModels2 = DomesticClearingViewModels.Where(x => x.Status == "BECS Created Today").ToList();
+        DCViewModels3 = DomesticClearingViewModels.Where(x => x.Status == "Return Processed Today").ToList();
+        DCViewModels4 = DomesticClearingViewModels.Where(x => x.Status == "Pending Prior to Today").ToList();
+        DCViewModels5 = DomesticClearingViewModels.Where(x => x.Status == "Static Data").ToList();
+
+        UpdatedTimeDCL = DateTime.Now.ToString("HH:mm");
+
+        return;
+    }
+
+
+    protected async Task RefreshBif()
+    {
+        BifViewModels = null;
+        BifViewModels = (await _httpService.GetAllAsync($"api/Dashboard/GetBIFCount", null)).ToList();
+        return;
+    }
+
+    protected async Task RefreshSif()
+    {
+        SifViewModels = null;
+        SifViewModels = (await _httpService.GetAllAsync($"api/Dashboard/GetSIFCount", null)).ToList();
+        return;
+    }
+
+    protected async Task RefreshCustomer()
+    {
+        CustomerViewModels = null;
+        CustomerViewModels = (await _httpService.GetAllAsync($"api/Dashboard/GetCustomerCount", null)).ToList();
+        return;
+    }
+
+    protected async Task RefreshFxDelivery()
+    {
+        FxDeliveryViewModels = null;
+        FxDeliveryViewModels = (await _httpService.GetAllAsync($"api/Dashboard/GetFxDeliveryCount/{optionalDate}", null)).ToList();
+
+        UpdatedTimeDelivery = DateTime.Now.ToString("HH:mm");
+        return;
+    }
+
+
+    protected async Task RefreshDistributions()
+    {
+        DistributionsViewModels = null;
+        DistributionsViewModels = (await _httpService.GetAllAsync($"api/Dashboard/GetDistributionsCount/{optionalDate}", null)).ToList();
+        return;
+    }
+
+    protected async Task RefreshFx()
+    {
+        FxUploadViewModels = null;
+        FxUploadViewModels = (await _httpService2.GetAllAsync($"api/Dashboard/GetFxTransactionCount/{optionalDate}", null)).ToList();
+
+        UpdatedTimeFX = DateTime.Now.ToString("HH:mm");
+        return;
+    }
+
+    protected async Task RefreshMM()
+    {
+        MMViewModels = null;
+        MMViewModels = (await _httpService2.GetAllAsync($"api/Dashboard/GetMoneyMarketCount/{optionalDate}", null)).ToList();
+        return;
+    }
+
+    protected async Task RefreshPaymentControl()
+    {
+        PaymentControlViewModels = null;
+        PaymentControlViewModels = (await _httpService2.GetAllAsync($"api/Dashboard/GetPaymentControlCount/{optionalDate}", null)).ToList();
+
+        UpdatedTimePayment = DateTime.Now.ToString("HH:mm");
+        return;
+    }
+
+    protected async Task RefreshFXConfirmation()
+    {
+        FXConfirmationViewModels = null;
+        FXConfirmationViewModels = (await _httpService2.GetAllAsync($"api/Dashboard/GetFXConfirmationCount/{optionalDate}", null)).ToList();
+        return;
+    }
+
+
+    protected async Task RefreshRates()
+    {
+        RateViewModels = null;
+
+        ratesAvailablity = null;
+        ratesAvailablity = (await _httpService3.GetAsync($"api/RatesGbaseUploadCtl/GetRatesAvailablityCounter/{optionalDate}", null));
+
+        if (ratesAvailablity != null)
+        {
+            FXCounter = (ratesAvailablity != null) ? ratesAvailablity.FXRateCount : 0;
+            RevalutionCounter = (ratesAvailablity != null) ? ratesAvailablity.RevaluationRateCount : 0;
+            SwapCounter = (ratesAvailablity != null) ? ratesAvailablity.SwapRateCount: 0;
+            DepositsCounter = (ratesAvailablity != null) ? ratesAvailablity.DepositRateCount : 0;
+            BISCounter = (ratesAvailablity != null) ? ratesAvailablity.BitRateCount : 0;
+
+            isCheckedFX = (ratesAvailablity != null && ratesAvailablity.FXRateCount != 0) ? true : false;
+            isCheckedRevalution = (ratesAvailablity != null && ratesAvailablity.RevaluationRateCount != 0) ? true : false;
+            isCheckedSwap = (ratesAvailablity != null && ratesAvailablity.SwapRateCount != 0) ? true : false;
+            isCheckedDeposits = (ratesAvailablity != null && ratesAvailablity.DepositRateCount != 0) ? true : false;
+            isCheckedBIS = (ratesAvailablity != null && ratesAvailablity.BitRateCount != 0) ? true : false;
+
+
+            RateViewModels = new List<StatusCounterDTO>();
+            RateViewModels.Add(new StatusCounterDTO() { Description = "Daily Exchange Rates", Count = @FXCounter, Status = @isCheckedFX ? "Uploaded" : "Pending" });
+            RateViewModels.Add(new StatusCounterDTO() { Description = "Daily Revaluation Rates", Count = @RevalutionCounter, Status = @isCheckedRevalution ? "Uploaded" : "Pending" });
+            RateViewModels.Add(new StatusCounterDTO() { Description = "Daily Market Rate for NPV", Count = @SwapCounter, Status = @isCheckedSwap ? "Uploaded" : "Pending" });
+            RateViewModels.Add(new StatusCounterDTO() { Description = "EOM General Funding Rate", Count = @DepositsCounter, Status = @isCheckedDeposits ? "Uploaded" : "N/A" });
+            RateViewModels.Add(new StatusCounterDTO() { Description = "EOM BIS Rat", Count = @BISCounter, Status = @isCheckedBIS ? "Uploaded" : "N/A" });
+        }
+
+        return;
+    }
+}

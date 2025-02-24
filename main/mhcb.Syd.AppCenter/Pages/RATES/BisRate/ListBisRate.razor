@@ -1,0 +1,335 @@
+﻿@page "/ListBisRate/{optionalDataDate?}"
+@attribute [Authorize]
+
+<div class="container-fluid">
+
+    <div class="card">
+
+        @*Section 1 - Title *@
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h4>BIS Rates List</h4>
+            </div>
+        </div>
+
+        @*Section 2 - Body*@
+        <div class="card-body">
+            @*Section 2 - Search Parameters*@
+            <div class="col-4 row">
+                <table class="table table-sm table-bordered table-primary Col-Head-Left">
+                    <tbody thead class="thead-light">
+                        <tr>
+                            <td><label for="Id" class="col-form-label">Data Date</label></td>
+                            <td>
+                                <input type="date" class="form-control" @bind="SelectedOptDate" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            @*Section  - Add link *@
+            <div class="col-12 row">
+                <div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+                    <div class="panel-body">
+                        <button class="btn btn-primary m-1 float-left" @onclick="(()=>SearchClick())">Search Rates</button>
+                        <AuthorizeView Roles="FX_RATE_Authorise">
+                            <Authorized>
+                                <button class="btn btn-primary m-1" onclick="location.href='./AddBisRate'">Add new rate</button>
+                            </Authorized>
+                        </AuthorizeView>
+                        <button class="btn btn-primary m-1" onclick="location.href='./ListRatesUpload'">Go Back</button>
+                    </div>
+                </div>
+            </div>
+
+
+            @*Section - results *@
+            <div class="col-12 row">
+                @if (ListItems != null)
+                {
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:700px;">
+                                @*Section 4 - list via TableTemplate*@
+                                <TableTemplate Items="ListItems">
+                                    <TableHeader>
+                                        <th>Data Date</th>
+                                        <th>Ccy</th>
+                                        <th>Duration</th>
+                                        <th>Duration Unit</th>
+                                        <th>Base Rate</th>
+                                        <th>Imported By</th>
+                                        <th>Rec Status</th>
+                                        <th>Imported Time</th>
+                                        <AuthorizeView Roles="FX_RATE_Authorise">
+                                            <Authorized>
+                                                <th>Edit</th>
+                                                <th>Delete</th>
+                                            </Authorized>
+                                        </AuthorizeView>
+                                    </TableHeader>
+                                    <RowTemplate Context="ViewModel">
+                                        <BisRateDetails ViewModel="ViewModel" CallBackMethod="DeleteItem"></BisRateDetails>
+                                    </RowTemplate>
+                                    <TableFooter>
+                                        <th>Data Date</th>
+                                        <th>Ccy</th>
+                                        <th>Duration</th>
+                                        <th>Duration Unit</th>
+                                        <th>Base Rate</th>
+                                        <th>Imported By</th>
+                                        <th>Rec Status</th>
+                                        <th>Imported Time</th>
+                                        <AuthorizeView Roles="FX_RATE_Authorise">
+                                            <Authorized>
+                                                <th>Edit</th>
+                                                <th>Delete</th>
+                                            </Authorized>
+                                        </AuthorizeView>
+                                    </TableFooter>
+                                </TableTemplate>
+                            </div>
+                        </div>
+                    </div>                        
+                }
+                else
+                {
+                   @*  <div class="spinner"></div> *@
+                    <div class="col-12" style="background-color: lightgray; height:400px; vertical-align:middle">
+                        <br /><br />
+                        <Chase Center="true" Color="#c21f13" Size="70px"></Chase>
+                    </div>
+                }
+            </div>
+
+        </div>
+
+        @*Section 3 - footer section*@
+        @if (ListItems != null && ListItems.Count != 0)
+        {
+            <div class="card-footer">
+                <div class="panel-body">
+                    @*<a href="./AddBisRate">Add Bis Rate</a>*@
+                    <AuthorizeView Roles="FX_RATE_Authorise">
+                        <Authorized>
+                            <button class="btn btn-primary m-1" onclick="location.href='./AddBisRate'">Add new rate </button>
+                        </Authorized>
+                    </AuthorizeView>
+                </div>
+            </div>
+        }
+    </div>
+
+    <ConfirmationBox Title="@Title"
+                     Message="@Message"
+                     YesButtonText="@YesButtonText"
+                     NoButtonText="@NoButtonText"
+                     InfoButtonText="@InfoButtonText"
+                     BtnClass="@BtnClass"
+                     ConfirmationChanged="Save" 
+                     InformationChanged="OkClick"
+                     IsVisible="IsVisible"
+                     IsInformationOnly="IsInformationOnly">
+    </ConfirmationBox>
+</div>
+
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Web;
+
+@using mhcb.Syd.AppCenter.Services.RoleBase.API;
+@using mhcb.Syd.AppCenter.Services.Generic;
+@using mhcb.Syd.AppCenter.Services.RoleBase.Interface;
+@using mhcb.Syd.Models;
+@using mhcb.Syd.DataAccess.Models.GUIDE;
+@using mhcb.Syd.AppCenter.Pages.RATES;
+
+@inject IJSRuntime jsRuntime;
+@inject IBisRateHttpService _httpServiceRole;
+@inject IHttpService<BisRateViewModel> _httpService;
+
+@code {
+    public List<BisRateViewModel> ListItems = new List<BisRateViewModel>();
+    public BisRateViewModel ViewModelDel = new BisRateViewModel();
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    [Parameter]
+    public string optionalDataDate { get; set; }
+    public DateTime SelectedOptDate { get; set; } = DateTime.Today;
+
+     public bool IsSuccess { get; set; }
+
+    // ** Variables for confirmation box
+    public string Title { get; set; }
+    public string Message { get; set; }
+    public string YesButtonText { get; set; }
+    public string NoButtonText { get; set; }
+    public string InfoButtonText { get; set; }
+    public bool IsVisible { get; set; }
+    public bool IsInformationOnly { get; set; }
+    public string BtnClass { get; set; }
+    // ** End
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsVisible = false;
+        IsInformationOnly = false;
+
+        Title = "Delete BIS Rate";
+        Message = "";
+        YesButtonText = "Yes";
+        NoButtonText = "No";
+        InfoButtonText = "OK";
+        BtnClass = "btn btn-primary float-left";
+
+        //return base.OnInitializedAsync();
+        var authenticationState = await authenticationStateTask;
+
+        if (optionalDataDate != null)
+        {
+            SelectedOptDate = DateTime.Parse(optionalDataDate);
+            //ListItems = (await _rateService.GetBisRatesByDate(optionalDataDate)).ToList();
+
+            //var token = await _localStorageService.GetItemAsync<string>("accessToken");
+            ListItems = (await _httpService.GetAllAsync($"api/BisRate/GetBisRatesByDate/{optionalDataDate}", null)).ToList();
+        }
+        await base.OnInitializedAsync();
+    }
+
+
+    protected async Task SearchClick()
+    {
+        ListItems = null;
+        //ListItems = (await _rateService.GetBisRatesByDate(SelectedOptDate.ToString("yyyy-MM-dd"))).ToList();
+        ListItems = (await _httpService.GetAllAsync($"api/BisRate/GetBisRatesByDate/{SelectedOptDate.ToString("yyyy-MM-dd")}", null)).ToList();
+
+        if (ListItems.Count() == 0)
+        {
+            //_comfirmationMessage.Show();
+            IsVisible = true;
+            IsInformationOnly = true;
+            Message = "No BIS Rate record found.";
+        }
+    }
+
+    protected void DeleteItem(BisRateViewModel ViewModelData)
+    {
+        ViewModelDel.DataDate = ViewModelData.DataDate;
+        ViewModelDel.Ccy = ViewModelData.Ccy;
+        ViewModelDel.Duration = ViewModelData.Duration;
+        ViewModelDel.DurationUnit = ViewModelData.DurationUnit;
+
+        Message = "Do you need to delete BIS rate?";
+        IsInformationOnly = false;  // set not information box
+        IsVisible = true;
+        
+        // var result = await jsRuntime.InvokeAsync<bool>("confirm", "Do you need to delete Bis rate?");
+        // if (result.ToString() == "True")
+        // {
+        //     ViewModelDel.DataDate = ViewModelData.DataDate;
+        //     ViewModelDel.Ccy = ViewModelData.Ccy;
+        //     ViewModelDel.Duration = ViewModelData.Duration;
+        //     ViewModelDel.DurationUnit = ViewModelData.DurationUnit;
+
+        //     var intReturn = await _httpServiceRole.DeleteBisRate(ViewModelData.DataDate.ToString("yyyy-MM-dd"),
+        //                                        ViewModelData.Ccy,
+        //                                        ViewModelData.Duration,
+        //                                        ViewModelData.DurationUnit);
+        //     //var intReturn = await _httpService.DeleteAsync($"api/BisRate/{ViewModelData.DataDate.ToString("yyyy-MM-dd")}/{ViewModelData.Ccy}/{ViewModelData.Duration}/{ViewModelData.DurationUnit}", null);
+
+        //     if (intReturn == "OK")
+        //     {
+        //         Message = "Bis rate has deleted successfully.";
+        //         IsSuccess = true;
+        //     }
+        //     else if (intReturn == "NotFound")
+        //     {
+        //         Message = "The Bis rate is not found.";
+        //         IsSuccess = false;
+        //     }
+        //     else
+        //     {
+        //         Message = "Failed to delete Bis rate.";
+        //         IsSuccess = false;
+        //     }
+        //     IsInformationOnly = true;  // make to show information box
+        //     IsVisible = true;
+        //     StateHasChanged();
+
+        //     // remove the item from memory list
+        //     // ListItems.RemoveAll(a => a.DataDate == ViewModelData.DataDate
+        //     //                                 && a.Ccy == ViewModelData.Ccy
+        //     //                                 && a.Duration == ViewModelData.Duration
+        //     //                                 && a.DurationUnit == ViewModelData.DurationUnit);
+        //}
+    }
+
+    
+    protected void ConfirmClick(bool blnConfirm)
+    {
+        if (blnConfirm) { }
+    }
+
+    protected async Task<string> DeletingData(BisRateViewModel ViewModelData)
+    {
+        ViewModelDel.DataDate = ViewModelData.DataDate;
+        ViewModelDel.Ccy = ViewModelData.Ccy;
+        ViewModelDel.Duration = ViewModelData.Duration;
+        ViewModelDel.DurationUnit = ViewModelData.DurationUnit;
+
+        var intReturn = await _httpServiceRole.DeleteBisRate(ViewModelData.DataDate.ToString("yyyy-MM-dd"),
+                                           ViewModelData.Ccy,
+                                           ViewModelData.Duration,
+                                           ViewModelData.DurationUnit);
+        //var intReturn = await _httpService.DeleteAsync($"api/BisRate/{ViewModelData.DataDate.ToString("yyyy-MM-dd")}/{ViewModelData.Ccy}/{ViewModelData.Duration}/{ViewModelData.DurationUnit}", null);
+
+        return intReturn;
+    }
+
+    //**************************************************
+    // Code to handle confirmation box OK or Save button
+    //**************************************************
+    protected async Task Save(bool IsSave)
+    {
+        IsVisible = false;
+        if (IsSave == false) return;
+
+        var intReturn = await DeletingData(ViewModelDel);
+
+        if (intReturn == "OK")
+        {
+            Message = "Bis rate has deleted successfully.";
+            IsSuccess = true;
+        }
+        else if (intReturn == "NotFound")
+        {
+            Message = "The Bis rate is not found.";
+            IsSuccess = false;
+        }
+        else
+        {
+            Message = "Failed to delete Bis rate.";
+            IsSuccess = false;
+        }
+        IsInformationOnly = true;  // make to show information box
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    protected void OkClick()
+    {
+        IsVisible = false;
+        // remove the item from memory list
+        ListItems.RemoveAll(a => a.DataDate == ViewModelDel.DataDate
+                                && a.Ccy == ViewModelDel.Ccy
+                                && a.Duration == ViewModelDel.Duration
+                                && a.DurationUnit == ViewModelDel.DurationUnit);
+    }
+
+    
+}
+
+

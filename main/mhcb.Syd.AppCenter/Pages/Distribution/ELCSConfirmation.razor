@@ -1,0 +1,288 @@
+﻿@page "/ELCSConfirmation"
+
+@attribute [Authorize]
+<div class="container-fluid">
+
+    <div class="card">
+        @*Section 1 - Title *@
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h4>Resent ELCS Loan Confirmation</h4>
+            </div>
+        </div>
+
+        @*Section 2 - Edit form*@
+        <div class="card-body">
+            @*Section 4 - Update Form*@
+            <div class="row ">
+                <div class="col-sm-4">
+                    <EditForm Model="@UpdateStatus" OnValidSubmit="Confirmed">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <table class="table table-sm table-bordered table-primary Col-Head-Left">
+                            <tbody>
+                                <tr>
+                                    <td><label for="Id" class="col-form-label">Document ID :</label></td>
+                                    <td>
+                                        <InputNumber class="form-control" placeholder="ConfirmationFileID" @bind-Value="UpdateStatus.Id" />
+                                        <ValidationMessage For="@(() => UpdateStatus.Id)" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="Id" class="col-form-label">Added By :</label></td>
+                                    <td><input type="text" class="form-control" @bind="UpdateStatus.AuthorizeBy" readonly /></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="well">
+                            <button class="btn btn-outline-primary m-1 float-left" type="submit">Resent</button>
+                            <button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+                            <br />
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+
+        @*Section 2 - Search*@
+        <div class="card-body">
+            @*Section 2 - Parameters*@
+            <div class="row">
+                <div class="col-sm-4">
+                    <table class="table table-sm table-bordered table-primary Col-Head-Left">
+                        <tbody thead class="thead-light">
+                            <tr>
+                                <td><label for="Id" class="col-form-label">Date Added</label></td>
+                                <td>
+                                    <input type="date" class="form-control" @bind="SelectedOptDate" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label for="Id" class="col-form-label">Document type</label></td>
+                                <td>
+                                    <select class="form-control form-select-sm" @bind="SelectedReportType">
+                                        <option value="ElcsLoanConfirmation">ELCS Loan Confirmation</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="well">
+                        <button class="btn btn-outline-primary m-1 float-left" @onclick="(()=>SearchClick())">Search Confirmation</button>
+                    </div>
+                </div>
+            </div>
+            @if (modelView == null && SelectedReportType != "")
+            {
+                <div class="spinner"></div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:500px;">
+                            @*Section 4 - list via TableTemplate*@
+                            <TableTemplate Items="modelView.ToList()">
+                                <TableHeader>
+                                    <th>Document ID</th>
+                                    <th>Status</th>
+                                    <th>Sent Method</th>
+                                    <th>Address</th>
+                                    <th>Custom code</th>
+                                    <th>Customer Abbr</th>
+                                    <th>GBase REF</th>
+                                    <th>Date Added</th>
+                                    <th>Added By</th>
+                                    <th>Date Sent</th>
+                                    <th>Sent By</th>                 
+                                </TableHeader>
+                                <RowTemplate Context="item">
+                                    <td>@item.Id</td>
+                                    <td>@item.Status</td>
+                                    <td>@item.ChannelId</td>
+                                    <td>@item.DeliveryAddress</td>
+                                    <td>@item.CustomerCode</td>
+                                    <td>@item.CustAbbr</td>
+                                    <td>@item.Reference</td>
+                                    <td>@item.DateAdded</td>
+                                    <td>@item.AddedBy</td>
+                                    <td>@item.DateSent</td>
+                                    <td>@item.SentBy</td>                      
+                                </RowTemplate>
+                                <TableFooter>
+                                    <th>Document ID</th>
+                                    <th>Status</th>
+                                    <th>Sent Method</th>
+                                    <th>Address</th>
+                                    <th>Custom code</th>
+                                    <th>Customer Abbr</th>
+                                    <th>GBase REF</th>
+                                    <th>Date Added</th>
+                                    <th>Added By</th>
+                                    <th>Date Sent</th>
+                                    <th>Sent By</th>
+                                </TableFooter>
+                            </TableTemplate>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <ConfirmationBox Title="@Title"
+                     Message="@Message"
+                     YesButtonText="@YesButtonText"
+                     NoButtonText="@NoButtonText"
+                     InfoButtonText="@InfoButtonText"
+                     BtnClass="@BtnClass"
+                     ConfirmationChanged="Save"
+                     InformationChanged="OkClick"
+                     IsVisible="IsVisible"
+                     IsInformationOnly="IsInformationOnly">
+    </ConfirmationBox>
+</div>
+
+
+@inject IHttpService<DistributionView> _httpService;
+@inject IDistributionService _httpServiceRole;
+
+@inject IJSRuntime IJSRuntime;
+@inject NavigationManager NavigationManager;
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    public IEnumerable<DistributionView> modelView { get; set; } = new List<DistributionView>();
+    protected InputEDistribution UpdateStatus;
+
+    public DateTime SelectedOptDate { get; set; } = DateTime.Today;
+    public string SelectedReportType { get; set; } = "ElcsLoanConfirmation";
+
+    // ** Variables for confirmation box
+    public string Title { get; set; }
+    public string Message { get; set; }
+    public string YesButtonText { get; set; }
+    public string NoButtonText { get; set; }
+    public string InfoButtonText { get; set; }
+    public bool IsVisible { get; set; }
+    public bool IsInformationOnly { get; set; }
+    public string BtnClass { get; set; }
+    // ** End
+
+    protected override async Task OnInitializedAsync()
+    {
+        Title = "ELCS Loan Confirmation";
+        Message = "Do you want to Save?";
+        YesButtonText = "Yes";
+        NoButtonText = "No";
+        InfoButtonText = "OK";
+        BtnClass = "btn btn-primary float-left";
+
+        UpdateStatus = new()
+            {
+                Id = 0,                
+                AuthorizeBy = ""
+            };
+
+        var authenticationState = await authenticationStateTask;
+        var user = authenticationState?.User;
+        if (user is not null)
+        {
+            if (user.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                UpdateStatus.AuthorizeBy = authenticationState.User.Identity.Name.ToUpper();
+            }
+        }
+        //return base.OnInitializedAsync();
+    }
+
+    protected async Task SearchClick()
+    {
+        modelView = null;
+        string eDocType = SelectedReportType;
+        string dateAdded = SelectedOptDate.ToString("yyyy-MM-dd");
+
+        modelView = (await _httpService.GetAllAsync($"api/Distribution/GetElcsConfirmation/{eDocType}/{dateAdded}", null)).ToList();
+
+        if (modelView.Count() == 0)
+        {
+            //await IJSRuntime.InvokeVoidAsync("AlertMessage", "No Bank Information Found.");
+            //ConfirmationComponent.Show();
+            IsVisible = true;
+            IsInformationOnly = true;
+            Message = "No ELCS Loan Confirmation Found.";
+        } 
+
+    }
+    protected void OkClick() => IsVisible = false;
+
+    // ** Add for confirmation box
+    protected async Task Confirmed()
+    {
+        Message = "Do you want to Save?";
+        IsVisible = true;
+        IsInformationOnly = false;
+        StateHasChanged();
+
+        await Task.FromResult(true);
+    }
+
+    protected async Task Save(bool IsSave)
+    {
+        if (IsSave)
+        {
+            var result = await _httpServiceRole.UpdateStatus(UpdateStatus);
+
+            switch (result)
+            {
+                case 200:
+                    Message = "Resent ELSC Confirmation Successfully.";
+                    IsInformationOnly = true;
+                    IsVisible = true;
+
+                    string eDocType = SelectedReportType;
+                    string optDate = SelectedOptDate.ToString("yyyy-MM-dd");
+                    await SearchClick();
+                    break;
+                case 404:
+
+                    Message = "Unsuccessfully saved.";
+                    IsInformationOnly = true;
+                    IsVisible = true;
+                    break;
+                case 401:
+
+                    Message = "Bad internet request.";
+                    IsInformationOnly = true;
+                    IsVisible = true;
+                    break;
+                default:
+
+                    Message = "Error retrieving data from the database.";
+                    IsInformationOnly = true;
+                    IsVisible = true;
+                    break;
+            }
+        }
+        else
+        {
+            IsVisible = false;
+        }
+        StateHasChanged();
+
+    }
+
+    protected void BackClick() => NavigationManager.NavigateTo($"/Confirmation");
+
+    protected void ConfirmClick(bool blnConfirm)
+    {
+        if (blnConfirm)
+        {
+        }
+    }
+
+}

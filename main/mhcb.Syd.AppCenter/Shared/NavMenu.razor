@@ -1,0 +1,176 @@
+﻿@using mhcb.Syd.AppCenter.Services;
+
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+
+<style>
+    .disabled-link {
+		pointer-events: none;
+		opacity: 0.5;
+		cursor: not-allowed;
+    }
+</style>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+	<ul class="nav flex-column">
+		<li class="nav-item px-3">
+			<NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+				<span class="oi oi-home" aria-hidden="true"></span> Home
+			</NavLink>
+		</li>
+
+		<AuthorizeView>
+			<Authorized>				
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="GUIDE">
+						<span class="oi oi-circle-check" aria-hidden="true"></span>GUIDE Status
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link disabled-link" href="Dashboard">
+						<span class="oi oi-circle-check" aria-hidden="true"></span>GUIDE Dashboard
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="ListRatesUpload">
+						<span class="oi oi-data-transfer-upload" aria-hidden="true"></span>Rate Upload
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="Confirmation">
+						<span class="oi oi-tags" aria-hidden="true"></span>Confirmation
+					</NavLink>
+				</li>
+
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="PaymentControl">
+						<span class="oi oi-target" aria-hidden="true"></span>Payment Control
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="EDistribution">
+						<span class="oi oi-star" aria-hidden="true"></span>EDistribution
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="MxInbound">
+						<span class="oi oi-dashboard" aria-hidden="true"></span>MxInbound Event
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="ELCS">
+						<span class="oi oi-info" aria-hidden="true"></span>ELCS
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="GUIDEReport">
+						<span class="oi oi-compass" aria-hidden="true"></span>GUIDE Report
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="ELCSReport">
+						<span class="oi oi-dashboard" aria-hidden="true"></span>ELCS Report
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="AuditReport">
+						<span class="oi oi-data-transfer-download" aria-hidden="true"></span>Audit Data Report
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="MarketRates">
+						<span class="oi oi-random" aria-hidden="true"></span>FX & MM Rate
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="GUIDEUser">
+						<span class="oi oi-person" aria-hidden="true"></span>GUIDE User
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="GetAuditLogByDates">
+						<span class="oi oi-monitor" aria-hidden="true"></span>AppCenter Log
+					</NavLink>
+				</li>
+			
+			</Authorized>
+			<NotAuthorized>
+			</NotAuthorized>
+		</AuthorizeView>
+
+		<li class="nav-item px-3">
+			<NavLink class="nav-link" href="http://guide.mhcb.com.au/GUIDESG/Login.aspx">
+				<span class="oi oi-bolt" aria-hidden="true"></span>GUIDE
+			</NavLink>
+		</li>
+
+		<AuthorizeView>
+			<NotAuthorized>
+				@*<li class="nav-item px-3">
+					<NavLink class="nav-link" href="/identity/account/login" Match="NavLinkMatch.All">
+					<span class="oi oi-lock-locked" aria-hidden="true"></span> Login
+					</NavLink>
+				</li>
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" href="/identity/account/Register" Match="NavLinkMatch.All">
+					<span class="oi oi-power-standby" aria-hidden="true"></span> Register
+					</NavLink>
+					<NavLink class="nav-link" href="/identity/account/ForgotPassword" Match="NavLinkMatch.All">
+					<span class="oi oi-compass" aria-hidden="true"></span>Forgot AppCenter PW
+					</NavLink>
+				</li>*@
+
+				<li class="nav-item px-3">
+					@*<NavLink class="nav-link" href="/identity/account/login" Match="NavLinkMatch.All">
+						<span class="oi oi-lock-locked" aria-hidden="true"></span> Login
+					</NavLink>*@
+					<NavLink class="nav-link" href="/Login" >
+						<span class="oi oi-lock-locked" aria-hidden="true"></span> Login
+					</NavLink>
+				</li>
+                <li class="nav-item px-3">	
+					@*<NavLink class="nav-link" href="/identity/account/Register" Match="NavLinkMatch.All">
+						<span class="oi oi-power-standby" aria-hidden="true"></span> Register old
+					</NavLink>*@
+					<NavLink class="nav-link" href="/Register">
+						<span class="oi oi-power-standby" aria-hidden="true"></span> Register
+					</NavLink>
+					<NavLink class="nav-link" href="/ForgotPassword" Match="NavLinkMatch.All">
+						<span class="oi oi-compass" aria-hidden="true"></span>Forgot AppCenter PW
+					</NavLink>
+					@*<NavLink class="nav-link" href="ForgotPassword" >
+						<span class="oi oi-compass" aria-hidden="true"></span>Forgot AppCenter PW
+                    </NavLink>*@
+                </li>
+			</NotAuthorized>
+			<Authorized>
+				@*<li class="nav-item px-3">
+					<NavLink class="nav-link" href="/identity/account/logout" Match="NavLinkMatch.All">
+					<span class="oi oi-power-standby" aria-hidden="true"></span> Logout (@context.User.Identity.Name.ToUpper())
+					</NavLink>
+				</li>*@
+				<li class="nav-item px-3">
+					<NavLink class="nav-link" to="/" @onclick="(()=>Logout())">
+						<span class="oi oi-power-standby" aria-hidden="true">Logout(@context.User.Identity.Name.ToUpper())</span>
+					</NavLink>
+				</li>
+			</Authorized>
+		</AuthorizeView>
+	</ul>
+</div>
+
+@code {
+	private bool collapseNavMenu = true;
+	private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+	private void ToggleNavMenu()
+	{
+		collapseNavMenu = !collapseNavMenu;
+	}
+
+	public async Task Logout()
+	{
+		await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
+		NavigationManager.NavigateTo("/");
+	}
+}

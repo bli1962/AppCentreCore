@@ -1,0 +1,84 @@
+﻿@page "/ELCSReport"
+
+<div class="container-sm container-fluid">
+	<div class="card bg-primary text-white">
+		<div class="card-header">
+			<h3>ELCS Data Reports</h3>
+		</div>
+	</div>
+
+	<div class="card-body">
+		@* To stop menu items before RoleClaims complete*@
+		@if (!isVisable)
+		{
+			@* <div class="spinner"></div>*@
+		}
+		else
+		{
+			<div class="list-group">
+				<ul class="nav flex-column nav-tabs">
+					<li><h4><span class="badge badge-light">Loan Transaction Reports</span></h4></li>
+					<li class="list-group-item list-group-item-action list-group-item-primary">
+						<a class="nav-link oi oi-plus nav-mhcb-list" href="GetLoanTransactionByDates">
+							Loan Transaction Report By Dates
+						</a>
+					</li>
+					<li class="list-group-item list-group-item-action list-group-item-secondary">
+						<a class="nav-link oi oi-plus nav-mhcb-list" href="GetLoanTransactionByCcyDates">
+							Loan Transaction Report By CCY and Dates
+						</a>
+					</li>
+
+					<li><h4><span class="badge badge-light">Covenant Transaction Report</span></h4></li>
+					<li class="list-group-item list-group-item-action list-group-item-primary">
+						<a class="nav-link oi oi-plus nav-mhcb-list" href="GetCovenantRatio">
+							Covenant Ratio Report
+						</a>
+					</li>
+
+
+					<li><h4><span class="badge badge-light">RFR Interest Report</span></h4></li>
+					<li class="list-group-item list-group-item-action list-group-item-primary">
+						<a class="nav-link oi oi-plus nav-mhcb-list" href="GetLoanRfrInterest">
+							RFR Loan Transaction Report
+						</a>
+					</li>
+					<li class="list-group-item list-group-item-action list-group-item-secondary">
+						<a class="nav-link oi oi-plus nav-mhcb-list" href="GetSwapRfrInterest">
+							RFR Swap Loan Transaction Report
+						</a>
+					</li>
+
+				</ul>
+			</div>
+
+		}
+
+		
+	</div>
+
+	@* <div class="card-footer">
+		<div class="text-sm-center footer" style="margin-bottom:0">
+			<p>&copy; @DateTime.Now.Year - MIZUHO Bank Sydney</p>
+		</div>
+	</div> *@
+	<RoleClaims Value="isAuthorised" CallBackMethod="ChangeStatus"></RoleClaims>
+</div>
+
+@code {
+	bool isVisable;
+	bool isAuthorised { get; set; }
+
+	private void ChangeStatus(bool isAuthorised)
+	{
+		isVisable = isAuthorised;
+	}
+
+}
+
+
+@*<div id="navbar2" class="container tab-pane active" style="padding: 0px 0px 0px 0px;">
+	<div class="col-sm-12" id="myScrollspy">
+	</div>
+</div>*@
+

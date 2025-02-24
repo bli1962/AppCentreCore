@@ -1,0 +1,241 @@
+﻿@page "/UpdateBisRate/{dataDate}/{ccy}/{duration:int}/{unit}"
+@attribute [Authorize(Roles = "FX_RATE_Authorise")]
+
+<div class="container-fluid">
+    <div class="card">
+
+        @*Section 1 - Title *@
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h4>Update BIS Rate</h4>
+            </div>
+        </div>
+
+        @*Section 2 - Body*@
+        <div class="card-body">
+            @* <MessageBar IsVisible="IsVisible" IsSuccess="IsSuccess"></MessageBar> *@
+
+            @*Section - results *@
+            <div class="row">
+                <div class="col-sm-8">
+                    <BisRateEditedForm ViewModel="viewModel" CallBackOnSave="UpdateData" CallBackOnError="HandleInvalidSubmit" IsEdit="true"></BisRateEditedForm>
+                </div>
+            </div>
+        </div>
+
+        @*Section 3 - footer section*@
+        <div class="card-footer">
+            <div class="row">
+                <button class="btn btn-primary" onclick="location.href='./BisRatelist'">Go Back</button>
+            </div>
+        </div>
+    </div>
+
+    <ConfirmationBox Title="@Title"
+                     Message="@Message"
+                     YesButtonText="@YesButtonText"
+                     NoButtonText="@NoButtonText"
+                     InfoButtonText="@InfoButtonText"
+                     BtnClass="@BtnClass"
+                     ConfirmationChanged="Save"
+                     InformationChanged="OkClick"
+                     IsVisible="IsVisible"
+                     IsInformationOnly="IsInformationOnly">
+    </ConfirmationBox>
+</div>
+
+
+@using mhcb.Syd.AppCenter.Services.RoleBase.API;
+@using mhcb.Syd.AppCenter.Services.Generic;
+@using mhcb.Syd.AppCenter.Services.RoleBase.Interface;
+@using mhcb.Syd.Models;
+@using mhcb.Syd.DataAccess.Models.GUIDE;
+
+@inject NavigationManager _navigationManager;
+@inject IJSRuntime jsRuntime;
+@inject IConfiguration _configuration;
+@inject IBisRateHttpService _httpServiceRole;
+@inject IHttpService<BisRateViewModel> _httpService;
+
+
+@code {
+    [Parameter]
+    public string dataDate { get; set; }
+    [Parameter]
+    public string ccy { get; set; }
+    [Parameter]
+    public int duration { get; set; }
+    [Parameter]
+    public string unit { get; set; }
+
+    private BisRateViewModel viewModel = new BisRateViewModel();
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private string ImportedBy;
+    public bool IsSuccess { get; set; }
+
+    // ** Variables for confirmation box
+    public string Title { get; set; }
+    public string Message { get; set; }
+    public string YesButtonText { get; set; }
+    public string NoButtonText { get; set; }
+    public string InfoButtonText { get; set; }
+    public bool IsVisible { get; set; }
+    public bool IsInformationOnly { get; set; }
+    public string BtnClass { get; set; }
+    // ** End
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsVisible = false;
+        Title = "Update Bis Rate";
+        Message = "";
+        YesButtonText = "Yes";
+        NoButtonText = "No";
+        InfoButtonText = "OK";
+        BtnClass = "btn btn-primary float-left";
+
+        //return base.OnInitializedAsync();
+        var authenticationState = await authenticationStateTask;
+        ImportedBy = authenticationState.User.Identity.Name.ToUpper();
+
+        //viewModel = (await _rateService.GetBisRatesByDateCcyDuration(dataDate, ccy, duration, unit));
+        viewModel = await _httpService.GetAsync($"api/BisRate/GetBisRatesByDateCcyDuration/{dataDate}/{ccy}/{duration}/{unit}", null);
+
+
+        // need to replace with new details
+        viewModel.RecStatus = "N";
+        viewModel.ImportedBy = ImportedBy;
+        viewModel.ImportedTime = DateTime.Now;
+    }
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        IsVisible = false;
+        IsSuccess = false;
+        await base.OnParametersSetAsync();
+    }
+   
+    protected void UpdateData(BisRateViewModel ViewModelData)
+    {
+        Message = "Do you need to uppdate BIS rate?";
+        IsInformationOnly = false;  // set not information box
+        IsVisible = true;
+
+        // var result = await jsRuntime.InvokeAsync<bool>("confirm", "Do you need to update the record?");
+        // if (result.ToString() == "True")
+        // {
+        //     // Remove insignificant trailing zeros from a number
+        //     ViewModelData.BaseRate = decimal.Parse((ViewModelData.BaseRate).ToString());
+
+        //     var RateDecimalPlace = Int32.Parse(_configuration["BisRateDecimalPlace"]);
+        //     if ((ViewModelData.BaseRate).ToString().Length > RateDecimalPlace)
+        //     {
+        //         var result2 = await jsRuntime.InvokeAsync<bool>("confirm", "The rate will be truncated from right, due to over size?");
+        //         if (result2.ToString() == "False")
+        //         {
+        //             return;
+        //         }
+        //     }  
+
+        //     ViewModelData.BaseRate = Math.Round(decimal.Parse((ViewModelData.BaseRate).ToString()), RateDecimalPlace - 2);
+        //     ViewModelData.RecStatus = "N";
+        //     ViewModelData.ImportedBy = ImportedBy;
+        //     ViewModelData.ImportedTime = DateTime.Now;
+
+        //     var intReturn = await _httpServiceRole.UpdateBisRate(ViewModelData);
+        //     //var intReturn = await _httpService.UpdateAsync($"api/BisRate", null, ViewModelData);
+
+        //     if (intReturn == 200)
+        //     {
+        //         Message = "Bis rate has updated successfully.";
+        //         IsSuccess = true;
+        //     }
+        //     else if (intReturn == 404)
+        //     {
+        //         Message = "The Bis rate is not existed.";
+        //         IsSuccess = false;
+        //     }
+        //     else
+        //     {
+        //         Message = "Failed to upate Bis rate.";
+        //         IsSuccess = false;
+        //     }
+        //     IsInformationOnly = true;  // make to show information box
+        //     IsVisible = true;
+        //     StateHasChanged();
+
+        //     //_navigationManager.NavigateTo("./ListBisRate/" + ViewModelData.DataDate.ToString("yyyy-MM-dd"));
+        // }
+    }
+
+    protected async Task HandleInvalidSubmit()
+    {
+        //Console.WriteLine("Handle valid submit");
+        await jsRuntime.InvokeVoidAsync("alert", "Invalid submission!");
+    }
+
+    protected async Task<int> SavingData(BisRateViewModel ViewModelData)
+    {
+        // Remove insignificant trailing zeros from a number
+        ViewModelData.BaseRate = decimal.Parse((ViewModelData.BaseRate).ToString());
+
+        var RateDecimalPlace = Int32.Parse(_configuration["BisRateDecimalPlace"]);
+        if ((ViewModelData.BaseRate).ToString().Length > RateDecimalPlace)
+        {
+            var result2 = await jsRuntime.InvokeAsync<bool>("confirm", "The rate will be truncated from right, due to over size?");
+            if (result2.ToString() == "False")
+            {
+                return 0;
+            }
+        }
+
+        ViewModelData.BaseRate = Math.Round(decimal.Parse((ViewModelData.BaseRate).ToString()), RateDecimalPlace - 2);
+        ViewModelData.RecStatus = "N";
+        ViewModelData.ImportedBy = ImportedBy;
+        ViewModelData.ImportedTime = DateTime.Now;
+
+        var intReturn = await _httpServiceRole.UpdateBisRate(ViewModelData);
+        //var intReturn = await _httpService.UpdateAsync($"api/BisRate", null, ViewModelData);
+
+        return intReturn;
+    }
+    //**************************************************
+    // Code to handle confirmation box OK or Save button
+    //**************************************************
+    protected async Task Save(bool IsSave)
+    {
+        IsVisible = false;
+        if (IsSave == false) return;
+
+        var intReturn = await SavingData(viewModel);
+
+        if (intReturn == 200)
+        {
+            Message = "Bis rate has updated successfully.";
+            IsSuccess = true;
+        }
+        else if (intReturn == 404)
+        {
+            Message = "The Bis rate is not existed.";
+            IsSuccess = false;
+        }
+        else
+        {
+            Message = "Failed to upate Bis rate.";
+            IsSuccess = false;
+        }
+        IsInformationOnly = true;  // make to show information box
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    protected void OkClick()
+    {
+        IsVisible = false;
+        _navigationManager.NavigateTo("./ListBisRate/" + viewModel.DataDate.ToString("yyyy-MM-dd"));
+    }
+}

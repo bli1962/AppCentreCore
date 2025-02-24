@@ -1,0 +1,18 @@
+﻿<AuthorizeView>
+@*  <Authorized>	
+        Welcome @context.User.Identity.Name! You are authorized now. 
+    </Authorized>*@
+    <NotAuthorized>
+        You are not authorized yet.  Please <a href="/identity/account/login">Log in</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+
+    //bool HasBIFAuthRoles;
+    //if (context.User.IsInRole("BIF - Authorise"))
+    //{
+    //    HasBIFAuthRoles = true;
+    //}
+}

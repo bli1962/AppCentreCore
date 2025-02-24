@@ -1,0 +1,346 @@
+﻿@page "/UpdateBankInf"
+
+@attribute [Authorize(Roles = "BIF - Authorise")]
+<div class="container-fluid">
+    <div class="card">
+        @*Section 1 - Title *@
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h4>Send Bank Information (BIF) To Finalized Status</h4>
+            </div>
+        </div>
+
+        @*Section 2 - Edit form*@
+        <div class="card-body">
+            <div class="row ">
+                <div class="col-sm-4">
+                    <EditForm Model="@UpdateStatus" OnValidSubmit="Confirmed">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <table class="table table-sm table-bordered table-primary Col-Head-Left">
+                            <tbody>
+                                <tr>
+                                    <td><label for="Id" class="col-form-label">SWIFT ID</label></td>
+                                    <td>
+                                        <InputText id="SwiftId" @bind-Value="UpdateStatus.SwiftId" class="form-control" placeholder="Swift Id" />
+                                        <ValidationMessage For="@(() => UpdateStatus.SwiftId)" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="Id" class="col-form-label">Authorized By</label></td>
+                                    <td><InputText id="Authoriser" @bind-Value="UpdateStatus.AuthorizeBy" class="form-control" disabled /></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="Id" class="col-form-label">Status</label></td>
+                                    <td><InputText id="Status" @bind-Value="UpdateStatus.Status" class="form-control" disabled /></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="Id" class="col-form-label">Deletion Status</label></td>
+                                    <td>
+                                        <InputSelect @bind-Value="UpdateStatus.DeletionStatus" class="form-control form-select-sm" @onclick="SetGipStatus">
+                                            <option value="">N/A - Upload</option>
+                                            <option value="D">D - Deletion</option>
+                                        </InputSelect>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="Id" class="col-form-label">GIP Status</label></td>
+                                    <td>
+                                        <InputSelect @bind-Value="UpdateStatus.GipStatus" class="form-control form-select-sm" disabled>
+                                            <option value="4">4 - Upload</option>
+                                            <option value="8">8 - Deletion</option>
+                                        </InputSelect>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><label for="Id" class="col-form-label">GIP Description</label></td>
+                                    <td><InputText id="GipDescription" @bind-Value="UpdateStatus.GipDescription" class="form-control" disabled /></td>
+                                </tr>
+                                <tr>
+                                    <td><label for="Id" class="col-form-label">Tran No.</label></td>
+                                    <td>
+                                        <InputText id="TransNo" @bind-Value="UpdateStatus.TranNo" class="form-control" placeholder="Transaction No" maxlength="5" />
+                                        <ValidationMessage For="@(() => UpdateStatus.TranNo)" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="well">
+                            <button class="btn btn-outline-primary m-1 float-left " type="submit">Set to finalized status</button>
+                        </div>
+                    </EditForm>
+                    <div class="well">
+                        <button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*Section 2 - Search*@
+        <div class="card-body">
+            @*Section 2 - Parameters*@
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="well">
+                        <button class="btn btn-outline-primary m-1 float-left " @onclick="(()=>SearchClick())">Get Pending Bank Information (BIF)</button>
+                    </div>
+                </div>
+            </div>
+            @if (modelView == null && UpdateStatus.Status != "")
+            {
+                <div class="spinner"></div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:200px;">
+                            @*Section 4 - list via TableTemplate*@
+                            <TableTemplate Items="modelView.ToList()">
+                                <TableHeader>
+                                    <th>SWIFT ID</th>
+                                    <th>BRANCH NO</th>
+                                    <th>ACRONYM</th>
+                                    <th>NAME & ADDRESS 1</th>
+                                    <th>NAME & ADDRESS 2</th>
+                                    <th>NAME & ADDRESS 3</th>
+                                    <th>CCY</th>
+                                    <th>SETTLE BANK ID</th>
+                                    <th>Status</th>
+                                    <th>Deletion Status</th>
+                                    <th>GIP Status</th>
+                                    <th>GIP Description</th>
+                                    <th>AUTHORIZE BY</th>
+                                    <th>TRANNO</th>
+                                </TableHeader>
+                                <RowTemplate Context="item">
+                                    <td>@item.SWIFT_ID</td>
+                                    <td>@item.BRANCH_NO</td>
+                                    <td>@item.ACRONYM</td>
+                                    <td>@item.NAME_ADDR_1</td>
+                                    <td>@item.NAME_ADDR_2</td>
+                                    <td>@item.NAME_ADDR_3</td>
+                                    <td>@item.CCY</td>
+                                    <td>@item.MM_SETTL_BANK_ID</td>
+                                    <td>@item.STATUS</td>
+                                    <td>@item.DELETION_STATUS</td>
+                                    <td>@item.GIP_STATUS</td>
+                                    <td>@item.GIP_DESCRIPTION</td>
+                                    <td>@item.AUTHORIZE_BY</td>
+                                    <td>@item.TRAN_NO</td>
+                                </RowTemplate>
+                                <TableFooter>
+                                    <th>SWIFT ID</th>
+                                    <th>BRANCH NO</th>
+                                    <th>ACRONYM</th>
+                                    <th>NAME & ADDRESS 1</th>
+                                    <th>NAME & ADDRESS 2</th>
+                                    <th>NAME & ADDRESS 3</th>
+                                    <th>CCY</th>
+                                    <th>SETTLE BANK ID</th>
+                                    <th>Status</th>
+                                    <th>Deletion Status</th>
+                                    <th>GIP Status</th>
+                                    <th>GIP Description</th>
+                                    <th>AUTHORIZE BY</th>
+                                    <th>TRANNO</th>
+                                </TableFooter>
+                            </TableTemplate>
+                        </div>
+                    </div>
+                </div>             
+            }
+        </div>
+
+        @*Section 3 - list display*@
+        <div class="card-footer">
+            @*Section 5 - Notes *@
+            <div class="row ">
+                <div class="col-sm-6">
+                    <div class="panel" style="color: red; border-color: #ffffff; ">
+                        <div class="panel-body">
+                            <ul>
+                                <li>The only <b>pending</b> status can be sent to finalized status.</li>
+                                <li>You must be the last <b>authorizer</b> of the transaction.</li>
+                                <li>No GIP will be generated to the operation, so no GBASE data will be updated.</li>
+                                <li>The execution can be tracked in our audit log table.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <ConfirmationBox Title="@Title"
+                     Message="@Message"
+                     YesButtonText="@YesButtonText"
+                     NoButtonText="@NoButtonText"
+                     InfoButtonText="@InfoButtonText"
+                     BtnClass="@BtnClass"
+                     ConfirmationChanged="Save"  
+                     InformationChanged="OkClick"
+                     IsVisible="IsVisible"
+                     IsInformationOnly="IsInformationOnly">
+    </ConfirmationBox>
+</div>
+
+
+
+@inject IBankInfHttpService _httpServiceRole;
+@inject IHttpService<BankInfView> _httpService;
+@inject IJSRuntime IJSRuntime;
+@inject IHttpContextAccessor _httpContext;
+@inject NavigationManager NavigationManager;
+@inject IWebHostEnvironment Env;
+@inject IJwtToken jwtToken;
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    public IEnumerable<BankInfView> modelView { get; set; } = new List<BankInfView>();
+    public InputBIF UpdateStatus;
+
+    // ** Variables for confirmation box
+    public string Title { get; set; }
+    public string Message { get; set; }
+    public string YesButtonText { get; set; }
+    public string NoButtonText { get; set; }
+    public string InfoButtonText { get; set; }
+    public bool IsVisible { get; set; }
+    public bool IsInformationOnly { get; set; }
+    public string BtnClass { get; set; }
+    // ** End
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("Index - OnInitializedAsync");
+
+        Title = "Bank Information";
+        Message = "Do you want to save?";
+        YesButtonText = "Yes";
+        NoButtonText = "No";
+        InfoButtonText = "OK";
+        BtnClass = "btn btn-primary float-left";
+
+        UpdateStatus = new InputBIF()
+            {
+                SwiftId = "",
+                AuthorizeBy = "",
+                Status = "F",
+                DeletionStatus = "",
+                GipDescription = "Approved",
+                GipStatus = "4",
+                TranNo = ""
+            };
+
+        var authenticationState = await authenticationStateTask;
+        var user = authenticationState?.User;
+        if (user is not null)
+        {
+            if (user.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                UpdateStatus.AuthorizeBy = authenticationState.User.Identity.Name.ToUpper();
+            }
+        }
+        //return base.OnInitializedAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Console.WriteLine("Index - OnParametersSetAsync");
+        await base.OnParametersSetAsync();
+    }
+
+    protected async Task SearchClick()
+    {
+        modelView = null;
+        modelView = (await _httpService.GetAllAsync($"api/BankInfs/GetPendingBIF", null)).ToList();
+
+        if (modelView.Count() == 0)
+        {
+            IsVisible = true;
+            IsInformationOnly = true;
+            Message = "No pending BIF records found.";
+            //ConfirmationComponent.Show();
+        }
+    }
+    protected void OkClick() => IsVisible = false;
+
+    // ** Add for confirmation box
+    protected async Task Confirmed()
+    {
+        Message = "Do you want to save?";
+        IsVisible = true;
+        IsInformationOnly = false;
+        StateHasChanged();
+
+        await Task.FromResult(true);
+    }
+
+    protected async Task Save(bool IsSave)
+    {
+        if (IsSave)
+        {
+            //var claims = new[] {
+            //		new Claim(ClaimTypes.Role, "BIF - Authorise"),
+            //	};
+            //var roleToken = jwtToken.GenerateJwtTokenByClaims(claims);
+            //var result = await _httpService.UpdateAsync($"api/BankInfs", roleToken, UpdateStatus);
+
+            var result = await _httpServiceRole.UpdateStatus(UpdateStatus);
+
+            switch (result)
+            {
+                case 200:
+
+                    Message = "Saved Successfully.";
+                    IsInformationOnly = true;
+                    IsVisible = true;
+
+                    await SearchClick();
+                    break;
+                case 404:
+
+                    Message = "Unsuccessfully saved.";
+                    IsInformationOnly = true;
+                    IsVisible = true;
+                    break;
+                case 401:
+
+                    Message = "Bad internet request.";
+                    IsInformationOnly = true;
+                    IsVisible = true;
+                    break;
+                default:
+
+                    Message = "Error retrieving data from the database.";
+                    IsInformationOnly = true;
+                    IsVisible = true;
+                    break;
+            }
+        }
+        else
+        {
+            IsVisible = false;
+        }
+        StateHasChanged();
+    }
+
+    protected void SetGipStatus()
+    {
+        if (UpdateStatus.DeletionStatus == "D")
+        {
+            UpdateStatus.GipStatus = "8";
+        }
+        else
+        {
+            UpdateStatus.GipStatus = "4";
+        }
+    }
+
+    protected void BackClick() => NavigationManager.NavigateTo($"/GUIDE");
+
+}

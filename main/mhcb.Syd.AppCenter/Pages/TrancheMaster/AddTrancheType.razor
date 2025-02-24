@@ -1,0 +1,238 @@
+﻿@page "/AddTrancheType"
+@using mhcb.Syd.DataAccess.Models.LOAN;
+@attribute [Authorize]
+
+<div class="container-fluid">
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>Add Tranche Type</h4>
+			</div>
+		</div>
+
+		<div class="card-body">
+			<div class="row ">
+				<div class="col-sm-4">
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody>							
+							<tr>
+								<td><label for="Id" class="col-form-label">Tranche Type</label></td>
+								<td><input type="text" class="form-control" @bind="SelectedTrancheType" /></td>
+							</tr>							
+							<tr>
+								<td><label for="Id" class="col-form-label">Type Description</label></td>
+								<td><input type="text" class="form-control" @bind="SelectedTrancheTypeDesc" /></td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Operated By</label></td>
+								<td><input type="text" class="form-control" @bind="SelectedAuthoriser" readonly /></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left" @onclick="Confirmed">Add Tranche Type</button>
+						<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+						<br />
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 2 - Search*@
+		<div class="card-body">
+
+			@*Section 2 - Parameters*@
+			<div class="row">
+				<div class="col-sm-4">
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left " @onclick="(()=>SearchClick())">Get Tranche Type</button>
+					</div>
+				</div>
+			</div>
+
+			@if (modelView == null)
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+
+				<div class="row">
+					<div class="col-sm-4">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="width:600px;height:600px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>Tranche Type</th>
+									<th>Tranched Type Description</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.TrancheType1</td>
+									<th>@item.TrancheTypeDesc</th>
+								</RowTemplate>
+								<TableFooter>
+									<th>Tranche Type</th>
+									<th>Tranched Type Description</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+
+		@*Section 3 - list display*@
+		<div class="card-footer">
+			@*Section 5 - Notes *@
+			<div class="row ">
+				<div class="col-sm-6">
+					<div class="panel" style="color: red; border-color: #ffffff; ">
+						<div class="panel-body">
+							@* <ul>
+								<li>Comment line 1</li>
+								<li>Comment line 2</li>
+							</ul> *@
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+@inject ITrancheCovenantTypeHttpService _httpServiceCrud ;
+@inject IHttpService<TrancheType> _httpService ;
+
+@inject IJSRuntime IJSRuntime ;
+@inject NavigationManager NavigationManager ;
+@inject IJwtToken jwtToken ;
+
+@code {
+	[CascadingParameter]
+	private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+	public IEnumerable<TrancheType> modelView { get; set; } = new List<TrancheType>();
+
+	public string SelectedTrancheType { get; set; } = "";
+	public string SelectedTrancheTypeDesc { get; set; } = "";
+	public string SelectedAuthoriser { get; set; } = "";
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+
+	protected override async Task OnInitializedAsync()
+	{
+		Title = "Tranche Types";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+
+		var authenticationState = await authenticationStateTask;
+
+		if (authenticationState.User.Identity.IsAuthenticated)
+		{
+			SelectedAuthoriser = authenticationState.User.Identity.Name.ToUpper();
+		}
+	}
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		modelView = (await _httpService.GetAllAsync($"api/TrancheCovenantType/GetTrancheType", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No Tranche Type found.";
+		}
+	}
+
+	// ** Add for confirmation box
+	protected async Task Confirmed()
+	{
+		Message = "Do you want to save?";
+		IsVisible = true;
+		IsInformationOnly = false;
+
+		StateHasChanged();
+		await Task.FromResult(true);
+	}
+
+	protected async Task Save(bool IsSave)
+	{
+		InputTrancheType status = new()
+			{
+				TrancheType = SelectedTrancheType,
+				TrancheTypeDesc = SelectedTrancheTypeDesc,
+				AuthorizeBy = SelectedAuthoriser,
+			};
+
+		if (IsSave)
+		{
+			var result = await _httpServiceCrud.AddTrancheType(status);
+
+			switch (result)
+			{
+				case 200:
+					Message = "Saved Successfully.";
+					IsInformationOnly = true;
+					IsVisible = true;
+
+					await SearchClick();
+					break;
+				case 404:
+					Message = "Unsuccessfully saved.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				case 401:
+					Message = "Bad internet request.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				default:
+					Message = "Error retrieving data from the database.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+			}
+		}
+		else
+		{
+			IsVisible = false;
+		}
+		StateHasChanged();
+	}
+
+	protected void OkClick() => IsVisible = false;
+
+	protected void BackClick() => NavigationManager.NavigateTo($"/ELCS");
+
+
+}

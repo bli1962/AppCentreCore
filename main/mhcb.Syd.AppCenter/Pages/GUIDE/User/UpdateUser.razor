@@ -1,0 +1,185 @@
+﻿@page "/UpdateUser"
+@attribute [Authorize]
+
+<div class="container-fluid">
+
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				@*Section 1 - Title *@
+				<div class="row ">
+					<h4>Reset GUIDE User Login Status</h4>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Parameters*@
+		<div class="card-body">
+			@*Section 4 - Update Form*@
+			<div class="row ">
+				<div class="col-sm-4">
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody>
+							<tr>
+								<td><label for="Id" class="col-form-label">GUIDE User Id</label></td>
+								<td>
+									<input type="text" class="form-control" @bind="SelectedUserId" Readonly />
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Current Password</label></td>
+								<td>
+									<input type="password" class="form-control" @bind="SelectedPassword" placeholder="Password" Readonly />
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="row">
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="(()=>Confirmed())">Reset</button>
+					<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+					<br />
+				</div>
+			</div>
+		</div>
+
+		@*Section 3 - list display*@
+		<div class="card-footer">
+			@*Section 5 - Notes *@
+			<div class="row ">
+				<div class="col-sm-12">
+					<div class="panel" style="color: red; border-color: #ffffff; ">
+						<div class="panel-body">
+							<ul>
+								<li>If you can't change GUIDE password, please click 'Reset' button here.</li>
+								<li>Then you are able to change password again in GUIDE.</li>
+								<li>Note: the Reset function won't change your password.</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+
+@inject IUserHttpService _httpServiceCrud ;
+@inject IJSRuntime IJSRuntime;
+@inject NavigationManager NavigationManager ;
+@inject IJwtToken jwtToken ;
+
+@code {
+	[CascadingParameter]
+	private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+	//public IEnumerable<UserView> modelView { get; set; } = new List<UserView>();
+	public string SelectedUserId { get; set; } = "";
+	public string SelectedPassword { get; set; } = "";
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+
+	protected override async Task OnInitializedAsync()
+	{
+		Title = "GUIDE User Password";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+
+		var authenticationState = await authenticationStateTask;
+		if (authenticationState.User.Identity.IsAuthenticated)
+		{
+			SelectedUserId = authenticationState.User.Identity.Name.ToUpper();
+		}
+	}
+
+	// ** Add for confirmation box
+	protected async Task Confirmed()
+	{
+		Message = "Do you want to save?";
+		IsVisible = true;
+		IsInformationOnly = false;
+		StateHasChanged();
+
+		await Task.FromResult(true);
+	}
+
+	protected async Task Save(bool IsSave)
+	{
+		InputGuideUser status = new()
+			{
+				UserId = SelectedUserId,
+				Password = SelectedPassword,
+			};
+
+		if (IsSave)
+		{
+			var result = await _httpServiceCrud.UpdateStatus(status);
+
+			switch (result)
+			{
+				case 200:
+
+					Message = "Saved Successfully.";
+					IsInformationOnly = true;
+					IsVisible = true;
+
+					break;
+				case 404:
+
+					Message = "Unsuccessfully saved.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				case 401:
+
+					Message = "Bad internet request.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				default:
+
+					Message = "Error retrieving data from the database.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+			}
+		}
+		else
+		{
+			IsVisible = false;
+		}
+		StateHasChanged();
+
+	}
+	protected void OkClick() => IsVisible = false;
+	protected void BackClick() => NavigationManager.NavigateTo($"/GUIDEUser");
+
+}

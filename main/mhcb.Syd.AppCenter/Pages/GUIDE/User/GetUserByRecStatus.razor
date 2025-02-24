@@ -1,0 +1,180 @@
+﻿@page "/GetUserByRecStatus"
+@attribute [Authorize]
+
+
+<div class="container-fluid">
+
+	<div class="card">
+
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				@*Section 1 - Title *@
+				<div class="row ">
+					<h4>Search GUIDE Users by Status</h4>
+				</div>
+			</div>
+		</div>
+
+		<div class="card-body">
+			@*Section 2 - Parameters*@
+			<div class="row">
+				<div class="col-sm-4">
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody thead class="thead-light">
+							<tr>
+								<td><label for="Id" class="col-form-label">User Status</label></td>
+								<td>
+									<select class="form-control-sm" @bind="SelectStatus">
+										<option value="E">Active</option>
+										<option value="N">New</option>
+										<option value="C">Closed</option>
+									</select>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="row">
+				<div class="well">
+					<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="(()=>SearchClick())">Search</button>
+					<button class="btn btn-outline-info m-1 float-left btn-width-80"  @onclick="(()=>CopyClick())">Copy</button>
+					<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+				</div>
+			</div>
+		</div>
+
+		<div class="card-footer">
+			@if (modelView == null && SelectStatus != "")
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+				<div class="row">
+					<div class="col-sm-12">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:700px;">
+							@*Section 3 - list display*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>USER ID</th>
+									<th>FIRST NAME</th>
+									<th>LAST NAME</th>
+									<th>PWD CHANGE IND</th>
+									<th>RACF STATUS CODE</th>
+									<th>BU STATUS CODE</th>
+									<th>ACU STATUS CODE</th>
+									<th>NO OF LOGIN ATTEMPTS</th>
+									<th>ENABLED IND</th>
+									<th>REC STATUS</th>
+									<th>GBASE STATUS CODE</th>
+									<th>GBASE PWD BU STATUS CODE</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.USER_ID</td>
+									<td>@item.FIRST_NAME</td>
+									<td>@item.LAST_NAME</td>
+									<td>@item.PWD_CHANGE_IND</td>
+									<td>@item.RACF_STATUS_CODE</td>
+									<td>@item.BU_STATUS_CODE</td>
+									<td>@item.ACU_STATUS_CODE</td>
+									<td>@item.NO_OF_LOGIN_ATTEMPTS</td>
+									<td>@item.ENABLED_IND</td>
+									<td>@item.REC_STATUS</td>
+									<td>@item.GBASE_STATUS_CODE</td>
+									<td>@item.GBASE_PWD_BU_STATUS_CODE</td>
+								</RowTemplate>
+								<TableFooter>
+									<th>USER ID</th>
+									<th>FIRST NAME</th>
+									<th>LAST NAME</th>
+									<th>PWD CHANGE IND</th>
+									<th>RACF STATUS CODE</th>
+									<th>BU STATUS CODE</th>
+									<th>ACU STATUS CODE</th>
+									<th>NO OF LOGIN ATTEMPTS</th>
+									<th>ENABLED IND</th>
+									<th>REC STATUS</th>
+									<th>GBASE STATUS CODE</th>
+									<th>GBASE PWD BU STATUS CODE</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>
+			
+			}
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+@inject IHttpService<UserView> _httpService ;
+@inject IEmailSender _emailSender ;
+@inject IAccountHttpService _accountHttpService ;
+@inject IJSRuntime IJSRuntime ;
+@inject NavigationManager navigationManager ;
+
+@code {
+	
+	public IEnumerable<UserView> modelView { get; set; } = new List<UserView>();
+	public string SelectStatus { get; set; } = "E";
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+
+	protected override void OnInitialized()
+	{
+		Title = "GUIDE User";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+	}
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		string status = SelectStatus;
+		//modelView = (await _httpService2.GetUserByStatus(status)).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/Users/GetUserByStatus/{status}", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No records found.";
+		}
+	}
+	protected void Save(bool IsSave) { IsVisible = IsSave; }
+	protected void OkClick() => IsVisible = false;
+	protected async Task CopyClick()
+	{
+		await IJSRuntime.InvokeAsync<object>("selectElementContents", "SelectedReport");
+		await IJSRuntime.InvokeVoidAsync("alert", "Now you can paste the context to excel file.");
+	}
+
+	protected void BackClick() => navigationManager.NavigateTo($"/GUIDEUser");
+
+}

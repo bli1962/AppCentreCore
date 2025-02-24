@@ -1,0 +1,289 @@
+﻿@page "/UpdaeMxEucBalanceEvent"
+@attribute [Authorize(Roles = "Money Market Modify")]
+
+<div class="container-fluid">
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>Set Closing Date for CASA Closing Account</h4>
+			</div>
+		</div>
+
+
+		<div class="card-body">
+			@*Section 4 - Update Form*@
+			<div class="row ">
+				<div class="col-sm-4">
+
+					<EditForm Model="@UpdateStatus" OnValidSubmit="Confirmed">
+						<DataAnnotationsValidator />
+						<ValidationSummary />
+
+						<table class="table table-sm table-bordered table-primary Col-Head-Left">
+							<tbody>
+								<tr>
+									<td><label for="Id" class="col-form-label">GUIDE Reference No.</label></td>
+									<td>
+										<InputText class="form-control" placeholder="GUIDE Reference No" @bind-Value="UpdateStatus.GBaseReferenceNo" />
+										<ValidationMessage For="@(() => UpdateStatus.GBaseReferenceNo)" />
+									</td>
+								</tr>
+								<tr>
+									<td><label for="Id" class="col-form-label">Operated By</label></td>
+									<td><input type="text" class="form-control" @bind="UpdateStatus.AuthorizeBy" readonly /></td>
+								</tr>
+							</tbody>
+						</table>
+
+						<div class="well">
+							<button class="btn btn-outline-primary m-1 float-left " type="submit">Set Closing Date</button>
+						</div>
+					</EditForm>
+
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - display*@
+		<div class="card-body">
+			<div class="row">
+				<div class="col-sm-4">
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody thead class="thead-light">
+							<tr>
+								<td><label for="Id" class="col-form-label">Update Date</label></td>
+								<td><input type="date" class="form-control" @bind="SelectedUpdateDate" /></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left " @onclick="(()=>SearchClick())">Get CASA Closing Account</button>
+					</div>
+				</div>
+			</div>
+
+			@if (modelView == null)
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+				<div class="row">
+					<div class="col-sm-12">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:600px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>Id</th>
+									<th>Event Id</th>
+									<th>Reference No</th>
+									<th>Batch No</th>
+									<th>Category</th>
+									<th>Event Type</th>
+									<th>Closing Date</th>
+									<th>Trade Date</th>
+									<th>Effective Date</th>
+									<th>Time Sent</th>
+
+									<th>Status</th>
+									<th>Update Time</th>
+
+									<th>Customer Abbr</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.Id</td>
+									<td>@item.EventId</td>
+									<td>@item.GbaseReferenceNo</td>
+									<td>@item.BatchNo</td>
+									<td>@item.Category</td>
+									<td>@item.EventType</td>
+									<td>@item.ClosingDate</td>
+									<td>@item.TradeDate</td>
+									<td>@item.EffectiveDate</td>
+									<td>@item.TimeSent</td>
+
+									<td>@item.Status</td>
+									<td>@item.StatusUpdateTime.ToString("dd/MM/yyyy")</td>
+									<td>@item.CustomerAbbreviation</td>
+								</RowTemplate>
+								<TableFooter>
+									<th>Id</th>
+									<th>Event Id</th>
+									<th>Reference No</th>
+									<th>Batch No</th>
+									<th>Category</th>
+									<th>Event Type</th>
+									<th>Closing Date</th>
+									<th>Trade Date</th>
+									<th>Effective Date</th>
+									<th>Time Sent</th>
+
+									<th>Status</th>
+									<th>Update Time</th>
+
+									<th>Customer Abbr</th>
+								</TableFooter>
+							</TableTemplate>
+
+						</div>
+					</div>
+				</div>				
+			}
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+
+@inject IEUCBalanceEventHttpService _httpServiceRole ;
+@inject IHttpService<MxEucBalanceEventView> _httpService ;
+@inject IJSRuntime IJSRuntime ;
+@inject NavigationManager NavigationManager ;
+@inject IHttpContextAccessor _httpContext ;
+@inject IJwtToken jwtToken ;
+
+@code {
+	[CascadingParameter]
+	private Task<AuthenticationState> authenticationStateTask { get; set; }
+	
+	public IEnumerable<MxEucBalanceEventView> modelView { get; set; } = new List<MxEucBalanceEventView>();
+
+	protected InputEucBalance UpdateStatus;
+
+	public DateTime SelectedUpdateDate { get; set; } = DateTime.Today;
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+
+	protected override async Task OnInitializedAsync()
+	{
+		Title = "CASE Closing Account";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+
+		UpdateStatus = new()
+			{
+				GBaseReferenceNo = "",
+				AuthorizeBy = ""
+				//updateDate = DateTime.Today
+			};
+
+		var authenticationState = await authenticationStateTask;
+		var user = authenticationState?.User;
+		if (user is not null)
+		{
+			if (user.Identity is not null && user.Identity.IsAuthenticated)
+			{
+				UpdateStatus.AuthorizeBy = authenticationState.User.Identity.Name.ToUpper();
+			}
+		}
+		//return base.OnInitializedAsync();
+	}
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		string UpdateDdate = SelectedUpdateDate.ToString("yyyy-MM-dd");
+		//modelView = (await _httpService2.GetPendingEUCBalanceEvent(UpdateDdate)).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/EUCBalanceEvents/GetPendingEUCBalanceEvent/{UpdateDdate}", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No CASE closing account found.";
+			//ConfirmationComponent.Show();
+		}
+	}
+
+	// ** Add for confirmation box
+	protected async Task Confirmed()
+	{
+		Message = "Do you want to save?";
+		IsVisible = true;
+		IsInformationOnly = false;
+		StateHasChanged();
+
+		await Task.FromResult(true);
+	}
+
+	protected async Task Save(bool IsSave)
+	{
+		if (IsSave)
+		{
+			//var claims = new[] {
+			//		new Claim(ClaimTypes.Role, "Money Market Modify")
+			//	};
+			//var roleToken = jwtToken.GenerateJwtTokenByClaims(claims);
+
+			var result = await _httpServiceRole.UpdateStatus(UpdateStatus);
+
+			switch (result)
+			{
+				case 200:
+
+					Message = "Saved Successfully.";
+					IsInformationOnly = true;
+					IsVisible = true;
+
+					await SearchClick();
+					break;
+				case 404:
+
+					Message = "Unsuccessfully saved.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				case 401:
+
+					Message = "Bad internet request.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				default:
+
+					Message = "Error retrieving data from the database.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+			}
+		}
+		else
+		{
+			IsVisible = false;
+		}
+		StateHasChanged();
+
+
+	}
+	protected void OkClick() => IsVisible = false;
+	protected void BackClick() => NavigationManager.NavigateTo($"/GUIDE");
+
+}

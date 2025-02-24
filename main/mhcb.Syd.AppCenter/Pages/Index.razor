@@ -1,0 +1,397 @@
+﻿@page "/"
+
+@using System.Security.Claims;
+@using mhcb.Syd.AppCenter.Services;
+@using mhcb.Syd.AppCenter.Services.RoleBase.Interface;
+@using mhcb.Syd.AppCenter.Services.Generic
+
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject IHttpService<string> _httpService
+
+<style>
+    .myDivBox {
+        border: 5px outset red;
+        text-align: center;
+        font-size: 18px;
+        border-radius: 15px;
+    }
+
+    .myDivSmallBox {
+        border: 3px outset blue;
+        text-align: left;
+        font-size: 18px;
+        border-radius: 15px;
+    }
+</style>
+
+<div class="container-sm container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <div class="mt-4 p-5 bg-primary text-white text-center rounded">
+                <h1>MIZUHO Application Center</h1>
+            </div>
+        </div>
+
+        @*<div>
+        <img src="/images/60MartinPlace.jpg" class="rounded img-fluid mx-auto d-block" style="width:70%" />
+        </div> *@
+        <div class="card-body">
+            <AuthorizeView>
+                <Authorized>
+                    @*  <p>Welcome, @context.User.Identity.Name. You are autherized!</p> *@
+
+                    <div class="row">
+
+                        <div class="col-4 alert-primary myDivSmallBox ">
+                            <div class="col-12" style="text-align: center">
+                                <h2><span class="badge" style="font-size: 20px">Pending Transaction</span></h2>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="UpdateBankInf">
+                                    Send Bank Information To Finalized Status
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="UpdateSettlementInf">
+                                    Send Settlement Information To Finalized Status
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="UpdateFXTransaction">
+                                    Send FX Transaction To Finalized Status
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="UpdateFXDelivery">
+                                    Send FX Settlement To Finalized Status
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="UpdateFXTransactionExt">
+                                    Reupload FX Transaction GID 
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="UpdateMoneyMarketTicket">
+                                    Reupload Money Market Transaction GID
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="UpdateGasPendingTransaction">
+                                    Update GUIDE-DCS GAS Transaction Status
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="UpdateFXFCustAttribute">
+                                    Update FX Customer Attributes
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="UpdatePayment">
+                                    Update Payment Control Transaction Status
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="UpdateDCPayment">
+                                    Update Domestic Clearing Transaction Status
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-4 alert-danger myDivSmallBox">
+                            <div class="col-12" style="text-align: center">
+                                <h2><span class="badge" style="font-size: 20px">Transaction Queries</span></h2>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetFXTransactionByDatesCustAbbr">
+                                    FX Transaction by Dates & Customer Name
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetFXTransactionByDates">
+                                    FX Delivery by Contract Dates
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetFXDeliveryCorporateSummary">
+                                    Corporate Delivery Summary
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetFXDeliveryCorporate">
+                                    Corporate Delivery Details
+                                </a>
+                            </div>
+
+                            <div class="col-12">
+                            </div>
+
+                            <div class="col-12" style="text-align: center">
+                                <h2><span class="badge" style="font-size: 20px">Confirmations</span></h2>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="MMStatement">
+                                    Reprint Money Market Statement 
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="MMConfirmation">
+                                    Reprint Money Market Confirmation
+                                </a>
+                            </div>                            
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="FXConfirmation">
+                                    Reprint FX Confirmation 
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="ELCSConfirmation">
+                                    Resent ELCS Loan Confirmation
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-4 alert-info myDivSmallBox">
+                            <div class="col-12" style="text-align: center">
+                                <h2><span class="badge" style="font-size: 20px">User Account</span></h2>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="UpdateUser">
+                                    Reset User Status for GUIDE Password Change
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetGuidePasswordByUserId">
+                                    Forgot GUIDE Password
+                                </a>
+                            </div>
+                            <div class="col-12">
+                            </div>
+                            <div class="col-12" style="text-align: center">
+                                <h2><span class="badge" style="font-size: 20px">Add ELCS Reference Type</span></h2>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="AddTrancheType">
+                                    Add Tranche Type
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="AddCovenantCondition">
+                                    Add Covenant Condition
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="AddCovenantReceiptTiming">
+                                    Add Covenant Receipt Timing
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div id="row_1" class="row" style="font-size: 18px">
+                        <div class="col-4 alert-dark myDivSmallBox">
+                            <div class="col-12" style="text-align: center">
+                                <h2><span class="badge" style="font-size: 20px">Audit Data Report</span></h2>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetFullFXTransactionByDates">
+                                    FX Transaction & Delivery Reports
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetFullBankInfByStatus">
+                                    Bank Information Reports
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetSIFInstructionsByStatus">
+                                    FX Settlement Instruction Reports
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetMMTransactionByDates">
+                                    Money Market Transaction Reports
+                                </a>
+                            </div>
+
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetAuditLogByDates">
+                                    AppCenter Log Report
+                                </a>
+                            </div>
+
+
+                        </div>
+                        <div class="col-4 alert-success myDivSmallBox">
+                            <div class="col-12" style="text-align: center">
+                                <h2><span class="badge" style="font-size: 20px">ELCS Data Report</span></h2>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetLoanTransactionByDates">
+                                    Loan Transaction Report By Dates
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetLoanTransactionByCcyDates">
+                                    Loan Transaction Report By CCY and Dates
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetCovenantRatio">
+                                    Covenant Ratio Report
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetLoanRfrInterest">
+                                    RFR Loan Transaction Report
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="GetSwapRfrInterest">
+                                    RFR Swap Loan Transaction Report
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-4 alert-warning myDivSmallBox">
+                            <div class="col-12" style="text-align: center">
+                                <h2><span class="badge" style="font-size: 20px">FX & Loan Rates Utility</span></h2>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="UpdateSpecialRate">
+                                    Upload MIZUHO Special Rates
+                                </a>
+                            </div>                            
+                            
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="BisRatelist">
+                                    BIS Rates
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="ListDepositsRate">
+                                    Deposits Rates
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="ListFxRate">
+                                    FX Rates
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="ListRevaluationRate">
+                                    Revaluation Rates
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a class="nav-link oi oi-play-circle" href="ListSwapRate">
+                                    Swap Rates
+                                </a>
+                            </div>
+                            <div class="col-12">
+                            </div>
+                        </div>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <div>
+                        <img src="/images/60MartinPlace.jpg" class="rounded img-fluid mx-auto d-block" style="width:70%" />
+                    </div>
+                </NotAuthorized>
+            </AuthorizeView>
+        </div>
+
+        <br />
+        <div class="card-footer">
+            <div class="text-sm-center footer" style="margin-bottom:0">
+                <p>&copy; @DateTime.Now.Year - MIZUHO Bank Sydney, supported by B. Li</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    bool IsAuthenticated { get; set; }
+    bool IsAuthorized { get; set; }
+    public bool IsLoading { get; set; }
+
+    // ClaimsIdentity identity;
+    // ClaimsPrincipal principal;
+
+    [CascadingParameter]
+    public Task<AuthenticationState> authenticationState { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        IsAuthorized = false;
+        IsLoading = false;
+
+        Console.WriteLine("Index - OnInitializedAsync");
+
+        // //var authstate = await authenticationStateProvider.GetAuthenticationStateAsync();
+        // // or
+        // var authstate = await authenticationState;
+        // var user = authstate.User;
+
+        // var priciple = (ClaimsPrincipal)user;               // get current Claimed principle
+        // var clone = priciple.Clone();                       // Clone current Claimed principle
+        // var newIdentity = (ClaimsIdentity)clone.Identity;   // get identity of clone principle
+
+        // if (user.Identity.IsAuthenticated)
+        // {
+        //    IsAuthenticated = true;
+
+        //    if (user.Identity.Name != null)
+        //    {
+        //         //....
+        //    }
+        //    else
+        //    {
+        //        identity = new ClaimsIdentity();
+        //    }
+        //    principal = new ClaimsPrincipal(newIdentity);
+        //    await Task.FromResult(new AuthenticationState(principal));
+        // }
+        await base.OnInitializedAsync();
+    }
+
+    protected override void OnParametersSet()
+    {
+        Console.WriteLine("Index - OnParametersSet");
+        base.OnParametersSet();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Console.WriteLine("Index - OnParametersSetAsync");
+        await base.OnParametersSetAsync();
+    }
+
+    protected override bool ShouldRender()
+    {
+        base.ShouldRender();
+        Console.WriteLine("Index - ShouldRender");
+        return true;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Console.WriteLine("Index - OnAfterRender - firstRender = " + firstRender);
+        base.OnAfterRender(firstRender);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Console.WriteLine("Index - OnAfterRenderAsync - firstRender = " + firstRender);
+        if (firstRender)
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    public void Dispose()
+    {
+        Console.WriteLine("Index - Dispose");
+    }
+
+}

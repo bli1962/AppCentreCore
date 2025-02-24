@@ -1,0 +1,174 @@
+﻿@page "/GetSettlementInfsByStatus"
+@attribute [Authorize]
+
+
+<div class="container-fluid">
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>Search Settlement Information (SIF) by Status</h4>
+			</div>
+		</div>
+
+		@*Section 2 - Search*@
+		<div class="card-body">
+			@*Section 2 - Parameters*@
+			<div class="row">
+				<div class="col-sm-4">
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody thead class="thead-light">
+							<tr>
+								<td><label for="Id" class="col-form-label">SIF Status</label></td>
+								<td>
+									<select class="form-control form-select-sm" id="status" @bind="SelectedStatus">
+										<option value="All">All</option>
+										<option value="F">Finalized</option>
+										<option value="A">Authorized</option>
+										<option value="V">Verified</option>
+										<option value="S">Submitted</option>
+										<option value="SD">Deleting</option>
+										<option value="D">Closed</option>
+									</select>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="(()=>SearchClick())">Search</button>
+						<button class="btn btn-outline-info m-1 float-left btn-width-80"  @onclick="(()=>CopyClick())">Copy</button>
+						<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 3 - list display*@
+		<div class="card-footer">
+
+			@if (modelView == null && SelectedStatus != "")
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+				<div class="row">
+					<div class="col-sm-12">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:700px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>ID</th>
+									<th>CUST ABBR</th>
+									<th>RECORD KIND</th>
+									<th>CCY CD</th>
+									<th>Status</th>
+									<th>Deletion Status</th>
+									<th>GIP Status</th>
+									<th>GIP Description</th>
+									<th>AUTHORIZE BY</th>
+									<th>TRAN NO</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.SifId</td>
+									<td>@item.CustAbbr</td>
+									<td>@item.RecordKind</td>
+									<td>@item.CcyCd</td>
+									<td>@item.Status</td>
+									<td>@item.DeletionStatus</td>
+									<td>@item.GipStatus</td>
+									<td>@item.GipDescription</td>
+									<td>@item.AuthorizeBy</td>
+									<td>@item.TranNo</td>
+								</RowTemplate>
+								<TableFooter>
+									<th>ID</th>
+									<th>CUST ABBR</th>
+									<th>RECORD KIND</th>
+									<th>CCY CD</th>
+									<th>Status</th>
+									<th>Deletion Status</th>
+									<th>GIP Status</th>
+									<th>GIP Description</th>
+									<th>AUTHORIZE BY</th>
+									<th>TRAN NO</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>
+				
+			}
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+@inject IHttpService<mhcb.Syd.DataAccess.Models.GUIDE.SettlementInf> _httpService ;
+@inject IJSRuntime IJSRuntime ;
+@inject NavigationManager navigationManager ;
+
+@code {
+
+	public IEnumerable<mhcb.Syd.DataAccess.Models.GUIDE.SettlementInf> modelView { get; set; } = new List<mhcb.Syd.DataAccess.Models.GUIDE.SettlementInf>();
+
+	public string SelectedStatus { get; set; } = "F";
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+
+	protected override void OnInitialized()
+	{
+		Title = "Settlement Information";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+	}
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		string status = SelectedStatus;
+		//modelView = (await _httpService2.GetSIFByStatus(status)).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/SettlementInfs/GetSIFByStatus/{status}", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No records found.";
+		}
+	}
+	protected void Save(bool IsSave) { IsVisible = IsSave; }
+	protected void OkClick() => IsVisible = false;
+	protected async Task CopyClick()
+	{
+		await IJSRuntime.InvokeAsync<object>("selectElementContents", "SelectedReport");
+		await IJSRuntime.InvokeVoidAsync("alert", "Now you can paste the context to excel file.");
+	}
+	protected void BackClick() => navigationManager.NavigateTo($"/GUIDEReport");
+
+}

@@ -1,0 +1,237 @@
+﻿@page "/UpdateRevaluationRate/{dataDate}/{ccy}/{days:int}"
+@attribute [Authorize(Roles = "FX_RATE_Authorise")]
+
+
+<div class="container-fluid">
+    <div class="card">
+
+        @*Section 1 - Title *@
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h4>Update Revaluation Rate</h4>
+            </div>
+        </div>
+
+        @*Section 2 - Body*@
+        <div class="card-body">
+            @*Section - results *@
+            <div class="row">
+                <div class="col-sm-8">
+                    <RevaluationRateEditedForm ViewModel="viewModel" CallBackOnSave="UpdateData" CallBackOnError="HandleInvalidSubmit" IsEdit="true"></RevaluationRateEditedForm>
+                </div>
+            </div>
+        </div>
+
+        @*Section 3 - footer section*@
+    </div>
+
+    <ConfirmationBox Title="@Title"
+                     Message="@Message"
+                     YesButtonText="@YesButtonText"
+                     NoButtonText="@NoButtonText"
+                     InfoButtonText="@InfoButtonText"
+                     BtnClass="@BtnClass"
+                     ConfirmationChanged="Save"
+                     InformationChanged="OkClick"
+                     IsVisible="IsVisible"
+                     IsInformationOnly="IsInformationOnly">
+    </ConfirmationBox>
+</div>
+
+
+@using mhcb.Syd.AppCenter.Services.RoleBase.API;
+@using mhcb.Syd.AppCenter.Services.Generic;
+@using mhcb.Syd.AppCenter.Services.RoleBase.Interface;
+@using mhcb.Syd.Models;
+@using mhcb.Syd.DataAccess.Models.GUIDE;
+
+@inject NavigationManager _navigationManager;
+@inject IJSRuntime jsRuntime;
+@inject IConfiguration _configuration;
+@inject IRevaluationRateHttpService _httpServiceRole;
+@inject IHttpService<RevaluationRateViewModel> _httpService;
+
+
+@code {
+    [Parameter]
+    public string dataDate { get; set; }
+    [Parameter]
+    public string ccy { get; set; }
+    [Parameter]
+    public int days { get; set; }
+
+    private RevaluationRateViewModel viewModel = new RevaluationRateViewModel();
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    private string ImportedBy;
+    public bool IsSuccess { get; set; }
+
+    // ** Variables for confirmation box
+    public string Title { get; set; }
+    public string Message { get; set; }
+    public string YesButtonText { get; set; }
+    public string NoButtonText { get; set; }
+    public string InfoButtonText { get; set; }
+    public bool IsVisible { get; set; }
+    public bool IsInformationOnly { get; set; }
+    public string BtnClass { get; set; }
+    // ** End
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsVisible = false;
+        Title = "Update Revaluation Rate";
+        Message = "";
+        YesButtonText = "Yes";
+        NoButtonText = "No";
+        InfoButtonText = "OK";
+        BtnClass = "btn btn-primary float-left";
+
+        //return base.OnInitializedAsync();
+        var authenticationState = await authenticationStateTask;
+        ImportedBy = authenticationState.User.Identity.Name.ToUpper();
+
+        //viewModel = (await _rateService.GetRevaluationRateByDateCcyDay(dataDate, ccy, days));
+        viewModel = await _httpService.GetAsync($"api/RevaluationRate/GetRevaluationRateByDateCcyDay/{dataDate}/{ccy}/{days}", null);
+
+        // need to replace with new details
+        //viewModel.RecStatus = "N";
+        //viewModel.GbaseMsg = "N";
+        viewModel.ImportedBy = ImportedBy;
+        //viewModel.ImportedTime = DateTime.Now;
+    }
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        IsVisible = false;
+        IsSuccess = false;
+        await base.OnParametersSetAsync();
+    }
+
+    protected void UpdateData(RevaluationRateViewModel ViewModelData)
+    {
+        Message = "Do you need to uppdate Revaluation rate?";
+        IsInformationOnly = false;  // set not information box
+        IsVisible = true;
+
+        // var result = await jsRuntime.InvokeAsync<bool>("confirm", "Do you need to update the record?");
+        // if (result.ToString() == "True")
+        // {
+        //     // Remove insignificant trailing zeros from a number
+        //     ViewModelData.Rate = decimal.Parse((ViewModelData.Rate).ToString());
+        //     var RateDecimalPlace = Int32.Parse(_configuration["RevaluationDecimalPlace"]);
+
+        //     if ((ViewModelData.Rate).ToString().Length > RateDecimalPlace)
+        //     {
+        //         var result2 = await jsRuntime.InvokeAsync<bool>("confirm", "The rate will be truncated from right, due to over size?");
+        //         if (result2.ToString() == "False")
+        //         {
+        //             return;
+        //         }
+        //     }
+
+        //     ViewModelData.Rate = Math.Round(decimal.Parse((ViewModelData.Rate).ToString()), RateDecimalPlace-2);
+        //     ViewModelData.GbaseMsg = null;
+        //     ViewModelData.RecStatus = "N";
+        //     ViewModelData.ImportedBy = ImportedBy;
+        //     ViewModelData.ImportedTime = DateTime.Now;
+
+        //     var intReturn = await _httpServiceRole.UpdateRevaluationRate(ViewModelData);
+        //     //var intReturn = await _httpService.UpdateAsync($"api/RevaluationRate", null, ViewModelData);
+
+        //     if (intReturn == 200)
+        //     {
+        //         Message = "Revaluation rate has updated successfully.";
+        //         IsSuccess = true;
+        //     }
+        //     else if (intReturn == 404)
+        //     {
+        //         Message = "The Revaluation rate is not existed.";
+        //         IsSuccess = false;
+        //     }
+        //     else
+        //     {
+        //         Message = "Failed to upate Revaluation rate.";
+        //         IsSuccess = false;
+        //     }
+        //     IsInformationOnly = true;  // make to show information box
+        //     IsVisible = true;
+        //     StateHasChanged();
+
+        //     //_navigationManager.NavigateTo("./ListRevaluationRate/" + ViewModelData.DataDate.ToString("yyyy-MM-dd"));
+        // }
+    }
+
+    protected async Task HandleInvalidSubmit()
+    {
+        //Console.WriteLine("Handle valid submit");
+        await jsRuntime.InvokeVoidAsync("alert", "Invalid submission!");
+    }
+
+    protected async Task<int> SavingData(RevaluationRateViewModel ViewModelData)
+    {
+        // Remove insignificant trailing zeros from a number
+        ViewModelData.Rate = decimal.Parse((ViewModelData.Rate).ToString());
+        var RateDecimalPlace = Int32.Parse(_configuration["RevaluationDecimalPlace"]);
+
+        if ((ViewModelData.Rate).ToString().Length > RateDecimalPlace)
+        {
+            var result2 = await jsRuntime.InvokeAsync<bool>("confirm", "The rate will be truncated from right, due to over size?");
+            if (result2.ToString() == "False")
+            {
+                return 0;
+            }
+        }
+
+        ViewModelData.Rate = Math.Round(decimal.Parse((ViewModelData.Rate).ToString()), RateDecimalPlace - 2);
+        ViewModelData.GbaseMsg = null;
+        ViewModelData.RecStatus = "N";
+        ViewModelData.ImportedBy = ImportedBy;
+        ViewModelData.ImportedTime = DateTime.Now;
+
+        var intReturn = await _httpServiceRole.UpdateRevaluationRate(ViewModelData);
+        //var intReturn = await _httpService.UpdateAsync($"api/RevaluationRate", null, ViewModelData);
+
+
+        return intReturn;
+    }
+
+    //**************************************************
+    // Code to handle confirmation box OK or Save button
+    //**************************************************
+    protected async Task Save(bool IsSave)
+    {
+        IsVisible = false;
+        if (IsSave == false) return;
+
+        var intReturn = await SavingData(viewModel);
+
+        if (intReturn == 200)
+        {
+            Message = "Revaluation rate has updated successfully.";
+            IsSuccess = true;
+        }
+        else if (intReturn == 404)
+        {
+            Message = "The Revaluation rate is not existed.";
+            IsSuccess = false;
+        }
+        else
+        {
+            Message = "Failed to upate Revaluation rate.";
+            IsSuccess = false;
+        }
+        IsInformationOnly = true;  // make to show information box
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    protected void OkClick()
+    {
+        IsVisible = false;
+        _navigationManager.NavigateTo("./ListRevaluationRate/" + viewModel.DataDate.ToString("yyyy-MM-dd"));
+    }
+}

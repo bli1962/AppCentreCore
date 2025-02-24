@@ -1,0 +1,109 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register in AppCenter";
+}
+
+<div class="container-fluid">
+
+    <div class="card">
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h4>@ViewData["Title"]</h4>
+            </div>
+        </div>
+        <div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <section>
+                        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                            @*<dive class="">
+                            <h2><span class="badge badge-info text-center">Create a new account</span></h2>
+                            </dive>*@
+                            <div asp-validation-summary="All" class="text-danger"></div>
+                            <div class="form-group">
+                                <label asp-for="Input.UserName" class="form-control-label"></label>
+                                <input asp-for="Input.UserName" class="form-control" placeholder="AppCenter ID" />
+                                <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Input.Email" class="form-control-label"></label>
+                                <input asp-for="Input.Email" class="form-control" placeholder="Mizuho Email" />
+                                <span asp-validation-for="Input.Email" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Input.Password" class="form-control-label"></label>
+                                <input asp-for="Input.Password" class="form-control" placeholder="AppCenter Password" />
+                                <span asp-validation-for="Input.Password" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Input.ConfirmPassword" class="form-control-label"></label>
+                                <input asp-for="Input.ConfirmPassword" class="form-control" placeholder="Confirmed Password" />
+                                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-width-100">Register</button>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <ul>
+                <li>
+                    Any MBSO staff can use the <strong>AppCenter</strong> by registering their Mizuho email address;
+                </li>
+                <li>
+                    If you are a GUIDE user, then please register with your GUIDE USER ID in order to access the GUIDE related functions; Non-GUIDE users should register with their LAN ID as the User ID;
+
+                </li>
+                <li>
+                    Your password must be between 6 to 20 characters in length and must contain at least one UPPERCASE and one NUMERIC character;
+                </li>
+                <li>
+                    Note: This AppCenter User password is not synchronised with your GUIDE or LAN user credentials;
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</div>
+
+<!--<div class="row">-->
+@*<div class="col-md-6 col-md-offset-2">
+			<section>
+				<h4>Use another service to register.</h4>
+				<hr />
+				@{
+					if ((Model.ExternalLogins?.Count ?? 0) == 0)
+					{
+						<div>
+							<p>
+								There are no external authentication services configured. See <a href="https://go.microsoft.com/fwlink/?LinkID=532715">this article</a>
+								for details on setting up this ASP.NET application to support logging in via external services.
+							</p>
+						</div>
+					}
+					else
+					{
+						<form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+							<div>
+								<p>
+									@foreach (var provider in Model.ExternalLogins)
+									{
+										<button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.DisplayName</button>
+									}
+								</p>
+							</div>
+						</form>
+					}
+				}
+			</section>
+		</div>*@
+<!--</div>-->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

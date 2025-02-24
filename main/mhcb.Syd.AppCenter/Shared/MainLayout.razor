@@ -1,0 +1,43 @@
+﻿@using mhcb.Syd.AppCenter.Services;
+@inherits LayoutComponentBase
+
+<div class="page">
+	<div class="sidebar" style="padding: 0; border-width: 0">
+        <NavMenu />
+    </div>
+
+	<div class="main" style="padding: 0; border-width: 0">
+		<AuthorizeView>
+			<NotAuthorized>				
+				<div class="top-row px-4">
+					You are not authorized yet. <a href="/Login">Log in</a>
+				</div>
+			</NotAuthorized>
+		</AuthorizeView>
+	
+		<div class="content px-4" style="padding: 0; border-width: 0">	
+			@Body
+		</div>
+
+		<AuthorizeView>
+			<Authorized>
+				<div class="top-row px-4">
+					You are authorized.(@context.User.Identity.Name.ToUpper()) 
+					<a href="/" @onclick="(()=>Logout())">Sign Out </a>
+				</div>
+			</Authorized>
+		</AuthorizeView>
+	</div>
+</div>
+
+
+@code {
+	@inject NavigationManager NavigationManager
+	@inject AuthenticationStateProvider AuthenticationStateProvider;
+
+	public async Task Logout()
+	{
+		await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsLoggedOut();
+		NavigationManager.NavigateTo("/");
+	}
+}

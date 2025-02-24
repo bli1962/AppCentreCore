@@ -1,0 +1,40 @@
+﻿@typeparam TItem
+@using System.Diagnostics.CodeAnalysis
+
+<table id="tblData" class="table-striped table-bordered table-hover mb=0">
+    <tbody Class="table-active Row-Cell">
+        @if (Items is not null)
+        {
+            @foreach (var item in Items)
+            {
+                if (RowTemplate is not null)
+                {
+                    <tr>@RowTemplate(item)</tr>
+                }
+            }
+        }
+        else
+        {
+            {
+              @* <div class="col-12" style="background-color: transparent; height:50px; width:50px; vertical-align:middle; align-items: center ">
+                    <Chase Center="true" Color="#c21f13" Size="50px"></Chase>
+                </div> *@
+   
+                <Chase Center="true" Color="#c21f13" Size="50px"></Chase>
+            }
+        }
+    </tbody>
+</table>
+
+
+@code {
+    [Parameter]
+    public RenderFragment TableHeader { get; set; }
+    [Parameter]
+    public RenderFragment<TItem> RowTemplate { get; set; }
+    [Parameter]
+    public RenderFragment TableFooter { get; set; }
+    [Parameter, AllowNull]
+    public IReadOnlyList<TItem> Items { get; set; }
+
+}

@@ -1,0 +1,35 @@
+﻿@if (IsVisible)
+{
+    if (IsSuccess)
+    {
+        <div id="divMessageBarId" class="col-12 alert alert-info row">
+            <div class="col-11" style="text-align:left">
+                <span>@childContent.</span>
+            </div>
+            <div class="col-1" style="text-align:right">
+                <a style="text-underline-position:auto;cursor:pointer" @onclick="CloseMessageBar">XXXXXX</a>
+            </div>         
+        </div>
+    } else{
+        <div id="divMessageBarId" class="col-12 alert alert-danger row">
+            <span>@childContent.</span>
+        </div>        
+    }
+}
+
+
+@code {
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public bool IsSuccess { get; set; }
+
+    [Parameter]
+    public RenderFragment childContent { get; set; }
+
+    public void CloseMessageBar()
+    {
+        IsVisible = false;
+    }
+}

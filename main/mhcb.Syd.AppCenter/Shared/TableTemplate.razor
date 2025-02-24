@@ -1,0 +1,39 @@
+﻿@typeparam TItem
+@using System.Diagnostics.CodeAnalysis
+
+@*<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar ">
+</div>*@
+
+<table id="tblData" class="table table-primary table-striped table-bordered table-hover  mb=0">
+    <thead class="table-primary Col-Head-Center">
+        <tr>@TableHeader</tr>
+    </thead>
+    <tbody Class="table-active Row-Cell">
+        @foreach (var item in Items)
+        {
+            if (RowTemplate is not null)
+            {
+                <tr>@RowTemplate(item)</tr>
+            }
+        }
+    </tbody>
+    <tfoot class="table-primary Col-Head-Center">
+        @if (Items != null && Items.Count != 0)
+        {
+            <tr>@TableFooter</tr>
+        }
+    </tfoot>
+</table>
+
+
+@code {
+    [Parameter]
+    public RenderFragment TableHeader { get; set; }
+    [Parameter]
+    public RenderFragment<TItem> RowTemplate { get; set; }
+    [Parameter]
+    public RenderFragment TableFooter { get; set; }
+    [Parameter, AllowNull]
+    public IReadOnlyList<TItem> Items { get; set; }
+
+}

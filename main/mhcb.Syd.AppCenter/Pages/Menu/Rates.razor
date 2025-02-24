@@ -1,0 +1,79 @@
+﻿@page "/MarketRates"
+
+<div class="container-sm container-fluid">
+
+    <div class="card bg-primary text-white">
+        <div class="card-header">
+            <h3>Market Rate</h3>
+        </div>
+    </div>
+
+    <div class="card-body">
+        @* To stop menu items before RoleClaims complete*@
+        @if (!isVisable)
+        {
+            @* <div class="spinner"></div>*@
+        }
+        else
+        {
+            <div class="list-group">
+                <ul class="nav flex-column nav-tabs">
+                    @*  <li class="list-group-item list-group-item-action list-group-item-primary">
+                    <a class="nav-link oi oi-plus nav-mhcb-list" href="ListRatesUpload">
+                        GUIDE Rates Upload
+                    </a>
+                </li> *@
+
+                    <li class="list-group-item list-group-item-action list-group-item-secondary">
+                        <a class="nav-link oi oi-plus nav-mhcb-list" href="ListFxRate">
+                            FX Rates
+                        </a>
+                    </li>
+
+                    <li class="list-group-item list-group-item-action list-group-item-primary">
+                        <a class="nav-link oi oi-plus nav-mhcb-list" href="ListRevaluationRate">
+                            Revaluation Rates
+                        </a>
+                    </li>
+
+                    <li class="list-group-item list-group-item-action list-group-item-secondary">
+                        <a class="nav-link oi oi-plus nav-mhcb-list" href="ListSwapRate">
+                            Swap Rates
+                        </a>
+                    </li>
+
+                    <li class="list-group-item list-group-item-action list-group-item-primary">
+                        <a class="nav-link oi oi-plus nav-mhcb-list" href="ListDepositsRate">
+                            Deposits Rates
+                        </a>
+                    </li>
+
+                    <li class="list-group-item list-group-item-action list-group-item-secondary">
+                        <a class="nav-link oi oi-plus nav-mhcb-list" href="ListBisRate">
+                            BIS Rates
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        }
+       
+    </div>
+    
+    <RoleClaims Value="isAuthorised" CallBackMethod="ChangeStatus"></RoleClaims>
+</div>
+
+
+@code {
+    bool isVisable;
+    bool isAuthorised { get; set; }
+
+    private void ChangeStatus(bool isAuthorised)
+    {
+        isVisable = isAuthorised;
+    }
+
+}
+
+
+
+

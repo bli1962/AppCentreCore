@@ -1,0 +1,24 @@
+﻿@*<InputSelect id="DurationUnit" class="form-control" placeholder="Duration Unit " @bind-Value="@ViewModel.DurationUnit">
+    @foreach (var durationunit in Enum.GetValues(typeof(BisRateDurationUnit)))
+    {
+        <option value="@durationunit">@durationunit</option>
+    }
+</InputSelect>*@
+
+<InputSelect id="Duration" class="form-control" disabled=@IsEdit placeholder="Duration" @bind-Value="@ViewModel.Duration">
+    @foreach (var duration in MonthDuritions)
+                {
+                    <option value="@duration">@duration</option>
+                }
+            </InputSelect>
+
+@code {
+    [Parameter]
+    public BisRateViewModel ViewModel { get; set; }
+
+    [Parameter]
+    public string[] MonthDuritions { get; set; }
+
+    [Parameter]
+    public bool IsEdit { get; set; }
+}

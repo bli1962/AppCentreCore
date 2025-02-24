@@ -1,0 +1,209 @@
+﻿.round-corner{
+    background-color: #eeeeee;
+    border: 3px solid #2779aa;
+    float: left;
+    margin: 3px 0 10px 0;
+    padding: 10px;
+    padding-left: 0px;
+    padding-right: 0px;
+    text-align: center;
+   /* height: 170px;
+    width: 250px;*/
+    border-radius: 15px;
+}
+.round-corner-200 {
+    background-color: #eeeeee;
+    border: 3px solid #2779aa;
+    float: left;
+    height: 170px;
+    margin: 3px 0 10px 0;
+    padding: 10px;
+    text-align: center;
+    width: 200px;
+    border-radius: 15px;
+}
+
+
+.categoryHeadings {
+    font-weight: normal;
+    font-size: 12px;
+    text-align: center;
+    /*width: 163px;*/
+    /*height: 12px;*/
+    padding: 2px;
+}
+
+
+
+
+
+.queueContainer {
+    width: 173px;
+    height: 12px;
+    float: left;
+    padding-left: 15px;
+}
+
+.round-container {
+    background-color: #eeeeee;
+    border: 3px solid #2779aa;
+    float: left;
+    height: 250px;
+    margin: 3px 0 10px 0;
+    text-align: center;
+    width: 330px;
+    border-radius: 15px;
+}
+
+.bigQueueContainer {
+    width: 210px;
+    height: 12px;
+    float: left;
+    padding-left: 15px;
+}
+
+
+
+
+
+.itemHeading {
+    font-weight: bold;
+    text-align: left;
+    width: 90px;
+    float: left;
+}
+
+.itemRatesHeading {
+    font-weight: bold;
+    text-align: left;
+    font-size: 11px;
+    color: blue;
+    width: 200px;
+    float: left;
+}
+
+.itemRatesValue {
+    font-weight: normal;
+    text-align: right;
+    width: 30px;
+    float: right;
+}
+
+
+.itemValueSameDay {
+    font-weight: bold;
+    text-align: right;
+    width: 40px;
+    float: right;
+}
+
+.itemValue {
+    font-weight: normal;
+    text-align: right;
+    width: 30px;
+    float: right;
+}
+
+.paymentValue {
+    font-weight: normal;
+    text-align: right;
+    width: 30px;
+    float: right;
+}
+
+.itemLinkHeading {
+    font-weight: normal;
+    font-size: 12px;
+    text-align: center;
+    width: 130px;
+    height: 16px;
+}
+
+.itemLink {
+    font-weight: normal;
+    text-align: center;
+    width: 45px;
+    font-size: 11px;
+    height: 13px;
+}
+
+
+.paymentValueSameDay {
+    font-weight: bold;
+    text-align: left;
+    width: 40px;
+    float: left;
+}
+
+
+tableContent {
+    font-family: Arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #2779aa;
+    text-align: center;
+}
+
+.lastUpdateTime {
+    font-family: Arial, sans-serif;
+    font-weight: normal;
+    font-size: 10px;
+    text-align: right;
+    color: red;
+    border-collapse: collapse;
+    width: 100%; 
+}
+
+/* Centering all table cells */
+/*th, td {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+}*/
+
+/* Individual header styles */
+/*th.header {
+    background-color: #99ccff;
+    color: black;
+    text-align: center;
+}
+
+tr.row td {
+    background-color: #e6f7ff;
+    text-align: center;
+}*/
+
+
+
+
+
+
+th.header1 {
+    background-color: lightskyblue;
+    color: white;
+    text-align: center;
+}
+
+th.header2 {
+    background-color: #99ccff;
+    color: black;
+    text-align: center;
+}
+
+th.header3 {
+    background-color: #99ff99;
+    color: darkblue;
+
+}
+
+tr.row1 td {
+    background-color: #f2f2f2;
+}
+
+tr.row2 td {
+    background-color: #e6f7ff;
+}
+
+tr.row3 td {
+    background-color: #e6ffe6;
+}

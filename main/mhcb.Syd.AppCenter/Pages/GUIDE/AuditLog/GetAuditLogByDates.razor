@@ -1,0 +1,170 @@
+﻿@page "/GetAuditLogByDates"
+
+@attribute [Authorize]
+<div class="container-fluid">
+
+    <div class="card">
+        @*Section 1 - Title *@
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h4>AppCenter Log Report</h4>
+            </div>
+        </div>
+
+        @*Section 3 - Search*@
+        <div class="card-body">
+            <div class="row">
+                <div class="col-sm-4">
+
+                    <table class="table table-sm table-bordered table-primary Col-Head-Left">
+                        <tbody thead class="thead-light">
+                            <tr>
+                                <td colspan="4"><label for="Id" class="col-form-label">Operation Date</label></td>
+                            </tr>
+                            <tr>
+                                <td><label for="Id" class="col-form-label">From</label></td>
+                                <td><input type="date" class="form-control" @bind="SelectedDateFrom" /></td>
+                                <td><label for="Id" class="col-form-label">To</label></td>
+                                <td><input type="date" class="form-control" @bind="SelectedDateTo" /></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="well">
+                        <button class="btn btn-outline-primary m-1 float-left btn-width-150" @onclick="(()=>SearchClick())">Search Logs</button>
+                        <button class="btn btn-outline-info m-1 float-left btn-width-80" @onclick="(()=>CopyClick())">Copy</button>
+                        <button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*Section 3 - list display*@
+        <div class="card-footer">
+            @if (modelView == null)
+            {
+                <div class="spinner"></div>
+            }
+            else
+            {
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:700px;">
+                            @*Section 4 - list via TableTemplate*@
+                            <TableTemplate Items="modelView.ToList()">
+                                <TableHeader>
+                                    <th>AUDIT ID</th>
+                                    <th>USER ID</th>
+                                    <th>AUDIT DATE</th>
+                                    <th>REF NO</th>
+                                    <th>TRANS NO</th>
+                                    <th>AUDIT DESCRIPTION</th>
+                                    <th>APPLICATION</th>
+                                    <th>TABLE NAME</th>
+                                    <th>ORIGINAL VALUE</th>
+                                    <th>NEW VALUE</th>
+                                </TableHeader>
+                                <RowTemplate Context="item">
+                                    <td>@item.AuditId</td>
+                                    <td>@item.UserId</td>
+                                    <td>@item.AuditDate</td>
+                                    <td>@item.RefNo</td>
+                                    <td>@item.TransNo</td>
+                                    <td>@item.AuditDesc</td>
+                                    <td>@item.AppName</td>
+                                    <td>@item.TableName</td>
+                                    <td>@item.OriginalValue</td>
+                                    <td>@item.NewValue</td>
+                                </RowTemplate>
+                                <TableFooter>
+                                    <th>AUDIT ID</th>
+                                    <th>USER ID</th>
+                                    <th>AUDIT DATE</th>
+                                    <th>REF NO</th>
+                                    <th>TRANS NO</th>
+                                    <th>AUDIT DESCRIPTION</th>
+                                    <th>APPLICATION</th>
+                                    <th>TABLE NAME</th>
+                                    <th>ORIGINAL VALUE</th>
+                                    <th>NEW VALUE</th>
+                                </TableFooter>
+                            </TableTemplate>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <ConfirmationBox Title="@Title"
+                     Message="@Message"
+                     YesButtonText="@YesButtonText"
+                     NoButtonText="@NoButtonText"
+                     InfoButtonText="@InfoButtonText"
+                     BtnClass="@BtnClass"
+                     ConfirmationChanged="Save"
+                     InformationChanged="OkClick"
+                     IsVisible="IsVisible"
+                     IsInformationOnly="IsInformationOnly">
+    </ConfirmationBox>
+</div>
+
+
+
+@inject IHttpService<mhcb.Syd.DataAccess.Models.GUIDE.AuditLog> _httpService;
+@inject IJSRuntime IJSRuntime;
+@inject NavigationManager navigationManager;
+
+@code {
+
+    public IEnumerable<mhcb.Syd.DataAccess.Models.GUIDE.AuditLog> modelView { get; set; } = new List<mhcb.Syd.DataAccess.Models.GUIDE.AuditLog>();
+    public DateTime SelectedDateFrom { get; set; } = DateTime.Today;
+    public DateTime SelectedDateTo { get; set; } = DateTime.Today;
+
+    // ** Variables for confirmation box
+    public string Title { get; set; }
+    public string Message { get; set; }
+    public string YesButtonText { get; set; }
+    public string NoButtonText { get; set; }
+    public string InfoButtonText { get; set; }
+    public bool IsVisible { get; set; }
+    public bool IsInformationOnly { get; set; }
+    public string BtnClass { get; set; }
+    // ** End
+
+    protected override void OnInitialized()
+    {
+        Title = "AppCenter Log";
+        Message = "Do you want to save?";
+        YesButtonText = "Yes";
+        NoButtonText = "No";
+        InfoButtonText = "OK";
+        BtnClass = "btn btn-primary float-left";
+    }
+    protected void Save(bool IsSave) { IsVisible = IsSave; }
+    protected void OkClick() => IsVisible = false;
+
+    protected async Task SearchClick()
+    {
+        modelView = null;
+        string dateFrom = SelectedDateFrom.ToString("yyyy-MM-dd");
+        string dateTo = SelectedDateTo.ToString("yyyy-MM-dd");
+        modelView = (await _httpService.GetAllAsync($"api/AuditLogs/GetAuditLogByDates/{dateFrom}/{dateTo}", null)).ToList();
+
+        if (modelView.Count() == 0)
+        {
+            // ConfirmationComponent.Show();
+            IsVisible = true;
+            IsInformationOnly = true;
+            Message = "No records found.";
+        }
+    }
+
+    protected async Task CopyClick()
+    {
+        await IJSRuntime.InvokeAsync<object>("selectElementContents", "SelectedReport");
+        await IJSRuntime.InvokeVoidAsync("alert", "Now you can paste the context to excel file.");
+    }
+
+    protected void BackClick() => navigationManager.NavigateTo($"/");
+
+}

@@ -1,0 +1,18 @@
+﻿<InputSelect id="Ccy" class="form-control" disabled=@IsEdit placeholder="Currency" @bind-Value="@ViewModel.Ccy">
+    @foreach (var ccy in RateCcies)
+    {
+        <option value="@ccy">@ccy</option>
+    }
+</InputSelect>
+
+@code {
+    [Parameter]
+    public BisRateViewModel ViewModel { get; set; }
+
+    [Parameter]
+    public RateCcy[] RateCcies { get; set; }
+
+    [Parameter]
+    public bool IsEdit { get; set; }
+
+}

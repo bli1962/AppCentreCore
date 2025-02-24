@@ -1,0 +1,239 @@
+﻿@page "/AddDepositsRate"
+@attribute [Authorize(Roles = "FX_RATE_Authorise")]
+
+
+
+<div class="container-fluid">
+    <div class="card">
+
+        @*Section 1 - Title *@
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h4>Add Deposits Ratee</h4>
+            </div>
+        </div>
+
+        @*Section 2 - Body*@
+        <div class="card-body">
+            @*Section - results *@
+            <div class="row">
+               <div class="col-sm-8">
+                    <DepositsRateEditedForm ViewModel="viewModel" CallBackOnSave="InsertData" CallBackOnError="HandleInvalidSubmit" IsEdit="false"></DepositsRateEditedForm>
+                </div>
+            </div>
+        </div>
+
+        @*Section 3 - footer section*@
+    </div>
+
+    <ConfirmationBox Title="@Title"
+                     Message="@Message"
+                     YesButtonText="@YesButtonText"
+                     NoButtonText="@NoButtonText"
+                     InfoButtonText="@InfoButtonText"
+                     BtnClass="@BtnClass"
+                     ConfirmationChanged="Save"
+                     InformationChanged="OkClick"
+                     IsVisible="IsVisible"
+                     IsInformationOnly="IsInformationOnly">
+    </ConfirmationBox>
+</div>
+
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Web;
+@using mhcb.Syd.AppCenter.Services.RoleBase.API;
+@using mhcb.Syd.AppCenter.Services.Generic;
+@using mhcb.Syd.AppCenter.Services.RoleBase.Interface;
+@using mhcb.Syd.Models;
+@using mhcb.Syd.DataAccess.Models.GUIDE;
+
+@inject NavigationManager _navigationManager;
+@inject IJSRuntime jsRuntime;
+@inject IConfiguration _configuration;
+@inject IDepositsRateHttpService _httpServiceRole;
+@inject IHttpService<DepositsRateViewModel> _httpService;
+
+@code {
+
+    private DepositsRateViewModel viewModel;
+    private string ImportedBy;
+    public bool IsSuccess { get; set; }
+
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    // ** Variables for confirmation box
+    public string Title { get; set; }
+    public string Message { get; set; }
+    public string YesButtonText { get; set; }
+    public string NoButtonText { get; set; }
+    public string InfoButtonText { get; set; }
+    public bool IsVisible { get; set; }
+    public bool IsInformationOnly { get; set; }
+    public string BtnClass { get; set; }
+    // ** End
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsVisible = false;
+        Title = "Deposits Rate";
+        Message = "";
+        YesButtonText = "Yes";
+        NoButtonText = "No";
+        InfoButtonText = "OK";
+        BtnClass = "btn btn-primary float-left";
+
+        //return base.OnInitializedAsync();
+        var authenticationState = await authenticationStateTask;
+        ImportedBy = authenticationState.User.Identity.Name.ToUpper();
+
+        //base.OnInitialized();
+        viewModel = new DepositsRateViewModel()
+            {
+                DataDate = DateTime.Now.Date,
+                Ccy = "AUD",
+                Period = "1M",
+                Bid = 0,
+                Offer =0,
+                Rate = 0,
+                RecStatus = "N",
+                ImportedBy = ImportedBy,
+                ImportedTime = DateTime.Now,
+            };
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        IsVisible = false;
+        IsSuccess = false;
+        await base.OnParametersSetAsync();
+    }
+
+    protected void InsertData(DepositsRateViewModel ViewModelData)
+    {
+        Message = "Do you need to add new Deposit rate?";
+        IsInformationOnly = false;  // set not information box
+        IsVisible = true;
+
+        // var result = await jsRuntime.InvokeAsync<bool>("confirm", "Do you need to insert new deposit rate?");
+        // if (result.ToString() == "True")
+        // {
+        //     // Remove insignificant trailing zeros from a number
+        //     ViewModelData.Rate = decimal.Parse((ViewModelData.Rate).ToString());
+        //     var RateDecimalPlace = Int32.Parse(_configuration["DepositsRateDecimalPlace"]);
+
+        //     if ((ViewModelData.Rate).ToString().Length > RateDecimalPlace)
+        //     {
+        //         var result2 = await jsRuntime.InvokeAsync<bool>("confirm", "The rate will be truncated from right, due to over size?");
+        //         if (result2.ToString() == "False")
+        //         {
+        //             return;
+        //         }
+        //     }
+
+        //     //ViewModelData.Rate = decimal.Parse((ViewModelData.Rate).ToString().Substring(0, 11));
+        //     ViewModelData.Rate = Math.Round(decimal.Parse((ViewModelData.Rate).ToString()), RateDecimalPlace - 2);
+        //     ViewModelData.Bid = null;
+        //     ViewModelData.Offer = null;
+        //     ViewModelData.RecStatus = "N";
+        //     ViewModelData.ImportedBy = ImportedBy;
+        //     ViewModelData.ImportedTime = DateTime.Now;
+
+        //     var intReturn = await _httpServiceRole.AddDepositsRate(ViewModelData);
+        //     //var intReturn = await _httpService.AddAsync($"api/DepositsRate", null,ViewModelData);
+
+        //     if (intReturn == 200)
+        //     {
+        //         Message = "New Deposits rate has added successfully.";
+        //         IsSuccess = true;
+        //     }
+        //     else if (intReturn == 422)
+        //     {
+        //         Message = "The Deposits rate has already existed.";
+        //         IsSuccess = false;
+        //     }
+        //     else
+        //     {
+        //         Message = "Failed to add Deposits rate.";
+        //         IsSuccess = false;
+        //     }
+        //     IsInformationOnly = true;   // make to show information box
+        //     IsVisible = true;
+        //     StateHasChanged();
+
+        //     _navigationManager.NavigateTo("./ListDepositsRate/" + ViewModelData.DataDate.ToString("yyyy-MM-dd"));
+        // }
+    }
+
+    protected async Task HandleInvalidSubmit()
+    {
+        //Console.WriteLine("Handle valid submit");
+        await jsRuntime.InvokeVoidAsync("alert", "Invalid submission!");
+    }
+
+    protected async Task<int> SavingData(DepositsRateViewModel ViewModelData)
+    {
+        // Remove insignificant trailing zeros from a number
+        ViewModelData.Rate = decimal.Parse((ViewModelData.Rate).ToString());
+        var RateDecimalPlace = Int32.Parse(_configuration["DepositsRateDecimalPlace"]);
+
+        if ((ViewModelData.Rate).ToString().Length > RateDecimalPlace)
+        {
+            var result2 = await jsRuntime.InvokeAsync<bool>("confirm", "The rate will be truncated from right, due to over size?");
+            if (result2.ToString() == "False")
+            {
+                return 0;
+            }
+        }
+
+        //ViewModelData.Rate = decimal.Parse((ViewModelData.Rate).ToString().Substring(0, 11));
+        ViewModelData.Rate = Math.Round(decimal.Parse((ViewModelData.Rate).ToString()), RateDecimalPlace - 2);
+        ViewModelData.Bid = null;
+        ViewModelData.Offer = null;
+        ViewModelData.RecStatus = "N";
+        ViewModelData.ImportedBy = ImportedBy;
+        ViewModelData.ImportedTime = DateTime.Now;
+
+        var intReturn = await _httpServiceRole.AddDepositsRate(ViewModelData);
+        //var intReturn = await _httpService.AddAsync($"api/DepositsRate", null,ViewModelData);
+
+        return intReturn;
+    }
+
+    //**************************************************
+    // Code to handle confirmation box OK or Save button
+    //**************************************************
+    protected async Task Save(bool IsSave)
+    {
+        IsVisible = false;
+        if (IsSave == false) return;
+
+        var intReturn = await SavingData(viewModel);
+
+        if (intReturn == 200)
+        {
+            Message = "New Deposits rate has added successfully.";
+            IsSuccess = true;
+        }
+        else if (intReturn == 422)
+        {
+            Message = "The Deposits rate has already existed.";
+            IsSuccess = false;
+        }
+        else
+        {
+            Message = "Failed to add Deposits rate.";
+            IsSuccess = false;
+        }
+        IsInformationOnly = true;   // make to show information box
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    protected void OkClick()
+    {
+        IsVisible = false;
+        _navigationManager.NavigateTo("./ListDepositsRate/" + viewModel.DataDate.ToString("yyyy-MM-dd"));
+    }
+}

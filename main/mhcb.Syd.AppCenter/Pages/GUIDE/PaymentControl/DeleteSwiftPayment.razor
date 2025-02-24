@@ -1,0 +1,304 @@
+﻿@page "/DeleteSwiftPayment"
+@attribute [Authorize(Roles = "Payment Control Auth")]
+
+
+<div class="container-fluid">
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>Delete Swift Payment Records</h4>
+			</div>
+		</div>
+
+		@*Section 4 - Update Form*@
+		<div class="card-body">
+			<div class="row ">
+				<div class="col-sm-4">
+
+					<EditForm Model="@UpdateStatus" OnValidSubmit="Confirmed">
+						<DataAnnotationsValidator />
+						<ValidationSummary />
+
+						<table class="table table-sm table-bordered table-primary Col-Head-Left">
+							<tbody>
+								<tr>
+									<td><label for="Id" class="col-form-label">Swift Payment Id:</label></td>
+									<td>
+										<InputNumber class="form-control" placeholder="Payment ID" @bind-Value="UpdateStatus.SwiftPaymentId" />
+										<ValidationMessage For="@(() => UpdateStatus.SwiftPaymentId)" />
+									</td>
+								</tr>
+								<tr>
+									<td>Operated By :</td>
+									<td><input type="text" class="form-control" @bind="UpdateStatus.AuthorizeBy" readonly /></td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="well">
+							<button class="btn btn-outline-primary m-1 float-left" type="submit">Delete Duplicate Swift Payment Records</button>
+							<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+							<br />
+						</div>
+					</EditForm>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Search*@
+		<div class="card-body">
+			@*Section 2 - Parameters*@
+			<div class="row">
+				<div class="col-sm-4">
+
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody thead class="thead-light">
+							<tr>
+								<td><label for="Id" class="col-form-label">Date type</label></td>
+								<td>
+									<select class="form-control form-select-sm" @bind="SelectedDateType">
+										<option value="CreatedDate">Created Date</option>
+										<option value="PaymentDate">Payment Date</option>
+										<option value="ValueDate">Value Date</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Date Value</label></td>
+								<td>
+									<input type="date" class="form-control" @bind="SelectedOptDate" />
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left " @onclick="(()=>SearchClick())">Get Swift Payment Records</button>
+					</div>
+				</div>
+			</div>
+
+			@if (modelView == null)
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+				<div class="row">
+					<div class="col-sm-12">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:500px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>Swift PaymentId</th>
+									<th>Payment ID</th>
+									<th>GRef No</th>
+									<th>Customer Abbr.</th>
+									<th>Status</th>
+									<th>Processed</th>
+
+									<th>Value Date</th>
+									<th>Payment Date</th>
+									<th>CCY</th>
+									<th>Amount</th>
+									<th>Sender Bank</th>
+									<th>Receiver Bank</th>
+									<th>Created Date</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.SwiftPaymentId</td>
+									<td>@item.PaymentId</td>
+									<td>@item.GBaseRefNo</td>
+									<td>@item.CustomerAbbreviation</td>
+									<td>@item.StatusDescription</td>
+									<td>@item.Processed</td>
+									<td>@item.ValueDate.ToString("dd/MM/yyyy")</td>
+									<td>@item.PaymentDate.ToString("dd/MM/yyyy")</td>
+									<td>@item.Currency</td>
+
+									<td>@item.Amount.ToString("0,0.00")</td>
+									<td>@item.SenderBank</td>
+									<td>@item.ReceiverBank</td>
+									<td>@item.CreatedWhen.ToString("dd/MM/yyyy")</td>
+								</RowTemplate>
+								<TableFooter>
+									<th>Swift PaymentId</th>
+									<th>Payment ID</th>
+									<th>GRef No</th>
+									<th>Customer Abbr.</th>
+									<th>Status</th>
+									<th>Processed</th>
+
+									<th>Value Date</th>
+									<th>Payment Date</th>
+									<th>CCY</th>
+									<th>Amount</th>
+									<th>Sender Bank</th>
+									<th>Receiver Bank</th>
+									<th>Created Date</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>				
+			}
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+
+@inject ISwiftPaymentHttpService _httpServiceRole;
+@inject IHttpService<SwiftPaymentView> _httpService;
+@inject IJSRuntime IJSRuntime;
+@inject NavigationManager NavigationManager;
+@inject IHttpContextAccessor _httpContext;
+
+@code {
+	[CascadingParameter]
+	private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+	public IEnumerable<SwiftPaymentView> modelView { get; set; } = new List<SwiftPaymentView>();
+
+	protected InputSwiftPayment UpdateStatus;
+
+	public DateTime SelectedOptDate { get; set; } = DateTime.Today;
+	public string SelectedDateType { get; set; } = "ValueDate";
+	public string SelectDeletionStatus { get; set; } = "N/A";
+	public string SelectGipStatus { get; set; } = "15";
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+	protected override async Task OnInitializedAsync()
+	{
+		Title = "Swift Payment";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+
+		//return base.OnInitializedAsync();
+		UpdateStatus = new()
+			{
+				PaymentId = 1,
+				SwiftPaymentId = 0,
+				StatusId = 0,
+				AuthorizeBy = ""
+			};
+
+		var authenticationState = await authenticationStateTask;
+		var user = authenticationState?.User;
+		
+		if (user is not null)
+		{
+			if (user.Identity is not null && user.Identity.IsAuthenticated)
+			{
+				UpdateStatus.AuthorizeBy = authenticationState.User.Identity.Name.ToUpper();
+			}
+		}
+		//return base.OnInitializedAsync();
+	}
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		string optDate = SelectedOptDate.ToString("yyyy-MM-dd");
+		string dateType = SelectedDateType;
+		//modelView = (await _httpService2.GetSwiftPTransByDate(optDate, dateType)).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/SwiftPayments/GetSwiftPTransByDate/{optDate}/{dateType}", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No Swift payment records found.";
+			//ConfirmationComponent.Show();
+		}
+	}
+
+	// ** Add for confirmation box
+	protected async Task Confirmed()
+	{
+		IsVisible = true;
+		IsInformationOnly = false;
+		StateHasChanged();
+
+		await Task.FromResult(true);
+	}
+
+	protected async Task Save(bool IsSave)
+	{
+		//if ((SelectedSwiftPaymentId == "") || (Int32.Parse(SelectedSwiftPaymentId) < 1)) return;
+
+		//var claims = new[] {
+		//        new Claim(ClaimTypes.Role, "Payment Control Auth")
+		//    };
+		//var roleToken = _repository.GenerateJwtTokenByClaims(claims);
+
+		if (IsSave)
+		{
+			var result = await _httpServiceRole.UpdateDeleteSwiftPayment(UpdateStatus);
+
+			switch (result)
+			{
+				case 200:
+
+					Message = "Saved Successfully.";
+					IsInformationOnly = true;
+					IsVisible = true;
+
+					await SearchClick();
+					break;
+				case 404:
+
+					Message = "Unsuccessfully saved.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				case 401:
+
+					Message = "Bad internet request.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				default:
+
+					Message = "Error retrieving data from the database.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+			}
+		}
+		else
+		{
+			IsVisible = false;
+		}
+		StateHasChanged();
+
+	}
+	protected void OkClick() => IsVisible = false;
+
+	protected void BackClick() => NavigationManager.NavigateTo($"/PaymentControl");
+
+
+}

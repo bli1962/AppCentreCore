@@ -1,0 +1,141 @@
+﻿@page "/Login"
+
+<div class="container-fluid">
+    <div class="card">
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h3 style="font-weight:normal; color:white;font-family: verdana;">Log in AppCenter</h3>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-6">
+                    <section>
+                        <EditForm Model="@Input" OnValidSubmit="@ValidateUser">
+                            <DataAnnotationsValidator />
+                            @*  <ValidationSummary />*@
+
+                            <div class="col-6 row">
+                                <label for="ID" class="col-form-label">AppCenter ID</label> <br />
+                                <input type="text" id="username" class="form-control col-12" @bind="Input.UserName" placeholder="User Name" />
+                                &nbsp;<ValidationMessage For="@(()=> Input.UserName)" />
+                            </div>
+                            <div class="col-6 row">
+                                <label for="Password" class="col-form-label">AppCenter Password</label> <br />
+                                <input type="password" id="password" class="form-control col-12" @bind="Input.Password" placeholder="AppCenter Password" />
+                                &nbsp;<ValidationMessage For="@(()=> Input.Password)" />
+                            </div>
+                            <div class="col-6 row">
+                                <label for="RememberMe" class="form-control-label"> Remember Me  <input type="checkbox" class="form-control-checkbox" @bind="Input.RememberMe" /></label>
+                            </div>
+                            <br />
+                            <div class="col-6 row">
+                                <span class="col-12"></span>
+                                <div class="well">
+                                    <button class="btn btn-primary btn-width-200 m-1 float-left " type="submit">Login</button>
+                                    <button class="btn btn-primary btn-width-200 m-1" @onclick="(()=>OpenRegister())">Sign up</button>
+                                </div>
+                            </div>
+                            <br />
+                            <div>
+                                <p class="alert-danger font-weight-bold">@StatusMessage</p>
+                            </div>
+                        </EditForm>
+                    </section>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="col-6 row">
+                <ul>
+                    <li><a href="/ForgotPassword">Forgot AppCenter Password</a><br /></li>
+                    <li><a href="/Register">Register as a new user</a><br /></li>
+                    <li><a href="/ActiveAccount">Active Account by Email</a></li>
+                </ul>
+            </div>
+        </div>
+        <br />
+        <SpinLoader IsLoading="IsLoading">
+            <LoadingTemplate>
+                <div class="col-12 bg-primary" style="height:150px; vertical-align:middle">
+                    <br />
+                    <Chase Center="true" Color="#c21f13" Size="70px"></Chase>
+                    <br />
+                </div>
+                <div class="top-row px-4">
+                    <span><h5 class="text-primary"> Loading user's profile, Please wait ... </h5></span>
+                </div>
+            </LoadingTemplate>
+        </SpinLoader>
+        @* @if (IsLoading)
+        {
+        <div class="spinner"></div>
+        } *@
+    </div>
+</div>
+
+
+@using mhcb.Syd.AppCenter.Services;
+@using mhcb.Syd.Models.Account;
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IAccountHttpService _accountHttpService;
+
+@code {
+
+    private LoginInput Input;
+    private string ConfirmationMessage { get; set; }
+    private string StatusMessage { get; set; }
+    private string ErrorMessage { get; set; }
+
+    //private bool CompleteSubmission = true;
+    private bool IsLoading = false;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        Input = new LoginInput();
+        //CompleteSubmission = false;
+        //StateHasChanged();
+
+        return base.OnInitializedAsync();
+    }
+
+    private async Task<bool> ValidateUser()
+    {
+        // step 1: authenticate
+        IsLoading = true;
+        var returnedMessage = await _accountHttpService.SignInAsync(Input);
+        if (returnedMessage != null)
+        {
+            //CompleteSubmission = true;
+            if (returnedMessage == MessageValue.msgAssignedIn)
+            {
+                // step 2: authorize
+                await ((CustomAuthenticationStateProvider)AuthenticationStateProvider).MarkUserAsAuthenticatedAsync(Input.UserName);
+
+                IsLoading = false;
+                //CompleteSubmission = true;
+                NavigationManager.NavigateTo("/");
+                return await Task.FromResult(true);
+            }
+            else
+            {
+                IsLoading = false;
+                //CompleteSubmission = true;
+                StatusMessage = MessageValue.msgInvalidLogin;
+                return await Task.FromResult(false);
+            }
+        }
+        return await Task.FromResult(true);
+    }
+
+    private void OpenRegister()
+    {
+        NavigationManager.NavigateTo("/Register");
+    }
+}

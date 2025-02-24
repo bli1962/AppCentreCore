@@ -1,0 +1,304 @@
+﻿@page "/GetFullFXTransactionByDates"
+@attribute [Authorize]
+
+<div class="container-fluid">
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>FX Transactions by Date</h4>
+			</div>
+		</div>
+
+		@*Section 2 - Search*@
+		<div class="card-body">
+
+
+			@*Section 2 - Parameters*@
+			<div class="row">
+				<div class="col-md-1">
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody thead class="thead-light">
+							<tr>
+								<td colspan="2"><label for="Id" class="col-form-label">Date Type</label></td>
+								<td colspan="2">
+									<select class="form-control form-select-sm" @bind="SelectedDateType">
+										<option value="ContractValueDate">Contract Value Date</option>
+										<option value="DelivaryDate">Delivery Date</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="4"><label for="Id" class="col-form-label">Contract Date</label></td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">From</label></td>
+								<td><input type="date" class="form-control" @bind="SelectedDateFrom" /></td>
+								<td><label for="Id" class="col-form-label">To</label></td>
+								<td><input type="date" class="form-control" @bind="SelectedDateTo" /></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="(()=>SearchClick())">Search</button>
+						<button class="btn btn-outline-info m-1 float-left btn-width-80"  @onclick="(()=>CopyClick())">Copy</button>
+						<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 3 - list display*@
+		<div class="card-footer">
+			@if (modelView == null)
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+
+				<div class="row">
+					<div class="col-sm-12">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:700px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>RefNo</th>
+									<th>ActCd</th>
+									<th>ActAbbr</th>
+									<th>CustAbbr</th>
+									<th>BranchNo</th>
+									<th>SchemeNo</th>
+									<th>Authorized</th>
+									<th>Revise</th>
+									<th>CoverPoFlg</th>
+
+									<th>ContractDateOpe</th>
+									<th>ContractDateValue</th>
+									<th>DelivaryDate</th>
+									<th>DelivaryThru</th>
+									<th>AccrualFrom</th>
+									<th>AccrualTo</th>
+									<th>SettlementValueDate</th>
+
+									<th>ContractCcyCd</th>
+									<th>ContractCcyAmt</th>
+									<th>ContractCcyBal</th>
+									<th>ContractCcyTtb</th>
+
+									<th>EquivCcyCd</th>
+									<th>EquivCcyAmt</th>
+									<th>EquivCcyBal</th>
+									<th>EquivCcyTtb</th>
+									<th>ExchangeRate</th>
+
+									<th>InternalRate</th>
+									<th>Spread</th>
+									<th>AccountEntry</th>
+									<th>Broker</th>
+									<th>Remarks</th>
+									<th>RemarksTrd</th>
+									<th>SwapRefNo</th>
+									<th>StatusCd</th>
+									<th>Addressee</th>
+									<th>Code56</th>
+									<th>Code57</th>
+									<th>Code57a</th>
+									<th>Code58</th>
+									<th>SetInstruction</th>
+									<th>Dealer</th>
+									<th>OptionsFlag</th>
+									<th>ExecutionRefNo</th>
+									<th>AuthorizeBy</th>
+									<th>Status</th>
+									<th>DeletionStatus</th>
+									<th>TranNo</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.RefNo</td>
+									<td>@item.ActCd</td>
+									<td>@item.ActAbbr</td>
+									<td>@item.CustAbbr</td>
+									<td>@item.BranchNo</td>
+									<td>@item.SchemeNo</td>
+									<td>@item.Authorized</td>
+									<td>@item.Revise</td>
+									<td>@item.CoverPoFlg</td>
+
+									<td>@item.ContractDateOpe.ToString("dd/MM/yyyy")</td>
+									<td>@item.ContractDateValue.ToString("dd/MM/yyyy")</td>
+									<td>@item.DelivaryDate.ToString("dd/MM/yyyy")</td>
+
+									<td>@item.DelivaryThru.ToString("dd/MM/yyyy")</td>
+									<td>@item.AccrualFrom.ToString("dd/MM/yyyy")</td>
+									<td>@item.AccrualTo.ToString("dd/MM/yyyy")</td>
+									<td>@item.SettlementValueDate.ToString("dd/MM/yyyy")</td>
+
+									<td>@item.ContractCcyCd</td>
+									<td>@item.ContractCcyAmt.ToString("0,0.00")</td>
+									<td>@item.ContractCcyBal.ToString("0,0.00")</td>
+									<td>@item.ContractCcyTtb</td>
+
+									<td>@item.EquivCcyCd</td>
+									<td>@item.EquivCcyAmt.ToString("0,0.00")</td>
+									<td>@item.EquivCcyBal.ToString("0,0.00")</td>
+									<td>@item.EquivCcyTtb</td>
+									<td>@item.ExchangeRate</td>
+
+									<td>@item.InternalRate</td>
+									<td>@item.Spread</td>
+									<td>@item.AccountEntry</td>
+									<td>@item.Broker</td>
+									<td>@item.Remarks</td>
+									<td>@item.RemarksTrd</td>
+									<td>@item.SwapRefNo</td>
+									<td>@item.StatusCd</td>
+									<td>@item.Addressee</td>
+									<td>@item.Code56</td>
+									<td>@item.Code57</td>
+									<td>@item.Code57a</td>
+									<td>@item.Code58</td>
+									<td>@item.SetInstruction</td>
+									<td>@item.Dealer</td>
+									<td>@item.OptionsFlag</td>
+									<td>@item.ExecutionRefNo</td>
+									<td>@item.AuthorizeBy</td>
+									<td>@item.Status</td>
+									<td>@item.DeletionStatus</td>
+									<td>@item.TranNo</td>
+								</RowTemplate>
+								<TableFooter>
+									<th>RefNo</th>
+									<th>ActCd</th>
+									<th>ActAbbr</th>
+									<th>CustAbbr</th>
+									<th>BranchNo</th>
+									<th>SchemeNo</th>
+									<th>Authorized</th>
+									<th>Revise</th>
+									<th>CoverPoFlg</th>
+
+									<th>ContractDateOpe</th>
+									<th>ContractDateValue</th>
+									<th>DelivaryDate</th>
+									<th>DelivaryThru</th>
+									<th>AccrualFrom</th>
+									<th>AccrualTo</th>
+									<th>SettlementValueDate</th>
+
+									<th>ContractCcyCd</th>
+									<th>ContractCcyAmt</th>
+									<th>ContractCcyBal</th>
+									<th>ContractCcyTtb</th>
+
+									<th>EquivCcyCd</th>
+									<th>EquivCcyAmt</th>
+									<th>EquivCcyBal</th>
+									<th>EquivCcyTtb</th>
+									<th>ExchangeRate</th>
+
+									<th>InternalRate</th>
+									<th>Spread</th>
+									<th>AccountEntry</th>
+									<th>Broker</th>
+									<th>Remarks</th>
+									<th>RemarksTrd</th>
+									<th>SwapRefNo</th>
+									<th>StatusCd</th>
+									<th>Addressee</th>
+									<th>Code56</th>
+									<th>Code57</th>
+									<th>Code57a</th>
+									<th>Code58</th>
+									<th>SetInstruction</th>
+									<th>Dealer</th>
+									<th>OptionsFlag</th>
+									<th>ExecutionRefNo</th>
+									<th>AuthorizeBy</th>
+									<th>Status</th>
+									<th>DeletionStatus</th>
+									<th>TranNo</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>				
+			}
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+
+@inject IHttpService<FxTransactionCompleteView> _httpService;
+@inject IJSRuntime IJSRuntime;
+@inject NavigationManager navigationManager;
+
+@code {
+	public IEnumerable<FxTransactionCompleteView> modelView { get; set; } = new List<FxTransactionCompleteView>();
+	public DateTime SelectedDateFrom { get; set; } = DateTime.Today;
+	public DateTime SelectedDateTo { get; set; } = DateTime.Today;
+	public string SelectedDateType { get; set; } = "ContractValueDate";
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+
+	protected override void OnInitialized()
+	{
+		Title = "FX Transaction";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+	}
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		string dateFrom = SelectedDateFrom.ToString("yyyy-MM-dd");
+		string dateTo = SelectedDateTo.ToString("yyyy-MM-dd");
+		string dateType = SelectedDateType;
+		//modelView = (await _httpService2.GetFullFXTransactionByDates(dateFrom, dateTo, dateType)).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/FXTransactions/GetFullFXTransactionByDates/{dateFrom}/{dateTo}/{dateType}", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No records found.";
+		}
+	}
+	protected void Save(bool IsSave) { IsVisible = IsSave; }
+	protected void OkClick() => IsVisible = false;
+
+	protected async Task CopyClick()
+	{
+
+		await IJSRuntime.InvokeAsync<object>("selectElementContents", "SelectedReport");
+		await IJSRuntime.InvokeVoidAsync("alert", "Now you can paste the context to excel file.");
+	}
+	protected void BackClick() => navigationManager.NavigateTo($"/AuditReport");
+
+}

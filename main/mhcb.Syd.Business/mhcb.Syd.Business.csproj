@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Label="Globals">
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Repositive\**" />
+    <Compile Remove="Repository\Account\**" />
+    <Compile Remove="Repository\Utility\**" />
+    <EmbeddedResource Remove="Repositive\**" />
+    <EmbeddedResource Remove="Repository\Account\**" />
+    <EmbeddedResource Remove="Repository\Utility\**" />
+    <None Remove="Repositive\**" />
+    <None Remove="Repository\Account\**" />
+    <None Remove="Repository\Utility\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="mhcb.Syd.Business.csproj.vspscc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper.StrongName" Version="2.0.123" />
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="mhcb.syd.Encryption" Version="2.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.28" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.28" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="6.1.0" />
+    <PackageReference Include="MSMQ.Messaging" Version="1.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\mhcb.Syd.DataAccess\mhcb.Syd.DataAccess.csproj" />
+    <ProjectReference Include="..\mhcb.Syd.Interface\mhcb.Syd.Interface.csproj" />
+    <ProjectReference Include="..\mhcb.Syd.Models\mhcb.Syd.Models.csproj" />
+  </ItemGroup>
+
+</Project>

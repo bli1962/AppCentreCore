@@ -1,0 +1,207 @@
+﻿@page "/GetCovenantRatio"
+@attribute [Authorize]
+
+<div class="container-fluid">
+
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>Covenant Ratio Transaction</h4>
+			</div>
+		</div>
+
+		@*Section 2 - Search*@
+		<div class="card-body">
+
+			@*Section 2 - Parameters*@
+			<div class="row">
+				<div class="col-sm-4">
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody thead class="thead-light">
+							<tr>
+								<td colspan="2"><label for="Id" class="col-form-label">Covenant Type</label></td>
+								<td colspan="2">
+									<select class="form-control  text-180" @bind="SelectedCovenantType">
+										<option value="Covenant">Covenant</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2"><label for="Id" class="col-form-label">Date Type</label></td>
+								<td colspan="2">
+									<select class="form-control form-select-sm text-180" @bind="SelectedDateType">
+										@*<option value="CovStartDate">Covenant Start Date</option>
+										<option value="CovEndDate">Covenant End Date</option>*@
+										<option value="CovRecReptDate">Record Report Date</option>
+										<option value="CovRecDueDate">Record Due Date</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="4"><label for="Id" class="col-form-label">Operation Date</label></td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">From</label></td>
+								<td><input type="date" class="form-control" @bind="SelectedDateFrom" /></td>
+								<td><label for="Id" class="col-form-label">To</label></td>
+								<td><input type="date" class="form-control" @bind="SelectedDateTo" /></td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="(()=>SearchClick())">Search</button>
+						<button class="btn btn-outline-info m-1 float-left btn-width-80"  @onclick="(()=>CopyClick())">Copy</button>
+						<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 3 - list display*@
+		<div class="card-footer">
+			@if (modelView == null && SelectedCovenantType != "")
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+
+				<div class="row">
+					<div class="col-sm-12">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:700px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>Covenant No</th>
+									<th>Record No</th>
+									<th>Cust. Abbr</th>
+									<th>CCIF Name</th>
+									<th>Type</th>
+									<th>Condition Group</th>
+
+									<th>Rate</th>
+									<th>Rate Adj</th>
+
+									<th>Adj Date</th>
+									<th>Report Date</th>
+									<th>Due Date</th>
+									<th>Received Date</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.COVENANT_NO</td>
+									<td>@item.RECORD_NO</td>
+									<td>@item.CUST_ABBR</td>
+									<td>@item.CCIF_NAME</td>
+									<td>@item.CONDITION_DESC</td>
+									<td>@item.CONDITION_GROUP_DESC</td>
+
+									<td>@item.RATE</td>
+									<td>@item.RATE_ADJ</td>
+
+									<td>@item.DATE_RECIEVED_ADJ.ToString("dd/MM/yyyy")</td>
+									<td>@item.REPORT_DATE.ToString("dd/MM/yyyy")</td>
+									<td>@item.DUE_DATE.ToString("dd/MM/yyyy")</td>
+									<td>@item.DATE_RECIEVED.ToString("dd/MM/yyyy")</td>
+								</RowTemplate>
+								<TableFooter>
+									<th>Covenant No</th>
+									<th>Record No</th>
+									<th>Cust. Abbr</th>
+									<th>CCIF Name</th>
+									<th>Type</th>
+									<th>Condition Group</th>
+
+									<th>Rate</th>
+									<th>Rate Adj</th>
+
+									<th>Adj Date</th>
+									<th>Report Date</th>
+									<th>Due Date</th>
+									<th>Received Date</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>
+							
+			}
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+
+@inject IHttpService<CovenantRatioView> _httpService ;
+@inject IJSRuntime IJSRuntime ;
+@inject NavigationManager navigationManager ;
+
+@code {
+	public IEnumerable<CovenantRatioView> modelView { get; set; } = new List<CovenantRatioView>();
+
+	public string SelectedCovenantType { get; set; } = "Covenant";
+	public string SelectedDateType { get; set; } = "CovStartDate";
+	public DateTime SelectedDateFrom { get; set; } = DateTime.Today;
+	public DateTime SelectedDateTo { get; set; } = DateTime.Today;
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+
+	protected override void OnInitialized()
+	{
+		Title = "Covenant Transaction";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+	}
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		string covenantType = SelectedCovenantType;
+		string dateType = SelectedDateType;
+		string dateFrom = SelectedDateFrom.ToString("yyyy-MM-dd");
+		string dateTo = SelectedDateTo.ToString("yyyy-MM-dd");
+		//modelView = (await _httpService2.GetCovenantRatio(covenantType, dateType, dateFrom, dateTo)).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/CovenantMasters/GetCovenantRatio/{covenantType}/{dateType}/{dateFrom}/{dateTo}", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No records found.";
+		}
+	}
+	protected void Save(bool IsSave) { IsVisible = IsSave; }
+	protected void OkClick() => IsVisible = false;
+	protected async Task CopyClick()
+	{
+		await IJSRuntime.InvokeAsync<object>("selectElementContents", "SelectedReport");
+		await IJSRuntime.InvokeVoidAsync("alert", "Now you can paste the context to excel file.");
+	}
+	protected void BackClick() => navigationManager.NavigateTo($"/ELCSReport");
+
+}

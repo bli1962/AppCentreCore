@@ -1,0 +1,13 @@
+﻿@mhcb.Syd.Api_HostAddress = https://localhost:44333
+
+GET {{mhcb.Syd.Api_HostAddress}}/api/tranchecovenanttype/GetTrancheType
+
+###
+
+GET {{mhcb.Syd.Api_HostAddress}}/api/fxtransactionexts/GetFXGID
+
+###
+
+GET {{mhcb.Syd.Api_HostAddress}}/api/users/GetGuidePasswordByUserId/string
+liaaba
+###

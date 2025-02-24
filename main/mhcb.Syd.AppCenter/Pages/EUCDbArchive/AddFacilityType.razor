@@ -1,0 +1,249 @@
+﻿@page "/AddFacilityType"
+
+@attribute [Authorize]
+<div class="container-fluid">
+
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>Add MUREX Credit Facility Type</h4>
+			</div>
+		</div>
+
+		@*Section 2 - Edit form*@
+		<div class="card-body">
+			<div class="row ">
+				<div class="col-sm-4">
+					<EditForm Model="@facilityTypeAttr" OnValidSubmit="Confirmed">
+						<DataAnnotationsValidator />
+						<ValidationSummary />
+
+						<table class="table table-sm table-bordered table-primary Col-Head-Left">
+							<tbody>
+								<tr>
+									<td><label for="Id" class="col-form-label">GID Reference No</label></td>
+									<td><InputText id="RefNo" @bind-Value="facilityTypeAttr.RefNo" class="form-control" placeholder="GID Reference No" /></td>
+								</tr>
+								<tr>
+									<td><label for="Id" class="col-form-label">Facility Type</label></td>
+									<td>
+										<InputSelect @bind-Value="facilityTypeAttr.FacilityType" class="form-control form-select-sm">
+											<option value="Committed">Committed</option>
+											<option value="Uncommitted">Uncommitted</option>
+											<option value="Liquidity">Liquidity</option>
+										</InputSelect>
+									</td>
+								</tr>
+								<tr>
+									<td><label for="Id" class="col-form-label">Authorized By</label></td>
+									<td><InputText id="authorizeBy" @bind-Value="facilityTypeAttr.AuthorizeBy" class="form-control" readonly /></td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="well">
+							<button class="btn btn-outline-primary m-1 float-left" type="submit">Add GID</button>
+						</div>
+					</EditForm>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 3 - Search*@
+		<div class="card-body">
+			<div class="row">
+				<div class="col-sm-4">
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left " @onclick="(()=>SearchClick())">Get Facility Type</button>
+					</div>
+				</div>
+			</div>
+
+			@if (modelView == null)
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+				<div class="row">
+					<div class="col-sm-4">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="width:600px;height:600px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>REF Number</th>
+									<th>Facility Type</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.RefNo</td>
+									<td>@item.FacilityType</td>
+								</RowTemplate>
+								<TableFooter>
+									<th>REF Number</th>
+									<th>Facility Type</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>					
+			}
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+@inject IFacilityTypeHttpService _httpServiceRole;
+@inject IHttpService<FacilityTypeOverride> _httpService;
+@inject IJSRuntime IJSRuntime;
+@inject IHttpContextAccessor _httpContext;
+@inject NavigationManager NavigationManager;
+@inject IWebHostEnvironment Env;
+
+@code {
+
+	[CascadingParameter]
+	private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+	public IEnumerable<FacilityTypeOverride> modelView { get; set; } = new List<FacilityTypeOverride>();
+	public InputFacilityType facilityTypeAttr;
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+
+	protected override async Task OnInitializedAsync()
+	{
+		Title = "Add MUREX Facility Type";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+
+		facilityTypeAttr = new InputFacilityType()
+			{
+				RefNo = "",
+				FacilityType = "Committed",
+				AuthorizeBy = ""
+			};
+
+		var authenticationState = await authenticationStateTask;
+		var user = authenticationState?.User;
+		if (user is not null)
+		{
+			if (user.Identity is not null && user.Identity.IsAuthenticated)
+			{
+				facilityTypeAttr.AuthorizeBy = authenticationState.User.Identity.Name.ToUpper();
+			}
+		}
+		//return base.OnInitializedAsync();
+	}
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		//modelView = (await _httpService2.GetFacilityType()).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/FacilityType/GetFacilityTypeOverride", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			//await IJSRuntime.InvokeVoidAsync("AlertMessage", "No Bank Information Found.");
+			//ConfirmationComponent.Show();
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No MUREX Facility Type records found.";
+		}
+	}
+
+	// Link to EventCallback InformationChanged of ConfirmationBox
+	protected void OkClick() => IsVisible = false;
+
+	// ** Add for confirmation box
+	protected async Task Confirmed()
+	{
+		Message = "Do you want to save?";
+		IsVisible = true;
+		IsInformationOnly = false;
+		StateHasChanged();
+
+		await Task.FromResult(true);
+	}
+
+	// Link to EventCallback ConfirmationChanged of ConfirmationBox
+	protected async Task Save(bool IsSave)
+	{
+		if (IsSave)
+		{
+			var result = await _httpServiceRole.InsertFacilityType(facilityTypeAttr);
+
+			switch (result)
+			{
+				case 200:
+
+					Message = "Saved Successfully.";
+					IsInformationOnly = true;
+					IsVisible = true;
+
+					await SearchClick();
+					break;
+				case 404:
+
+					Message = "Unsuccessfully saved.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				case 401:
+
+					Message = "Bad internet request.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				default:
+
+					Message = "Error retrieving data from the database.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+			}
+		}
+		else
+		{
+			IsVisible = false;
+		}
+		StateHasChanged();
+
+	}
+
+	protected void BackClick() => NavigationManager.NavigateTo($"/ELCS");
+
+
+	protected void ConfirmClick(bool blnConfirm)
+	{
+		if (blnConfirm)
+		{
+			NavigationManager.NavigateTo("/ELCS");
+		}
+	}
+}

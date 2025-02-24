@@ -1,0 +1,91 @@
+﻿@if (@IsVisible)
+{
+	<div class="modal fade show d-block" id="diagalModal" tabindex="-1" data-keyboard="false" data-backdrop="static" role="dialog">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+
+				<div class="modal-header">
+					<h5 class="modal-title align-content-sm-center text-info" id="ModalLabel">@Title</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"
+							@onclick="() => OnConfirmationChange(false)">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="modal-body">
+					<form>
+						<h4 class="modal-title">@Message</h4>
+					</form>
+				</div>
+
+				<div class="modal-footer">
+					@if (@IsInformationOnly)
+					{
+						<button type="button" class="btn btn-info" data-dismiss="modal" style="width: 100px"
+							@onclick="() => OnInformationChange()">@InfoButtonText
+						</button>
+					} 
+					else
+					{
+						<button type="button" class="btn btn-danger" data-dismiss="modal" style="width: 100px"
+							@onclick="() => OnConfirmationChange(false)">@NoButtonText
+						</button>
+						<button type="button" class=@BtnClass style="width: 100px"
+							@onclick="() => OnConfirmationChange(true)">@YesButtonText
+						</button>
+					}					
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+
+@code{
+	[Parameter]
+	public bool IsVisible { get; set; }
+	[Parameter]
+	public bool IsInformationOnly { get; set; }
+
+
+	[Parameter]
+	public string Title { get; set; }  
+	[Parameter]
+	public string Message { get; set; }  
+	[Parameter]
+	public string YesButtonText { get; set; } 
+	[Parameter]
+	public string NoButtonText { get; set; }
+	[Parameter]
+	public string InfoButtonText { get; set; }
+	[Parameter]
+	public string BtnClass { get; set; }  
+
+	protected override void OnInitialized()
+	{
+		// ShowConfirmation = false;
+	}
+
+	public void Show()
+	{
+		IsVisible = true;
+		StateHasChanged();
+	}
+
+	[Parameter]
+	public EventCallback<bool> ConfirmationChanged { get; set; }
+	[Parameter]
+	public EventCallback<bool> InformationChanged { get; set; }
+
+	protected async Task OnConfirmationChange(bool value)
+	{
+		IsVisible = false;
+		await ConfirmationChanged.InvokeAsync(value);
+	}
+
+	protected async Task OnInformationChange()
+	{
+		IsVisible = false;
+		await InformationChanged.InvokeAsync();
+	}
+}

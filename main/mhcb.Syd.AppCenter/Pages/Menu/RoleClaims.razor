@@ -1,0 +1,81 @@
+﻿@using System.Security.Claims;
+@using Microsoft.AspNetCore.Components.Authorization;
+@using mhcb.Syd.AppCenter.Services;
+@using mhcb.Syd.AppCenter.Services.RoleBase.Interface;
+@using mhcb.Syd.AppCenter.Services.Generic
+
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject IHttpService<string> _httpService
+
+@if (IsAuthorised == true)
+{
+   @* <div class="top-row px-4">
+        <span>User's profile has loaded.</span>
+    </div>*@
+}
+
+@code {
+    bool IsAuthenticated;
+    bool IsAuthorised = false;
+
+    ClaimsIdentity identity;
+    ClaimsPrincipal principal;
+
+    [Parameter]
+    public bool Value { get; set; }
+    [Parameter]
+    public EventCallback<bool> CallBackMethod { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        Console.WriteLine("RoleClaims components - OnInitializedAsync");
+
+        var authstate = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authstate.User;
+
+        var priciple = (ClaimsPrincipal)user;               // get current Claimed principle
+        var clone = priciple.Clone();                       // Clone current Claimed principle
+        var newIdentity = (ClaimsIdentity)clone.Identity;   // get identity of clone principle
+
+        if (user.Identity.IsAuthenticated)
+        {
+            IsAuthenticated = true;
+
+            if (user.Identity.Name != null)
+            {
+                List<string> roles = (await _httpService.GetAllAsync($"api/UserSecuritys/GetAuthorizations/{user.Identity.Name}", null)).ToList();
+
+                //var claims = new List<Claim>();
+                //foreach (var roleDesc in roles)
+                //{
+                //    claims.Add(new Claim(ClaimTypes.Role, roleDesc));
+                //}
+                //identity = new ClaimsIdentity(claims, authenticationType: "apiauth_type");
+
+                foreach (var roleDesc in roles)
+                {
+                    var claim = new Claim(newIdentity.RoleClaimType, (roleDesc));
+                    newIdentity.AddClaim(claim);
+                }
+                newIdentity.AddClaim(new Claim(ClaimTypes.Name, user.Identity.Name));
+
+                // Use EventCallback
+                Value = true;
+                await CallBackMethod.InvokeAsync(Value);
+            }
+            else
+            {
+                identity = new ClaimsIdentity();
+            }
+
+            // 3. Create new claimed principal from based on clone identity
+            principal = new ClaimsPrincipal(newIdentity);
+
+            //await NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(principal)));
+            await Task.FromResult(new AuthenticationState(principal));
+        }
+
+        await base.OnInitializedAsync();
+    }
+}
+

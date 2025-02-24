@@ -1,0 +1,202 @@
+﻿@page "/GetFXFCustByAbbr";
+@attribute [Authorize]
+
+<div class="container-fluid">
+
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>Search Customer by Customer Abbreviation</h4>
+			</div>
+		</div>
+
+		@*Section 2 - Search*@
+		<div class="card-body">
+
+			@*Section 2 - Parameters*@
+			<div class="row">
+				<div class="col-sm-4">
+					<EditForm Model="@searchModel" OnValidSubmit="@SearchClick">
+						<DataAnnotationsValidator />
+						<ValidationSummary />
+
+						<table class="table table-sm table-bordered table-primary Col-Head-Left">
+							<tbody thead class="thead-light">
+								<tr>
+									<td><label for="Id" class="col-form-label">Customer Abbr</label></td>
+									<td>
+										<InputText class="form-control" placeholder="Customer Abbr." @bind-Value="searchModel.CustAbbr" />
+										<ValidationMessage For="@(() => searchModel.CustAbbr)" />
+									</td>
+								</tr>
+								<tr>
+									<td><label for="Id" class="col-form-label">Branch No</label></td>
+									<td>
+										<InputText class="form-control" placeholder="Branch No" @bind-Value="searchModel.BranchNo" />
+										<ValidationMessage For="@(() => searchModel.BranchNo)" />
+									</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="well">
+							<button class="btn btn-outline-primary m-1 float-left btn-width-80" type="submit">Search</button>
+							<button class="btn btn-outline-info m-1 float-left btn-width-80"  @onclick="(()=>CopyClick())">Copy</button>
+						</div>
+					</EditForm>
+					<div class="well">
+						<button class="btn btn-outline-info m-1 float-left btn-width-80"  @onclick="(()=>CopyClick())">Copy</button>
+						<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 3 - list display*@
+		<div class="card-body">
+			@if (modelView == null)
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+				<div class="row">
+					<div class="col-sm-12">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:700px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>Short Name</th>
+									<th>Abbreviation</th>
+									<th>Dept Code</th>
+									<th>Tax Code</th>
+									<th>IBOS NO</th>
+									<th>Location</th>
+									<th>CCIF</th>
+									<th>Category</th>
+									<th>Email</th>
+									<th>Country</th>
+									<th>Active</th>
+									<th>Status</th>
+									<th>Deletion Status</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.SHORTNAME</td>
+									<td>@item.Abbreviation</td>
+									<td>@item.DeptCode</td>
+									<td>@item.TaxCode</td>
+									<td>@item.IBOSNO</td>
+									<td>@item.Location</td>
+									<td>@item.CCIF</td>
+									<td>@item.Category</td>
+									<td>@item.Email</td>
+									<td>@item.Country</td>
+									<td>@item.Active</td>
+									<td>@item.STATUS</td>
+									<td>@item.DeletionStatus</td>
+								</RowTemplate>
+								<TableFooter>
+									<th>Short Name</th>
+									<th>Abbreviation</th>
+									<th>Dept Code</th>
+									<th>Tax Code</th>
+									<th>IBOS NO</th>
+									<th>Location</th>
+									<th>CCIF</th>
+									<th>Category</th>
+									<th>Email</th>
+									<th>Country</th>
+									<th>Active</th>
+									<th>Status</th>
+									<th>Deletion Status</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>										
+			}
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+@inject IHttpService<FXFCustomerView> _httpService;
+@inject IJSRuntime IJSRuntime ;
+@inject NavigationManager navigationManager ;
+
+@code {
+
+	public IEnumerable<FXFCustomerView> modelView { get; set; } = new List<FXFCustomerView>();
+
+	protected CustSearchModel searchModel = new()
+		{
+			CustAbbr = "",
+			BranchNo = "751",
+			CustName = "Dummy"
+		};
+
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+
+	protected override void OnInitialized()
+	{
+		Title = "FX Customer";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+	}
+	protected void Save(bool IsSave) { IsVisible = IsSave; }
+	protected void OkClick() => IsVisible = false;
+
+	protected async Task SearchClick()
+	{
+		//if ((searchModel.CustAbbr == "")) return;
+
+		modelView = null;
+		string abbreviation = searchModel.CustAbbr;
+		//modelView = (await _httpService2.GetMMCustByAbbr(abbreviation)).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/FXFCusts/GetMMCustByAbbr/{abbreviation}", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			//await IJSRuntime.InvokeVoidAsync("AlertMessage", "No Bank Information Found.");
+			//ConfirmationComponent.Show();
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No records found.";
+		}
+	}
+
+	protected async Task CopyClick()
+	{
+		await IJSRuntime.InvokeAsync<object>("selectElementContents", "SelectedReport");
+		await IJSRuntime.InvokeVoidAsync("alert", "Now you can paste the context to excel file.");
+	}
+
+	protected void BackClick() => navigationManager.NavigateTo($"/GUIDEReport");
+
+
+}

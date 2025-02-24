@@ -1,0 +1,176 @@
+﻿@page "/GetBankInfByStatus"
+
+@attribute [Authorize]
+<div class="container-fluid">
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>Search Bank Information by Status</h4>
+			</div>
+		</div>
+
+		@*Section 2 - Search*@
+		<div class="card-body">
+
+			@*Section 2 - Parameters*@
+			<div class="row">
+				<div class="col-sm-4">
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody thead class="thead-light">
+							<tr>
+								<td><label for="Id" class="col-form-label">Bank Inf Status</label></td>
+								<td>
+									<select class="custom-select-sm form-select-sm" id="status" @bind="SelectStatus">
+										<option value="F">Finalized</option>
+										<option value="M">Modified</option>
+										<option value="V">Verified</option>
+										<option value="S">Submitted</option>
+										<option value="D">Closed</option>
+										<option value="All">All</option>
+									</select>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="(()=>SearchClick())">Search</button>
+						<button class="btn btn-outline-info m-1 float-left btn-width-80"  @onclick="(()=>CopyClick())">Copy</button>
+						<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 3 - list display*@
+		<div class="card-footer">
+			@if (modelView == null && SelectStatus != "")
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+				<div class="row">
+					<div class="col-sm-12">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:700px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>SWIFT ID</th>
+									<th>BRANCH NO</th>
+									<th>ACRONYM</th>
+									<th>NAME & ADDRESS 1</th>
+									<th>NAME & ADDRESS 2</th>
+									<th>NAME & ADDRESS 3</th>
+									<th>CCY</th>
+									<th>SETTLE BANK ID</th>
+									<th>STATUS</th>
+									<th>Deletion Status</th>
+									<th>AUTHORIZE BY</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.SWIFT_ID</td>
+									<td>@item.BRANCH_NO</td>
+									<td>@item.ACRONYM</td>
+									<td>@item.NAME_ADDR_1</td>
+									<td>@item.NAME_ADDR_2</td>
+									<td>@item.NAME_ADDR_3</td>
+									<td>@item.CCY</td>
+									<td>@item.MM_SETTL_BANK_ID</td>
+									<td>@item.STATUS</td>
+									<td>@item.DELETION_STATUS</td>
+									<td>@item.AUTHORIZE_BY</td>
+								</RowTemplate>
+								<TableFooter>
+									<th>SWIFT ID</th>
+									<th>BRANCH NO</th>
+									<th>ACRONYM</th>
+									<th>NAME & ADDRESS 1</th>
+									<th>NAME & ADDRESS 2</th>
+									<th>NAME & ADDRESS 3</th>
+									<th>CCY</th>
+									<th>SETTLE BANK ID</th>
+									<th>STATUS</th>
+									<th>Deletion Status</th>
+									<th>AUTHORIZE BY</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>					
+			}
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+@inject IHttpService<BankInfView> _httpService;
+@inject IJSRuntime IJSRuntime;
+@inject NavigationManager navigationManager;
+
+@code {
+	public IEnumerable<BankInfView> modelView { get; set; } = new List<BankInfView>();
+	public string SelectStatus { get; set; } = "F";
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+
+	protected override void OnInitialized()
+	{
+		Title = "Bank Information";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+	}
+	protected void Save(bool IsSave) { IsVisible = IsSave; }
+	protected void OkClick() => IsVisible = false;
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		string status = SelectStatus;
+		//modelView = (await _httpService2.GetBIFByStatus(status)).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/BankInfs/GetBIFByStatus/{status}", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No records found.";
+		}
+	}
+	protected async Task CopyClick()
+	{
+
+		await IJSRuntime.InvokeAsync<object>("selectElementContents", "SelectedReport");
+		await IJSRuntime.InvokeVoidAsync("alert", "Now you can paste the context to excel file.");
+	}
+
+	protected void BackClick() => navigationManager.NavigateTo($"/GUIDEReport");
+
+
+}

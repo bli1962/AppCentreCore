@@ -1,0 +1,1026 @@
+﻿@page "/ListRatesUpload"
+@attribute [Authorize]
+
+<div class="container-fluid">
+
+    <div class="card">
+
+        @*Section 1 - Title *@
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h4>GUIDE Rates Upload</h4>
+            </div>
+        </div>
+
+        @*Section 2 - Body*@
+        <div class="card-body">
+            @*Section 2 - Search Parameters*@
+            <div class="col-12 row">
+                <section>
+                    <table class="table table-sm table-bordered table-primary Col-Head-Left">
+                        <tbody thead class="thead-light">
+                            <tr>
+                                <td>
+                                    <label for="Id" class="col-form-label">Upload Date</label>
+                                </td>
+                                <td>
+                                    <input type="date" class="form-control" @bind="SelectedOptDate" @onblur="HandleOnDateChange" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                @if (ratesAvailablity != null)
+                {
+                    <section>
+                        <ul>
+                            <li>
+                                <div>
+                                    <label style="color: red; font-size: 16px;">Is FX rate available? @FXCounter </label>
+                                    <input type="checkbox" @bind="isCheckedFX" />
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <label style="color: red; font-size: 16px;"> Is Revalution rate available? @RevalutionCounter </label>
+                                    <input type="checkbox" @bind="isCheckedRevalution" />
+
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <label style="color: red; font-size: 16px;"> Is Swap rate available? @SwapCounter </label>
+                                    <input type="checkbox" @bind="isCheckedSwap" />
+
+                                </div>
+                            </li>
+                        </ul>
+                    </section>
+                    <section>
+                        <ul>
+                            <li>
+                                <div>
+                                    <label style="color: blue; font-size: 16px;"> Is Deposit rate (EOM) available? @DepositsCounter </label>
+                                    <input type="checkbox" @bind="isCheckedDeposits" />
+
+                                </div>
+                            </li>
+                            <li>
+                                <div>
+                                    <label style="color: blue; font-size: 16px;"> Is BIS rate (EOM) available?  @BISCounter</label>
+                                    <input type="checkbox" @bind="isCheckedBIS" />
+                                </div>
+                            </li>
+                        </ul>
+                    </section>
+                }
+                else
+                {
+                    <section>
+                        <div class="col-12" style="background-color: white; height:100px; width:500px; vertical-align:middle">
+                            <Chase Center="true" Color="#c21f13" Size="50px"></Chase>
+                        </div>
+                    </section>
+                }
+            </div>
+
+            @*Section  - Function/buttons *@
+            <div class="col-12 row">
+                <div class="panel panel-primary" style="color: blue; border-color: #ffffff; ">
+                    <div class="panel-body">
+                        <button class="btn btn-primary m-1 float-left" @onclick="(()=>RefreshRateUploadCtrlAll())">Refresh All</button>
+                        <AuthorizeView Roles="FX_RATE_Authorise">
+                            <Authorized>
+                                <button class="btn btn-primary m-1" @onclick="(()=>UploadAllDailyRates())">Upload Daily Rates All</button>
+                            </Authorized>
+                        </AuthorizeView>
+                        <button class="btn btn-primary m-1" onclick="location.href='./'">Go Back</button>
+                    </div>
+                </div>
+            </div>
+
+
+            @*Section - results *@
+            <div class="col-12 row">
+                @if (ratesGbaseUploadCtl != null)
+                {
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:750px;">
+                                <TableTemplate Items="ListItems">
+                                    <TableHeader>
+                                        <th>Upload Date</th>
+                                        <th>Rate_Type</th>
+                                        <AuthorizeView Roles="FX_RATE_Authorise">
+                                            <Authorized>
+                                                <th>Upload</th>
+                                                <th>Refresh</th>
+                                            </Authorized>
+                                        </AuthorizeView>
+                                        <th>Branch</th>
+
+                                        <th>ARS</th>
+                                        <th>BRL</th>
+                                        <th>CAD</th>
+                                        <th>CHF</th>
+                                        <th>CLP</th>
+                                        <th>CNY</th>
+                                        <th>COP</th>
+                                        <th>EUR</th>
+                                        <th>GBP</th>
+                                        <th>HK$</th>
+                                        <th>IDR</th>
+                                        <th>INR</th>
+                                        <th>YEN</th>
+                                        <th>KRW</th>
+                                        <th>MXN</th>
+                                        <th>MYR</th>
+                                        <th>NOK</th>
+                                        <th>NZ$</th>
+                                        <th>PEN</th>
+                                        <th>PHP</th>
+                                        <th>SEK</th>
+                                        <th>SGD</th>
+                                        <th>THB</th>
+                                        <th>TWD</th>
+                                        <th>US$</th>
+                                        <th>VND</th>
+                                        <th>ZAR</th>
+                                    </TableHeader>
+                                    <RowTemplate Context="ViewModel">
+                                        <RatesUploadDetails ViewModel="ViewModel" CallBackMethodFresh="Refresh" CallBackMethodUpload="UploadRateClick"></RatesUploadDetails>
+                                    </RowTemplate>
+                                    <TableFooter>
+                                        <th>Upload Date</th>
+                                        <th>Rate_Type</th>
+                                        <AuthorizeView Roles="FX_RATE_Authorise">
+                                            <Authorized>
+                                                <th>Upload</th>
+                                                <th>Refresh</th>
+                                            </Authorized>
+                                        </AuthorizeView>
+                                        <th>Branch</th>
+
+                                        <th>ARS</th>
+                                        <th>BRL</th>
+                                        <th>CAD</th>
+                                        <th>CHF</th>
+                                        <th>CLP</th>
+                                        <th>CNY</th>
+                                        <th>COP</th>
+                                        <th>EUR</th>
+                                        <th>GBP</th>
+                                        <th>HK$</th>
+                                        <th>IDR</th>
+                                        <th>INR</th>
+                                        <th>YEN</th>
+                                        <th>KRW</th>
+                                        <th>MXN</th>
+                                        <th>MYR</th>
+                                        <th>NOK</th>
+                                        <th>NZ$</th>
+                                        <th>PEN</th>
+                                        <th>PHP</th>
+                                        <th>SEK</th>
+                                        <th>SGD</th>
+                                        <th>THB</th>
+                                        <th>TWD</th>
+                                        <th>US$</th>
+                                        <th>VND</th>
+                                        <th>ZAR</th>
+                                    </TableFooter>
+                                </TableTemplate>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @* <div class="spinner"></div> *@
+                    <div class="col-12" style="background-color: lightgray; height:400px; vertical-align:middle">
+                        <br /><br />
+                        <Chase Center="true" Color="#c21f13" Size="70px"></Chase>
+                    </div>
+                }
+            </div>
+        </div>
+
+        @*Section 3 - footer section*@
+        @if (ListItems != null && ListItems.Count != 0)
+        {
+            <div class="card-footer">
+                <div class="panel-body">
+                    <button class="btn btn-primary m-1 float-left" @onclick="(()=>RefreshRateUploadCtrlAll())">Refresh All</button>
+                    <AuthorizeView Roles="FX_RATE_Authorise">
+                        <Authorized>
+                            <button class="btn btn-primary m-1" @onclick="(()=>UploadAllDailyRates())">Upload Daily Rates All</button>
+                        </Authorized>
+                    </AuthorizeView>
+                </div>
+            </div>
+        }
+    </div>
+
+    <ConfirmationBox Title="@Title"
+                     Message="@Message"
+                     YesButtonText="@YesButtonText"
+                     NoButtonText="@NoButtonText"
+                     InfoButtonText="@InfoButtonText"
+                     BtnClass="@BtnClass"
+                     ConfirmationChanged="Save"
+                     InformationChanged="OkClick"
+                     IsVisible="IsVisible"
+                     IsInformationOnly="IsInformationOnly">
+    </ConfirmationBox>
+</div>
+
+
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Web;
+
+@using System.Security.Claims
+@using mhcb.Syd.AppCenter.Services.RoleBase.API;
+@using mhcb.Syd.AppCenter.Services.Generic;
+@using mhcb.Syd.AppCenter.Services.RoleBase.Interface;
+@using mhcb.Syd.Models;
+@using mhcb.Syd.DataAccess.Models.GUIDE;
+@using mhcb.Syd.AppCenter.Pages.RATES;
+
+@inject IJSRuntime jsRuntime;
+
+@inject IHttpService<RatesGbaseUploadCtl> _httpService;
+@inject IHttpService<RatesAvailablityStatus> _httpService3;
+@inject IHttpService<int> _httpService2;
+
+@inject IRatesMessageHttpService _httpServiceRole;
+@inject IRatesGbaseUploadCtrlHttpService _httpServiceRole2;
+
+
+@code {
+    public List<CcyListOfRateUpload> ListItems = new List<CcyListOfRateUpload>();  // binding items
+    public RatesAvailablityStatus ratesAvailablity = new RatesAvailablityStatus();
+
+
+    public DateTime SelectedOptDate { get; set; } = DateTime.Today;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    [Parameter]
+    public string optionalDataDate { get; set; }
+
+    [Parameter]
+    public string rateType { get; set; }
+
+    public bool isCheckedFX { get; set; } = false;
+    public bool isCheckedRevalution { get; set; } = false;
+    public bool isCheckedSwap { get; set; } = false;
+    public bool isCheckedDeposits { get; set; } = false;
+    public bool isCheckedBIS { get; set; } = false;
+
+    public string FXCounter { get; set; } = "";
+    public string RevalutionCounter { get; set; } = "";
+    public string SwapCounter { get; set; } = "";
+    public string DepositsCounter { get; set; } = "";
+    public string BISCounter { get; set; } = "";
+
+    // ** Variables for confirmation box
+    public string Title { get; set; }
+    public string Message { get; set; }
+    public string YesButtonText { get; set; }
+    public string NoButtonText { get; set; }
+    public string InfoButtonText { get; set; }
+    public bool IsVisible { get; set; }
+    public bool IsInformationOnly { get; set; }
+    public string BtnClass { get; set; }
+    // ** End
+
+    public List<RatesGbaseUploadCtl> ratesGbaseUploadCtl = new List<RatesGbaseUploadCtl>();
+
+    public CcyListOfRateUpload ccyListOfRateUpload751 = new CcyListOfRateUpload();
+    public CcyListOfRateUpload ccyListOfRateUpload784 = new CcyListOfRateUpload();
+
+    public CcyListOfRateUpload ViewModelDataFromCallBack = new CcyListOfRateUpload();
+
+    public string messageBody { get; set; }
+    public bool IsSuccess { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsVisible = false;
+
+        Title = "GUIDE Rates Upload";
+        Message = "Do you want to upload rates?";
+        YesButtonText = "Yes";
+        NoButtonText = "No";
+        InfoButtonText = "OK";
+        BtnClass = "btn btn-primary float-left";
+
+        var authenticationState = await authenticationStateTask;
+
+        // Testing code
+        //ListItems = (await _rateService.GetFxRatesByDate("2022-12-30")).ToList();
+        // CcyListOfRateUpload ccyListOfRateUploadFXRate = new CcyListOfRateUpload
+        //     {
+        //         RateType = "FX Rate",
+        //         DataDate =DateTime.Parse("2018-11-30 00:00:00.000");
+        //         ARS = true, BRL = true, CAD = true, CHF = true, CLP = true, CNY = true, COP = true,
+        //         EUR = true, GBP = true, HKD = true, IDR = true, INR = true, JPY = true, KRW = true,
+        //         MXN = true, MYR = true, NOK = true, NZD = true, PEN = true, PHP = true, SEK = true,
+        //         SGD = true, THB = true, TWD = true, USD = true, VND = true, ZAR = true
+        //     };
+        //ListCcyItems = new List<CcyListOfRateUpload> { ccyListOfRateUploadFXRate };
+
+
+        optionalDataDate = SelectedOptDate.ToString("yyyy-MM-dd");
+
+        await SetDefaultValue(optionalDataDate);
+        await CheckRateAvailablity();
+        await base.OnInitializedAsync();
+    }
+
+    protected async Task SetDefaultValue(string optionalDataDate)
+    {
+        ListItems.Clear();
+        foreach (string rateType in Enum.GetNames(typeof(RateTypes)))
+        {
+            ccyListOfRateUpload751 = new CcyListOfRateUpload();
+            ccyListOfRateUpload784 = new CcyListOfRateUpload();
+
+            ccyListOfRateUpload751.RateType = rateType;
+            ccyListOfRateUpload751.Branch = "751";
+            ccyListOfRateUpload751.DataDate = optionalDataDate;
+            ccyListOfRateUpload751.NavigatorLink =
+                rateType == "FX_RATE" ? "./ListFxRate/" + optionalDataDate :
+                rateType == "REVALUATION_RATE" ? "./ListRevaluationRate/" + optionalDataDate :
+                rateType == "SWAP_RATE" ? "./ListSwapRate/" + optionalDataDate :
+                rateType == "DEPOSITS_RATE" ? "./ListDepositsRate/" + optionalDataDate :
+                rateType == "Bis_RATE" ? "./ListBisRate/" + optionalDataDate : "";
+
+            ccyListOfRateUpload784.RateType = rateType;
+            ccyListOfRateUpload784.Branch = "784";
+            ccyListOfRateUpload784.DataDate = optionalDataDate;
+            ccyListOfRateUpload784.NavigatorLink =
+                rateType == "FX_RATE" ? "./ListFxRate/" + optionalDataDate :
+                rateType == "REVALUATION_RATE" ? "./ListRevaluationRate/" + optionalDataDate :
+                rateType == "SWAP_RATE" ? "./ListSwapRate/" + optionalDataDate :
+                rateType == "DEPOSITS_RATE" ? "./ListDepositsRate/" + optionalDataDate :
+                rateType == "Bis_RATE" ? "./ListBisRate/" + optionalDataDate : "";
+
+            ListItems.Add(ccyListOfRateUpload751);
+            ListItems.Add(ccyListOfRateUpload784);
+        }
+    }
+
+
+    protected async Task HandleOnDateChange(FocusEventArgs e)
+    {
+        //Console.WriteLine("Date input lost focus");
+        await CheckRateAvailablity();
+
+        optionalDataDate = SelectedOptDate.ToString("yyyy-MM-dd");
+        await SetDefaultValue(optionalDataDate);
+    }
+
+
+    protected async Task CheckRateAvailablity()
+    {
+        optionalDataDate = SelectedOptDate.ToString("yyyy-MM-dd");
+
+        ratesAvailablity = null;
+        ratesAvailablity = (await _httpService3.GetAsync($"api/RatesGbaseUploadCtl/GetRatesAvailablityCounter/{optionalDataDate}", null));
+
+        if (ratesAvailablity != null)
+        {
+            FXCounter = (ratesAvailablity != null) ? ratesAvailablity.FXRateCount.ToString() : "";
+            RevalutionCounter = (ratesAvailablity != null) ? ratesAvailablity.RevaluationRateCount.ToString() : "";
+            SwapCounter = (ratesAvailablity != null) ? ratesAvailablity.SwapRateCount.ToString() : "";
+            DepositsCounter = (ratesAvailablity != null) ? ratesAvailablity.DepositRateCount.ToString() : "";
+            BISCounter = (ratesAvailablity != null) ? ratesAvailablity.BitRateCount.ToString() : "";
+
+            isCheckedFX = (ratesAvailablity != null && ratesAvailablity.FXRateCount != 0) ? true : false;
+            isCheckedRevalution = (ratesAvailablity != null && ratesAvailablity.RevaluationRateCount != 0) ? true : false;
+            isCheckedSwap = (ratesAvailablity != null && ratesAvailablity.SwapRateCount != 0) ? true : false;
+            isCheckedDeposits = (ratesAvailablity != null && ratesAvailablity.DepositRateCount != 0) ? true : false;
+            isCheckedBIS = (ratesAvailablity != null && ratesAvailablity.BitRateCount != 0) ? true : false;
+        }
+
+        // optionalDataDate = SelectedOptDate.ToString("yyyy-MM-dd");
+        // if (optionalDataDate != null)
+        // {
+        //     SelectedOptDate = DateTime.Parse(optionalDataDate);
+
+        //     List<FxRateViewModel> ListItems1 = (await _httpServiceFX.GetAllAsync($"api/FxRate/GetFxRatesByDate/{optionalDataDate}", null)).ToList();
+        //     isCheckedFX = (ListItems1 != null && ListItems1.Count() != 0) ? true : false;
+
+        //     List<RevaluationRateViewModel> ListItems2 = (await _httpServiceRevaluation.GetAllAsync($"api/RevaluationRate/GetRevaluationRatesByDate/{SelectedOptDate.ToString("yyyy-MM-dd")}", null)).ToList();
+        //     isCheckedRevalution = (ListItems2 != null && ListItems2.Count() != 0) ? true : false;
+
+        //     List<SwapRateViewModel> ListItems3 = (await _httpServiceSwap.GetAllAsync($"api/SwapRate/GetSwapRatesByDate/{optionalDataDate}", null)).ToList();
+        //     isCheckedSwap = (ListItems3 != null && ListItems3.Count() != 0) ? true : false;
+
+        //     List<DepositsRateViewModel> ListItems4 = (await _httpServiceDeposits.GetAllAsync($"api/DepositsRate/GetDepositsRatesByDate/{optionalDataDate}", null)).ToList();
+        //     isCheckedDeposits = (ListItems4 != null && ListItems4.Count() != 0) ? true : false;
+
+        //     List<BisRateViewModel> ListItems5 = (await _httpServiceBIS.GetAllAsync($"api/BisRate/GetBisRatesByDate/{optionalDataDate}", null)).ToList();
+        //     isCheckedBIS = (ListItems5 != null && ListItems5.Count() != 0) ? true : false;
+
+        // }
+    }
+
+    protected async Task RefreshRateUploadCtrlAll()
+    {
+        optionalDataDate = SelectedOptDate.ToString("yyyy-MM-dd");
+
+        ListItems.Clear();
+        foreach (string rateType in Enum.GetNames(typeof(RateTypes)))
+        {
+            await RefreshRateUploadCtrlByType(rateType, optionalDataDate, -1);
+        }
+
+        if (ListItems.Count() == 0)
+        {
+            IsVisible = true;
+            IsInformationOnly = true;
+            Message = "No Rates upload details found on " + SelectedOptDate.ToShortDateString();
+
+            await SetDefaultValue(optionalDataDate);
+        }
+    }
+
+    protected async Task RefreshRateUploadCtrlByType(string rateType, string optionalDataDate, int intPosition)
+    {
+        // New: BIS_RATE is available on the last day of the month
+        if (rateType == "BIS_RATE")
+        {
+            optionalDataDate = (GetLastDateOfMonth(DateTime.Parse(optionalDataDate))).ToString("yyyy-MM-dd");
+          
+        }
+
+        await RefreshRateUploadCtrlByTypeV2(rateType, optionalDataDate, intPosition);
+    }
+
+
+    protected async Task RefreshRateUploadCtrlByTypeV2(string rateType, string optionalDataDate, int intPosition)
+    {
+        ratesGbaseUploadCtl = null;
+        ratesGbaseUploadCtl = (await _httpService.GetAllAsync($"api/RatesGbaseUploadCtl/GetRateCtlByRateType/{optionalDataDate}/{rateType}", null)).ToList();
+
+        ccyListOfRateUpload751 = new CcyListOfRateUpload();
+        ccyListOfRateUpload784 = new CcyListOfRateUpload();
+
+
+        if (ratesGbaseUploadCtl != null && ratesGbaseUploadCtl.Count > 0)
+        {
+            //751
+            ccyListOfRateUpload751.RateType = rateType;
+            ccyListOfRateUpload751.NavigatorLink = ratesGbaseUploadCtl.FirstOrDefault().NavigatorLink;
+            ccyListOfRateUpload751.Branch = "751";
+            ccyListOfRateUpload751.DataDate = ratesGbaseUploadCtl.FirstOrDefault().OprDate.ToString("yyyy-MM-dd");
+
+            ccyListOfRateUpload751.ARS = (ratesGbaseUploadCtl.Where(o => o.Ccy == "ARS" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.BRL = (ratesGbaseUploadCtl.Where(o => o.Ccy == "BRL" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.CAD = (ratesGbaseUploadCtl.Where(o => o.Ccy == "CAD" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.CHF = (ratesGbaseUploadCtl.Where(o => o.Ccy == "CHF" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.CLP = (ratesGbaseUploadCtl.Where(o => o.Ccy == "CLP" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.CNY = (ratesGbaseUploadCtl.Where(o => o.Ccy == "CNY" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.COP = (ratesGbaseUploadCtl.Where(o => o.Ccy == "COP" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+
+            ccyListOfRateUpload751.EUR = (ratesGbaseUploadCtl.Where(o => o.Ccy == "EUR" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.GBP = (ratesGbaseUploadCtl.Where(o => o.Ccy == "GBP" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.HKD = (ratesGbaseUploadCtl.Where(o => o.Ccy == "HKD" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.IDR = (ratesGbaseUploadCtl.Where(o => o.Ccy == "IDR" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.INR = (ratesGbaseUploadCtl.Where(o => o.Ccy == "INR" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.JPY = (ratesGbaseUploadCtl.Where(o => o.Ccy == "JPY" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.KRW = (ratesGbaseUploadCtl.Where(o => o.Ccy == "KRW" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+
+            ccyListOfRateUpload751.MXN = (ratesGbaseUploadCtl.Where(o => o.Ccy == "MXN" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.MYR = (ratesGbaseUploadCtl.Where(o => o.Ccy == "MYR" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.NOK = (ratesGbaseUploadCtl.Where(o => o.Ccy == "NOK" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.NZD = (ratesGbaseUploadCtl.Where(o => o.Ccy == "NZD" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.PEN = (ratesGbaseUploadCtl.Where(o => o.Ccy == "PEN" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.PHP = (ratesGbaseUploadCtl.Where(o => o.Ccy == "PHP" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.SEK = (ratesGbaseUploadCtl.Where(o => o.Ccy == "SEK" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+
+            ccyListOfRateUpload751.SGD = (ratesGbaseUploadCtl.Where(o => o.Ccy == "SGD" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.THB = (ratesGbaseUploadCtl.Where(o => o.Ccy == "THB" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.TWD = (ratesGbaseUploadCtl.Where(o => o.Ccy == "TWD" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.USD = (ratesGbaseUploadCtl.Where(o => o.Ccy == "USD" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.VND = (ratesGbaseUploadCtl.Where(o => o.Ccy == "VND" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload751.ZAR = (ratesGbaseUploadCtl.Where(o => o.Ccy == "ZAR" && o.AcuTransStatus == "Y" && o.AcuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+
+            //784
+            ccyListOfRateUpload784.RateType = rateType;
+            ccyListOfRateUpload784.NavigatorLink = ratesGbaseUploadCtl.FirstOrDefault().NavigatorLink;
+            ccyListOfRateUpload784.Branch = "784";
+            ccyListOfRateUpload784.DataDate = ratesGbaseUploadCtl.FirstOrDefault().OprDate.ToString("yyyy-MM-dd");
+
+            ccyListOfRateUpload784.ARS = (ratesGbaseUploadCtl.Where(o => o.Ccy == "ARS" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.BRL = (ratesGbaseUploadCtl.Where(o => o.Ccy == "BRL" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.CAD = (ratesGbaseUploadCtl.Where(o => o.Ccy == "CAD" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.CHF = (ratesGbaseUploadCtl.Where(o => o.Ccy == "CHF" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.CLP = (ratesGbaseUploadCtl.Where(o => o.Ccy == "CLP" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.CNY = (ratesGbaseUploadCtl.Where(o => o.Ccy == "CNY" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.COP = (ratesGbaseUploadCtl.Where(o => o.Ccy == "COP" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+
+            ccyListOfRateUpload784.EUR = (ratesGbaseUploadCtl.Where(o => o.Ccy == "EUR" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.GBP = (ratesGbaseUploadCtl.Where(o => o.Ccy == "GBP" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.HKD = (ratesGbaseUploadCtl.Where(o => o.Ccy == "HKD" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.IDR = (ratesGbaseUploadCtl.Where(o => o.Ccy == "IDR" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.INR = (ratesGbaseUploadCtl.Where(o => o.Ccy == "INR" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.JPY = (ratesGbaseUploadCtl.Where(o => o.Ccy == "JPY" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.KRW = (ratesGbaseUploadCtl.Where(o => o.Ccy == "KRW" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+
+            ccyListOfRateUpload784.MXN = (ratesGbaseUploadCtl.Where(o => o.Ccy == "MXN" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.MYR = (ratesGbaseUploadCtl.Where(o => o.Ccy == "MYR" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.NOK = (ratesGbaseUploadCtl.Where(o => o.Ccy == "NOK" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.NZD = (ratesGbaseUploadCtl.Where(o => o.Ccy == "NZD" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.PEN = (ratesGbaseUploadCtl.Where(o => o.Ccy == "PEN" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.PHP = (ratesGbaseUploadCtl.Where(o => o.Ccy == "PHP" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.SEK = (ratesGbaseUploadCtl.Where(o => o.Ccy == "SEK" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+
+            ccyListOfRateUpload784.SGD = (ratesGbaseUploadCtl.Where(o => o.Ccy == "SGD" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.THB = (ratesGbaseUploadCtl.Where(o => o.Ccy == "THB" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.TWD = (ratesGbaseUploadCtl.Where(o => o.Ccy == "TWD" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.USD = (ratesGbaseUploadCtl.Where(o => o.Ccy == "USD" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.VND = (ratesGbaseUploadCtl.Where(o => o.Ccy == "VND" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+            ccyListOfRateUpload784.ZAR = (ratesGbaseUploadCtl.Where(o => o.Ccy == "ZAR" && o.BuTransStatus == "Y" && o.BuStatus == "U").ToList().FirstOrDefault()) != null ? true : false;
+        }
+
+        if (ratesGbaseUploadCtl != null && ratesGbaseUploadCtl.Count > 0)
+        {
+            if (intPosition == -1)
+            {
+                ListItems.Add(ccyListOfRateUpload751);
+                ListItems.Add(ccyListOfRateUpload784);
+            }
+            else
+            {
+                // Call twice to remove 751 and 784
+                ListItems.RemoveAt(intPosition);
+                ListItems.RemoveAt(intPosition);
+
+                ListItems.Insert(intPosition, ccyListOfRateUpload784);
+                ListItems.Insert(intPosition, ccyListOfRateUpload751);
+            }
+        }
+        else
+        {
+            if (intPosition != -1)
+            {
+                if (ccyListOfRateUpload751 != null || ccyListOfRateUpload784 != null)
+                {
+                    IsVisible = true;
+                    IsInformationOnly = true;
+                    Message = "Uploaded rates details has been refreshed on " + SelectedOptDate.ToShortDateString();
+                }
+            }
+        }
+    }
+
+    protected async Task RefreshRateUploadCtrlByTypeV1(string rateType, string optionalDataDate, int intPosition)
+    {
+        ratesGbaseUploadCtl = null;
+        ratesGbaseUploadCtl = (await _httpService.GetAllAsync($"api/RatesGbaseUploadCtl/GetRateCtlByRateType/{optionalDataDate}/{rateType}", null)).ToList();
+
+        ccyListOfRateUpload751 = new CcyListOfRateUpload();
+        ccyListOfRateUpload784 = new CcyListOfRateUpload();
+
+
+        foreach (var o in ratesGbaseUploadCtl)
+        {
+            //751
+            ccyListOfRateUpload751.RateType = rateType;
+            ccyListOfRateUpload751.Branch = "751";
+            ccyListOfRateUpload751.DataDate = o.OprDate.ToString("yyyy-MM-dd");
+
+            if (o.Ccy == "ARS" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.ARS = true;
+            if (o.Ccy == "BRL" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.BRL = true;
+            if (o.Ccy == "CAD" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.CAD = true;
+            if (o.Ccy == "CHF" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.CHF = true;
+            if (o.Ccy == "CLP" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.CLP = true;
+            if (o.Ccy == "CNY" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.CNY = true;
+            if (o.Ccy == "COP" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.COP = true;
+
+            // EUR = true, GBP = true, HKD = true, IDR = true, INR = true, JPY = true, KRW = true,
+            if (o.Ccy == "EUR" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.EUR = true;
+            if (o.Ccy == "GBP" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.GBP = true;
+            if (o.Ccy == "HKD" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.HKD = true;
+            if (o.Ccy == "IDR" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.IDR = true;
+            if (o.Ccy == "INR" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.INR = true;
+            if (o.Ccy == "JPY" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.JPY = true;
+            if (o.Ccy == "KRW" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.KRW = true;
+
+            //  MXN = true, MYR = true, NOK = true, NZD = true, PEN = true, PHP = true, SEK = true,
+            if (o.Ccy == "MXN" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.MXN = true;
+            if (o.Ccy == "MYR" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.MYR = true;
+            if (o.Ccy == "NOK" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.NOK = true;
+            if (o.Ccy == "NZD" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.NZD = true;
+            if (o.Ccy == "PEN" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.PEN = true;
+            if (o.Ccy == "PHP" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.PHP = true;
+            if (o.Ccy == "SEK" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.SEK = true;
+
+
+            //SGD = true, THB = true, TWD = true, USD = true, VND = true, ZAR = true
+            if (o.Ccy == "SGD" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.SGD = true;
+            if (o.Ccy == "THB" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.THB = true;
+            if (o.Ccy == "TWD" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.TWD = true;
+            if (o.Ccy == "USD" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.USD = true;
+            if (o.Ccy == "VND" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.VND = true;
+            if (o.Ccy == "ZAR" && o.AcuTransStatus == "Y" && o.AcuStatus == "U") ccyListOfRateUpload751.ZAR = true;
+
+            //784
+            ccyListOfRateUpload784.RateType = rateType;
+            ccyListOfRateUpload784.Branch = "784";
+            ccyListOfRateUpload784.DataDate = o.OprDate.ToString("yyyy-MM-dd");
+
+            if (o.Ccy == "ARS" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.ARS = true;
+            if (o.Ccy == "BRL" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.BRL = true;
+            if (o.Ccy == "CAD" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.CAD = true;
+            if (o.Ccy == "CHF" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.CHF = true;
+            if (o.Ccy == "CLP" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.CLP = true;
+            if (o.Ccy == "CNY" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.CNY = true;
+            if (o.Ccy == "COP" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.COP = true;
+
+            // EUR = true, GBP = true, HKD = true, IDR = true, INR = true, JPY = true, KRW = true,
+            if (o.Ccy == "EUR" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.EUR = true;
+            if (o.Ccy == "GBP" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.GBP = true;
+            if (o.Ccy == "HKD" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.HKD = true;
+            if (o.Ccy == "IDR" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.IDR = true;
+            if (o.Ccy == "INR" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.INR = true;
+            if (o.Ccy == "JPY" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.JPY = true;
+            if (o.Ccy == "KRW" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.KRW = true;
+
+            //  MXN = true, MYR = true, NOK = true, NZD = true, PEN = true, PHP = true, SEK = true,
+            if (o.Ccy == "MXN" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.MXN = true;
+            if (o.Ccy == "MYR" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.MYR = true;
+            if (o.Ccy == "NOK" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.NOK = true;
+            if (o.Ccy == "NZD" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.NZD = true;
+            if (o.Ccy == "PEN" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.PEN = true;
+            if (o.Ccy == "PHP" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.PHP = true;
+            if (o.Ccy == "SEK" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.SEK = true;
+
+
+            //SGD = true, THB = true, TWD = true, USD = true, VND = true, ZAR = true
+            if (o.Ccy == "SGD" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.SGD = true;
+            if (o.Ccy == "THB" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.THB = true;
+            if (o.Ccy == "TWD" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.TWD = true;
+            if (o.Ccy == "USD" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.USD = true;
+            if (o.Ccy == "VND" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.VND = true;
+            if (o.Ccy == "ZAR" && o.BuTransStatus == "Y" && o.BuStatus == "U") ccyListOfRateUpload784.ZAR = true;
+        }
+
+        if (ratesGbaseUploadCtl != null && ratesGbaseUploadCtl.Count > 0)
+        {
+            if (intPosition == -1)
+            {
+                ListItems.Add(ccyListOfRateUpload751);
+                ListItems.Add(ccyListOfRateUpload784);
+            }
+            else
+            {
+                // Call twice to remove 751 and 784
+                ListItems.RemoveAt(intPosition);
+                ListItems.RemoveAt(intPosition);
+
+                ListItems.Insert(intPosition, ccyListOfRateUpload784);
+                ListItems.Insert(intPosition, ccyListOfRateUpload751);
+            }
+        }
+        else
+        {
+            if (intPosition != -1)
+            {
+                if (ccyListOfRateUpload751 != null || ccyListOfRateUpload784 != null)
+                {
+                    IsVisible = true;
+                    IsInformationOnly = true;
+                    Message = "Uploaded rates details has been refreshed on " + SelectedOptDate.ToShortDateString();
+                }
+            }
+        }
+    }
+
+    protected async Task Refresh(CcyListOfRateUpload ViewModelData)
+    {
+        // var result = await jsRuntime.InvokeAsync<bool>("confirm", "Do you need to refresh rate upload list for " + ViewModelData.RateType.ToString());
+
+        // if (result.ToString() == "True")
+        {
+            CcyListOfRateUpload updateItem = ListItems.Find(a => a.RateType == ViewModelData.RateType
+                                                && a.DataDate == ViewModelData.DataDate);
+
+            int positionIndex = ListItems.IndexOf(updateItem);
+
+            await RefreshRateUploadCtrlByType(ViewModelData.RateType, ViewModelData.DataDate, positionIndex);
+        }
+    }
+
+    protected async Task UploadAllDailyRates()
+    {
+
+        DateTime currentDate = DateTime.Now;
+        if (currentDate.Hour < 12)
+        {
+            Message = "Upload all rates function is not available in the Morning before 12:PM.";
+            IsVisible = true;
+            IsInformationOnly = true;
+            StateHasChanged();
+
+            // Or use JavaScript version
+            //var result = await jsRuntime.InvokeAsync<bool>("confirm", Message);
+            return;
+        }
+
+        //if return 1, there is a pending transactions
+        //if return 2, there is a pending delivery
+        //if return 0, no pending trans/delivery
+        optionalDataDate = SelectedOptDate.ToString("yyyy-MM-dd");
+        int intOutstand = (await _httpService2.GetAsync($"api/FXTransactions/CheckFxTransactionQueues/{optionalDataDate}", null));
+
+        if (intOutstand > 0)
+        {
+            switch (intOutstand)
+            {
+                case 1:
+                    Message = "There are still outstanding transaction";
+                    break;
+                case 2:
+                    Message = "There are still outstanding delivery";
+                    break;
+                default:
+                    Message = "There are still outstanding transaction or delivery";
+                    break;
+            }
+            // IsVisible = true;
+            // IsInformationOnly = true;
+            // StateHasChanged();
+
+            var result = await jsRuntime.InvokeAsync<bool>("confirm", Message);
+            return;
+        }
+
+
+        foreach (int queueType in Enum.GetValues(typeof(RateTypes)))
+        {
+            MessageDTO messageDto = new MessageDTO()
+                {
+                    QueueServerName = "",
+                    QueuePath = "",
+                    QueueName = "",
+                    // SentTo = QueueTypes.FX_RATE,
+                    BranchNo = "751",
+                    Status = "Q",
+                    //appSpecificValue = 0,
+                    //SysToday = DateTime.Parse(optionalDataDate)
+                };
+
+            RateTypes rateTypeName = (RateTypes)Enum.ToObject(typeof(RateTypes), queueType);
+            optionalDataDate = SelectedOptDate.ToString("yyyy-MM-dd");
+
+            if (rateTypeName == RateTypes.FX_RATE)
+            {
+                messageDto.SentTo = QueueTypes.FX_RATE;
+            }
+            if (rateTypeName == RateTypes.REVALUATION_RATE)
+            {
+                messageDto.SentTo = QueueTypes.REVALUATION_RATE;
+            }
+            if (rateTypeName == RateTypes.SWAP_RATE)
+            {
+                messageDto.SentTo = QueueTypes.SWAP_RATE;
+            }
+            // daily rate only!
+            // if (rateTypeName == RateTypes.DEPOSITS_RATE) {
+            //     messageDto.SentTo = QueueTypes.DEPOSITS_RATE;
+            //    // optionalDataDate = "2018-06-29 00:00:00.000";
+            // }
+            // if (rateTypeName == RateTypes.BIS_RATE) {
+            //     messageDto.SentTo = QueueTypes.BIS_RATE;
+            //     //optionalDataDate = "2020-04-30 00:00:00.000";
+            // }
+
+
+            messageDto.SysToday = DateTime.Parse(optionalDataDate);
+            int intReturn;
+
+            if (messageDto.SentTo == QueueTypes.FX_RATE || messageDto.SentTo == QueueTypes.REVALUATION_RATE
+                    || messageDto.SentTo == QueueTypes.SWAP_RATE)
+            {
+                intReturn = await UploadingRate(messageDto);
+
+                if (intReturn == 200)
+                {
+                    Message = "Successfully create GIP message for uploading " + CapitalizeFirstLetter(messageDto.SentTo.ToString().Replace('_', ' ')) + ".";
+                    IsSuccess = true;
+                }
+                else if (intReturn == 404)
+                {
+                    Message = "No GIP message has been created for uploading " + CapitalizeFirstLetter(messageDto.SentTo.ToString().Replace('_', ' ')) + ".";
+                    IsSuccess = false;
+                }
+                else if (intReturn == 422)
+                {
+                    Message = "Failed to create GIP message for uploading " + CapitalizeFirstLetter(messageDto.SentTo.ToString().Replace('_', ' ')) + ".";
+                    IsSuccess = false;
+                }
+                else
+                {
+                    Message = "Failed to create GIP message for uploading " + CapitalizeFirstLetter(messageDto.SentTo.ToString().Replace('_', ' ')) + ".";
+                    IsSuccess = false;
+                }
+
+                IsInformationOnly = true; // make to show information box
+                IsVisible = true;
+                StateHasChanged();
+            }
+        }
+    }
+
+
+    // ** Add for confirmation box
+    protected async Task UploadRateClick(CcyListOfRateUpload ViewModelData)
+    {
+        ViewModelDataFromCallBack = ViewModelData;
+
+        //pseudocode:
+        DateTime currentDate = DateTime.Now;
+        if (currentDate.Hour < 12)
+        {
+            if (ViewModelData.RateType != "FX_RATE")
+            {
+                // message : No message in the Morning
+                Message = "Upload " + CapitalizeFirstLetter((ViewModelData.RateType).Replace('_', ' ')) + " is not expected in the Morning before 12:00 PM.";
+                IsVisible = true;
+                IsInformationOnly = true;
+                StateHasChanged();
+                return;
+            }
+            else
+            {
+                Message = "Do you need to upload " + CapitalizeFirstLetter(ViewModelData.RateType.Replace('_', ' ')) + " ?";
+                IsVisible = true;
+                IsInformationOnly = false;
+                StateHasChanged();
+            }
+        }
+        else
+        {
+            if (ViewModelData.RateType == "FX_RATE" || ViewModelData.RateType == "Renovation_RATE" || ViewModelData.RateType == "Swap_rate")
+            {
+                //if return 1, there is a pending transactions
+                //if return 2, there is a pending delivery
+                //if return 0, no pending trans/delivery
+                optionalDataDate = SelectedOptDate.ToString("yyyy-MM-dd");
+                int intOutstand = (await _httpService2.GetAsync($"api/FXTransactions/CheckFxTransactionQueues/{optionalDataDate}", null));
+
+                if (intOutstand > 0)
+                {
+                    switch (intOutstand)
+                    {
+                        case 1:
+                            Message = "There are still outstanding transaction";
+                            break;
+                        case 2:
+                            Message = "There are still outstanding delivery";
+                            break;
+                        default:
+                            Message = "There are still outstanding transaction or delivery";
+                            break;
+                    }
+                    IsVisible = true;
+                    IsInformationOnly = true;
+                    StateHasChanged();
+                }
+                else
+                {
+                    Message = "Do you need to upload " + CapitalizeFirstLetter(ViewModelData.RateType.Replace('_', ' ')) + "?";
+                    IsVisible = true;
+                    IsInformationOnly = false;
+                    StateHasChanged();
+                }
+            }
+            else  //ViewModelData.RateType != "Bis Rate"
+            {
+                Message = "Do you need to upload " + CapitalizeFirstLetter(ViewModelData.RateType.Replace('_', ' ')) + "? ";
+                IsVisible = true;
+                IsInformationOnly = false;
+                StateHasChanged();
+            }
+        }
+        await Task.FromResult(true);
+    }
+
+    // ** Upload rate steps
+    // ** 1. Create record in upload_control table, which is based on upload_criteria table
+    // ** 2. Create message for msmq GIP base on the control table
+    protected async Task<int> UploadingRate(MessageDTO messageDto)
+    {
+        //pseudocode
+        var user = (await authenticationStateTask).User;
+        var userName = user.FindFirst(ClaimTypes.Name)?.Value;
+
+        RateTypes rateType;
+        Enum.TryParse(messageDto.SentTo.ToString(), out rateType);
+
+        RatesControlPostDTO ratesControlPostDto = new RatesControlPostDTO();
+        
+        ratesControlPostDto.Operator = userName;
+        ratesControlPostDto.RateType = rateType;
+        // New: Need code to override the runDate for Bis_rate
+        if (messageDto.SentTo == QueueTypes.BIS_RATE)
+        {
+            ratesControlPostDto.RunDate = GetLastDateOfMonth(DateTime.Parse(optionalDataDate));
+        }else{
+            ratesControlPostDto.RunDate = DateTime.Parse(optionalDataDate);
+        }
+
+        // ** 1. Create record in control table
+        var blnRateCtrlRtn= await _httpServiceRole2.Create_GbaseRates_Upload_Ctrl(ratesControlPostDto);
+
+        if (blnRateCtrlRtn)
+        {
+            // ** 2. Create message in GIP base control table
+            var intReturn = await _httpServiceRole.SendMessageToQueue(messageDto);
+            return intReturn;
+        }
+        return 0;
+    }
+
+
+    protected async Task UploadAfterConfirm(CcyListOfRateUpload ViewModelData)
+    {
+        QueueTypes sendTo;
+        Enum.TryParse(ViewModelData.RateType, out sendTo);
+
+        MessageDTO messageDto = new MessageDTO()
+            {
+                QueueServerName = "",
+                QueuePath = "",
+                QueueName = "",
+                SentTo = sendTo,
+                BranchNo = ViewModelData.Branch,
+                Status = "Q",
+                //SysToday = DateTime.Parse(ViewModelData.DataDate)
+                SysToday = SelectedOptDate
+            };
+
+        var intReturn = await UploadingRate(messageDto);
+
+        if (intReturn == 200)
+        {
+            Message = "Successfully create GIP message for uploading " + CapitalizeFirstLetter(messageDto.SentTo.ToString().Replace('_', ' ')) + ".";
+            IsSuccess = true;
+        }
+        else if (intReturn == 404)
+        {
+            Message = "No GIP message has been created for uploading " + CapitalizeFirstLetter(messageDto.SentTo.ToString().Replace('_', ' ')) + ".";
+            IsSuccess = false;
+        }
+        else if (intReturn == 422)
+        {
+            Message = "Failed to create GIP message for uploading " + CapitalizeFirstLetter(messageDto.SentTo.ToString().Replace('_', ' ')) + ".";
+            IsSuccess = false;
+        }
+        else
+        {
+            Message = "Failed to create GIP message for uploading " + CapitalizeFirstLetter(messageDto.SentTo.ToString().Replace('_', ' ') )+ ".";
+            IsSuccess = false;
+        }
+
+        IsInformationOnly = true; // make to show information box
+        IsVisible = true;
+        StateHasChanged();
+    }
+
+    //**************************************************
+    // Code to handle confirmation box OK or Save button
+    //**************************************************
+    protected async Task Save(bool IsUpload)
+    {
+        IsVisible = false;
+        if (IsUpload == false) return;
+
+        await UploadAfterConfirm(ViewModelDataFromCallBack);
+    }
+
+    protected void OkClick() => IsVisible = false;
+
+
+    public static string CapitalizeFirstLetter(string input)
+    {
+        if (string.IsNullOrEmpty(input)) { return input; }
+        return char.ToUpper(input[0]) + input.Substring(1).ToLower();
+    }
+
+    public static DateTime GetLastDateOfMonth(DateTime date)
+    {
+        int lastDay = DateTime.DaysInMonth(date.Year, date.Month);
+        return new DateTime(date.Year, date.Month, lastDay);
+
+        // or
+        // DateTime firstDayOfNextMonth = new DateTime(date.Year, date.Month, 1).AddMonths(1);
+        // DateTime lastDayOfMonth = firstDayOfNextMonth.AddDays(-1);
+        // return lastDayOfMonth;
+    }
+}

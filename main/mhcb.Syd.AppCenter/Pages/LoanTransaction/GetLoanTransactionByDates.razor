@@ -1,0 +1,199 @@
+﻿@page "/GetLoanTransactionByDates"
+@attribute [Authorize]
+
+
+<div class="container-fluid">
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>Search Loan Transactions by Dates</h4>
+			</div>
+		</div>
+
+		@*Section 2 - Search*@
+		<div class="card-body">
+			@*Section 2 - Parameters*@
+			<div class="row">
+				<div class="col-sm-4">
+
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody thead class="thead-light">
+							<tr>
+								<td colspan="2"><label for="Id" class="col-form-label">Start Date</label></td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">From</label></td>
+								<td><input type="date" class="form-control" @bind="SelectedDateFrom" /></td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">To</label></td>
+								<td><input type="date" class="form-control" @bind="SelectedDateTo" /></td>
+							</tr>
+						</tbody>
+					</table>
+
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left btn-width-80" @onclick="(()=>SearchClick())">Search</button>
+						<button class="btn btn-outline-info m-1 float-left btn-width-80"  @onclick="(()=>CopyClick())">Copy</button>
+						<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 3 - list display*@
+		<div class="card-footer">
+
+			@if (modelView == null && SelectedCcyCode != "")
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+
+				<div class="row">
+					<div class="col-sm-12">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:700px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>REF NO</th>
+									<th>TRANS NO</th>
+									<th>CUST NAME</th>
+									<th>START DATE</th>
+									<th>DUE DATE</th>
+									<th>DAYS</th>
+									<th>DD CCY</th>
+									<th>DD AMOUNT</th>
+									<th>REPAY CCY</th>
+									<th>REPAY AMOUNT</th>
+
+									<th>INT RATE</th>
+									<th>INTERNAL RATE</th>
+
+									<th>SPREAD</th>
+									<th>INT COLLECTED</th>
+									<th>Status</th>
+									<th>REMARKS</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.REF_NO</td>
+									<td>@item.TRANS_NO</td>
+									<td>@item.CUST_NAME</td>
+									<td>@item.START_DATE.ToString("dd/MM/yyyy")</td>
+									<td>@item.DUE_DATE.ToString("dd/MM/yyyy")</td>
+									<td>@item.DAYS</td>
+									<td>@item.DRAW_CCY</td>
+									<td>@item.DRAW_AMT.ToString("0,0.00")</td>
+									<td>@item.REPAY_CCY</td>
+									<td>@item.REPAY_AMT.ToString("0,0.00")</td>
+									<td>@item.INT_RATE</td>
+									<td>@item.INTERNAL_RATE</td>
+									<td>@item.SPREAD</td>
+									<td>@item.INT_AMT</td>
+									<td>@item.STATUS</td>
+									<td>@item.REMARKS</td>
+								</RowTemplate>
+								<TableFooter>
+									<th>REF NO</th>
+									<th>TRANS NO</th>
+									<th>CUST NAME</th>
+									<th>START DATE</th>
+									<th>DUE DATE</th>
+									<th>DAYS</th>
+									<th>DD CCY</th>
+									<th>DD AMOUNT</th>
+									<th>REPAY CCY</th>
+									<th>REPAY AMOUNT</th>
+
+									<th>INT RATE</th>
+									<th>INTERNAL RATE</th>
+
+									<th>SPREAD</th>
+									<th>INT COLLECTED</th>
+									<th>Status</th>
+									<th>REMARKS</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+
+@inject IHttpService<FacilityMasterLoanTransView> _httpService ;
+@inject IJSRuntime IJSRuntime;
+@inject NavigationManager navigationManager ;
+
+@code {
+	public IEnumerable<FacilityMasterLoanTransView> modelView { get; set; } = new List<FacilityMasterLoanTransView>();
+
+	public DateTime SelectedDateFrom { get; set; } = DateTime.Today;
+	public DateTime SelectedDateTo { get; set; } = DateTime.Today;
+	public string SelectedCcyCode { get; set; } = "AUD";
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+
+	protected override void OnInitialized()
+	{
+		Title = "Loan Transaction";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+	}
+
+	protected void Save(bool IsSave) { IsVisible = IsSave; }
+	protected void OkClick() => IsVisible = false;
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		string dateFrom = SelectedDateFrom.ToString("yyyy-MM-dd");
+		string dateTo = SelectedDateTo.ToString("yyyy-MM-dd");
+		//modelView = (await _httpService2.GetLoanTransactionByCcyDates(dateFrom, dateTo)).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/FacilityMasterLoanTrans/GetLoanTransactionByDates/{dateFrom}/{dateTo}", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No records found.";
+		}
+	}
+	protected async Task CopyClick()
+	{
+		await IJSRuntime.InvokeAsync<object>("selectElementContents", "SelectedReport");
+		await IJSRuntime.InvokeVoidAsync("alert", "Now you can paste the context to excel file.");
+	}
+	protected void BackClick() => navigationManager.NavigateTo($"/ELCSReport");
+
+}

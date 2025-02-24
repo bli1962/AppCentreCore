@@ -1,0 +1,40 @@
+﻿@page "/Test"
+
+<div class="list-group">
+		<div class="card bg-primary text-white">
+		<div class="card-header">
+			<h3>Developer Test page</h3>
+		</div>
+	</div>
+
+	<div class="card-body">
+		<ul class="nav flex-column nav-tabs">
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="DeleteSwiftPayment">
+					Test Delete SwiftPayment
+				</a>
+			</li>
+			<li class="list-group-item list-group-item-action list-group-item-primary">
+				<a class="nav-link oi oi-plus nav-mhcb-list" href="UpdatePayment">
+					Test Update Payment
+				</a>
+			</li>
+		</ul>
+	</div>
+
+	<RoleClaims Value="isAuthorised" CallBackMethod="ChangeStatus"></RoleClaims>
+</div>
+
+
+@code {
+	bool isVisable;
+	bool isAuthorised { get; set; }
+
+	private void ChangeStatus(bool isAuthorised)
+	{
+		isVisable = isAuthorised;
+	}
+
+}
+
+

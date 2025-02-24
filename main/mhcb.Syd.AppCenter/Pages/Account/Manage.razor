@@ -1,0 +1,27 @@
+﻿@page "/Manage"
+    
+@using Microsoft.AspNetCore.Identity;
+@using mhcb.Syd.AppCenter.Services;
+@using mhcb.Syd.Models.Account;
+@using mhcb.Syd.AppCenter.Services.Identity;
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+@* @inject UserManager<IdentityUser> _userManager; *@
+@inject IAccountHttpService _accountHttpService;
+
+@code {
+
+    public LoginInput Input;
+    public string status;
+    public string Message;
+
+    protected override void OnInitialized()
+    {
+        Message = Message ?? "";
+
+        base.OnInitialized();
+    }
+
+}

@@ -1,0 +1,103 @@
+﻿@page "/TestConfirmationBox"
+
+<div class="container-fluid">
+    <div class="card">
+        @*Section 1 - Title *@
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h4>Test Confirmation Popup</h4>
+            </div>
+        </div>
+
+        @*Section 2 - Edit form*@
+        <div class="card-body">
+            <div class="row ">
+                <div class="col-sm-4">
+                    <div class="well">
+                        <button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>Confirmed())">Do you want to save?</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @*<ConfirmationBox Title="Bank Information"
+                        Message="Do you want to save?"
+                        YesButtonText="Yes"
+                        NoButtonText="No"
+                        BtnClass="btn btn-primary float-left"
+                        ConfirmationChanged="Save"  
+                        InformationChanged="OkClick"
+                        IsVisible="IsVisible">
+        </ConfirmationBox> *@
+        <ConfirmationBox Title="@Title"
+                         Message="@Message"
+                         YesButtonText="@YesButtonText"
+                         NoButtonText="@NoButtonText"
+                         InfoButtonText="@InfoButtonText"
+                         BtnClass="@BtnClass"
+                         ConfirmationChanged="Save"
+                         InformationChanged="OkClick"
+                         IsVisible="IsVisible"
+                         IsInformationOnly="IsInformationOnly">
+        </ConfirmationBox>
+
+        @*Section 2 - Search*@
+        @*Section 3 - list display*@
+    </div>
+</div>
+
+
+@inject IJSRuntime jsRuntime;
+
+@code {
+
+    public string Title { get; set; }
+    public string Message { get; set; }
+    public string YesButtonText { get; set; }
+    public string NoButtonText { get; set; }
+    public string InfoButtonText { get; set; }
+
+    public bool IsVisible { get; set; }
+    public bool IsInformationOnly { get; set; }
+    public string BtnClass { get; set; }
+
+    protected override void OnInitialized()
+    {
+       
+        base.OnInitialized();
+    }
+
+    protected async Task Confirmed()
+    {
+        IsVisible = true;
+        IsInformationOnly = false;
+
+        Title = "Bank Information";
+        Message = "Do you want to save?";
+        YesButtonText = "Yes";
+        NoButtonText = "No";
+        InfoButtonText = "OK";
+        BtnClass = "btn btn-primary float-left";
+        StateHasChanged();
+
+        await Task.FromResult(true);
+    }
+
+    private void Save(bool IsSave)
+    {
+        if (IsSave)
+        {
+            //await jsRuntime.InvokeVoidAsync("AlertMessage", "Save successfully.");
+            Message = "Save Successfully?";
+            IsInformationOnly = true;
+            IsVisible = true;
+            StateHasChanged();
+        }
+        else
+        {
+            IsVisible = false;
+            StateHasChanged();
+        }
+    }
+    protected void OkClick() => IsVisible = false;
+}

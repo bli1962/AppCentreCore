@@ -1,0 +1,342 @@
+﻿@page "/UpdateGasPendingTransaction"
+@attribute [Authorize(Roles = "FX-Trans - Authorise")]
+
+<div class="container-fluid">
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>Reset GAS Transactions</h4>
+			</div>
+		</div>
+
+		@*Section 2 - Edit form*@
+		<div class="card-body">
+			<div class="row ">
+				<div class="col-sm-4">
+					<EditForm Model="@UpdateStatus" OnValidSubmit="Confirmed">
+						<DataAnnotationsValidator />
+						<ValidationSummary />
+
+						<table class="table table-sm table-bordered table-primary Col-Head-Left">
+							<tbody>
+								<tr>
+									<td><label for="Id" class="col-form-label">MIN No</label></td>
+									<td>
+										<InputText id="MinNo" @bind-Value="UpdateStatus.MinNo"
+												   class="form-control" placeholder="Min Number" />
+										<ValidationMessage For="@(()=>UpdateStatus.MinNo)" />
+									</td>
+								</tr>
+								<tr>
+									<td><label for="Id" class="col-form-label">Value Date</label></td>
+									<td>
+										<InputDate id="valueDate" @bind-Value="UpdateStatus.valueDate"
+												   class="form-control" placeholder="Value Date" />
+										<ValidationMessage For="@(()=>UpdateStatus.valueDate)" />
+									</td>
+								</tr>
+								<tr>
+									<td><label for="Id" class="col-form-label">Operated By</label></td>
+									<td>
+										<InputText id="AuthorizeBy" @bind-Value="UpdateStatus.AuthorizeBy"
+												   class="form-control" disabled />
+										<ValidationMessage For="@(()=>UpdateStatus.AuthorizeBy)" />
+									</td>
+								</tr>
+								<tr>
+									<td><label for="Id" class="col-form-label">Has DCS Payments</label></td>
+									<td>
+										<InputSelect @bind-Value="UpdateStatus.HasDCSPayment" class="form-control form-select-sm" @onclick="SetStatus">
+											<option value="Yes">Yes</option>
+											<option value="No">No</option>
+										</InputSelect>
+									</td>
+								</tr>
+								<tr>
+									<td><label for="Id" class="col-form-label">GAS Status</label></td>
+									<td>
+										<InputSelect @bind-Value="UpdateStatus.StatusId" class="form-control form-select-sm">
+											<option value="8">8.Success</option>
+											<option value="10">10.Delete</option>
+										</InputSelect>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+
+						<div class="well">
+							<button class="btn btn-outline-primary m-1 float-left " type="submit">@lblUpdateButton</button>
+						</div>
+					</EditForm>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		@*Section 2 - Search*@
+		<div class="card-body">
+			@*Section 2 - Parameters*@
+			<div class="row">
+				<div class="col-sm-4">
+
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody thead class="thead-light">
+							<tr>
+								<td><label for="Id" class="col-form-label">Value Date</label></td>
+								<td>
+									<input type="date" class="form-control" @bind="SelectedOptDate" />
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left " @onclick="(()=>SearchClick())">Search GAS Transactions By Value Date</button>
+					</div>
+				</div>
+			</div>
+
+			@if (modelView == null)
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{				
+				<div class="row">
+					<div class="col-sm-12">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="height:400px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>MIN_NO</th>
+									<th>VALUEDATE_DT</th>
+									<th>STATUS_INT</th>
+									<th>DREAMS_REF_CODE</th>
+									<th>REMARKS_TX</th>
+									<th>CCY_TX</th>
+									<th>AMOUNT_AMT</th>
+									<th>CUSTID_TX</th>
+									<th>ACC_CD_TX</th>
+									<th>ACCNUM_TX</th>
+									<th>DESCRIPTION_TX</th>
+									<th>CREATED_BY</th>
+									<th>CREATED_DATE</th>
+									<th>UPLOADED_BY</th>
+									<th>UPLOADED_DATE</th>
+									<th>TRANSNO_TX</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.MIN_NO</td>
+									<td>@item.VALUEDATE_DT</td>
+									<td>@item.STATUS_INT</td>
+									<td>@item.DREAMS_REF_CODE</td>
+									<td>@item.REMARKS_TX</td>
+									<td>@item.CCY_TX</td>
+									<td>@item.AMOUNT_AMT.ToString("0,0.00")</td>
+									<td>@item.CUSTID_TX</td>
+									<td>@item.ACC_CD_TX</td>
+									<td>@item.ACCNUM_TX</td>
+									<td>@item.DESCRIPTION_TX</td>
+									<td>@item.CREATED_BY</td>
+
+									<td>@item.CREATED_DATE.ToString("dd/MM/yyyy")</td>
+									<td>@item.UPLOADED_BY</td>
+									<td>@item.UPLOADED_DATE.ToString("dd/MM/yyyy")</td>
+									<td>@item.TRANSNO_TX</td>
+								</RowTemplate>
+								<TableFooter>
+									<th>MIN_NO</th>
+									<th>VALUEDATE_DT</th>
+									<th>STATUS_INT</th>
+									<th>DREAMS_REF_CODE</th>
+									<th>REMARKS_TX</th>
+									<th>CCY_TX</th>
+									<th>AMOUNT_AMT</th>
+									<th>CUSTID_TX</th>
+									<th>ACC_CD_TX</th>
+									<th>ACCNUM_TX</th>
+									<th>DESCRIPTION_TX</th>
+									<th>CREATED_BY</th>
+									<th>CREATED_DATE</th>
+									<th>UPLOADED_BY</th>
+									<th>UPLOADED_DATE</th>
+									<th>TRANSNO_TX</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+
+@inject IGASService _httpServiceRole ;
+@inject IHttpService<GASDebitView> _httpService ;
+@inject IJSRuntime IJSRuntime ;
+@inject NavigationManager NavigationManager ;
+@inject IHttpContextAccessor _httpContext ;
+@inject IJwtToken jwtToken ;
+
+@code {
+	[CascadingParameter]
+	private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+	
+	public IEnumerable<GASDebitView> modelView { get; set; } = new List<GASDebitView>();
+	public InputGAS UpdateStatus;
+
+	public string SelectedMinNo { get; set; } = "";
+	public DateTime SelectedOptDate { get; set; } = DateTime.Today;
+
+	public string lblUpdateButton { get; set; } = "Set to GAS status";
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+	protected override async Task OnInitializedAsync()
+	{
+		Title = "GAS Transaction";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+
+		UpdateStatus = new()
+			{
+				MinNo = "",
+				valueDate = DateTime.Today,
+				StatusId = 8,
+				AuthorizeBy = "",
+				HasDCSPayment = "No",
+			};
+
+		var authenticationState = await authenticationStateTask;
+		var user = authenticationState?.User;
+		if (user is not null)
+		{
+			if (user.Identity is not null && user.Identity.IsAuthenticated)
+			{
+				UpdateStatus.AuthorizeBy = authenticationState.User.Identity.Name.ToUpper();
+			}
+		}
+		//return base.OnInitializedAsync();
+	}
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		string optDate = SelectedOptDate.ToString("yyyy-MM-dd");
+		//modelView = (await _httpService2.GetGASTransByDate(optDate)).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/GAS/GetGASTransByDate/{optDate}", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No GAS transaction records found.";
+			//ConfirmationComponent.Show();
+		}
+	}
+
+	// ** Add for confirmation box
+	protected async Task Confirmed()
+	{
+		Message = "Do you want to save?";
+		IsVisible = true;
+		IsInformationOnly = false;
+		StateHasChanged();
+
+		await Task.FromResult(true);
+	}
+
+	protected async Task Save(bool IsSave)
+	{
+		if (IsSave)
+		{
+			//var claims = new[] {
+			//        new Claim(ClaimTypes.Role, "FX-Trans - Authorise")
+			//    };
+			//var roleToken = jwtToken.GenerateJwtTokenByClaims(claims);
+			var result = await _httpServiceRole.UpdateDCSStatus(UpdateStatus);
+
+			switch (result)
+			{
+				case 200:
+
+					Message = "Saved Successfully.";
+					IsInformationOnly = true;
+					IsVisible = true;
+
+					await SearchClick();
+					break;
+				case 404:
+
+					Message = "Unsuccessfully saved.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				case 401:
+
+					Message = "Bad internet request.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				default:
+
+					Message = "Error retrieving data from the database.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+			}
+		}
+		else
+		{
+			IsVisible = false;
+		}
+		StateHasChanged();
+	}
+
+	protected void OkClick() => IsVisible = false;
+
+	protected void SetStatus()
+	{
+		if (UpdateStatus.HasDCSPayment == "Yes")
+		{
+			UpdateStatus.StatusId = 10;
+			lblUpdateButton = "Set to DCS status";
+		}
+		else
+		{
+			UpdateStatus.StatusId = 8;
+			lblUpdateButton = "Set to GAS status";
+		}
+	}
+
+	protected void BackClick() => NavigationManager.NavigateTo($"/GUIDE");
+
+}

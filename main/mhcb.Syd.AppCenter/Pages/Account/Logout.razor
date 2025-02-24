@@ -1,0 +1,50 @@
+﻿@page "/Logout"
+
+<div class="container-fluid">
+
+    <div class="card">
+        <div class="card bg-primary text-white">
+            <div class="card-header">
+                <h3 style="font-weight:normal; color:white;font-family: verdana;">Logout</h3>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div>
+                    <p class="text-primary font-weight-bold">@StatusMessage</p>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="container">
+                &copy; 2022 - MIZUHO Sydney AppCenter - <a href="http://confluence/display/DEV/AppCenter">AppCenter Help</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@using Microsoft.AspNetCore.Identity;
+@using mhcb.Syd.AppCenter.Services;
+@using mhcb.Syd.Models.Account;
+@using mhcb.Syd.AppCenter.Services.Identity;
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+@* No long use UserManager directly rather than API call *@
+@* @inject UserManager<IdentityUser> _userManager; *@
+@inject IAccountHttpService _accountHttpService;
+
+@code {
+    // private LoginInput Input;
+    private string ConfirmationMessage { get; set; }
+    private string StatusMessage { get; set; }
+
+    protected override void OnInitialized()
+    {
+        StatusMessage = StatusMessage ?? "";
+        
+        base.OnInitialized();
+    }
+}

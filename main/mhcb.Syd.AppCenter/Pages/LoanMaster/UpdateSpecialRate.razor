@@ -1,0 +1,249 @@
+﻿@page "/UpdateSpecialRate"
+@attribute [Authorize]
+
+<div class="container-fluid">
+	<div class="card">
+		@*Section 1 - Title *@
+		<div class="card bg-primary text-white">
+			<div class="card-header">
+				<h4>Upload MIZUHO Special Rates</h4>
+			</div>
+		</div>
+
+		<div class="card-body">
+			@*Section 4 - Update Form*@
+			<div class="row ">
+				<div class="col-sm-4">
+					<table class="table table-sm table-bordered table-primary Col-Head-Left">
+						<tbody>
+							<tr>
+								<td><label for="Id" class="col-form-label">CCY</label></td>
+								<td>
+									<select class="form-control form-select-sm" @bind="SelectedCcyCode">
+										<option value="AUD">AUD</option>
+										<option value="NZD">NZD</option>
+										<option value="SGD">SGD</option>
+										<option value="JPY">JPY</option>
+										<option value="EUR">EUR</option>
+										<option value="HKD">HKD</option>
+										<option value="GBP">GBP</option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Special Rate</label></td>
+								<td><input type="text" class="form-control" @bind="SelectedRate" /></td>
+							</tr>
+							<tr>
+								<td><label for="Id" class="col-form-label">Operated By</label></td>
+								<td><input type="text" class="form-control" @bind="SelectedAuthoriser" readonly /></td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left " @onclick="Confirmed">Update Special Rate</button>
+						<button class="btn btn-outline-primary m-1 btn-GoBack" @onclick="(()=>BackClick())">Back</button>
+						<br />
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		@*Section 2 - Search*@
+		<div class="card-body">
+
+			@*Section 2 - Parameters*@
+			<div class="row">
+				<div class="col-sm-4">
+					<div class="well">
+						<button class="btn btn-outline-primary m-1 float-left " @onclick="(()=>SearchClick())">Get Current MIZUHO special rates</button>
+					</div>
+				</div>
+			</div>
+
+			@if (modelView == null)
+			{
+				<div class="spinner"></div>
+			}
+			else
+			{
+
+				<div class="row">
+					<div class="col-sm-4">
+						<div name="SelectedReport" class="table-wrapper-scroll-y my-custom-scrollbar" style="width:600px;height:600px;">
+							@*Section 4 - list via TableTemplate*@
+							<TableTemplate Items="modelView.ToList()">
+								<TableHeader>
+									<th>CCY Code</th>
+									<th>Special Rates</th>
+								</TableHeader>
+								<RowTemplate Context="item">
+									<td>@item.CCY_CODE</td>
+									<th>@item.DKB_SPECIAL_RATE_USD</th>
+								</RowTemplate>
+								<TableFooter>
+									<th>CCY Code</th>
+									<th>Special Rates</th>
+								</TableFooter>
+							</TableTemplate>
+						</div>
+					</div>
+				</div>
+				
+			}
+		</div>
+
+		@*Section 3 - list display*@
+		<div class="card-footer">
+			@*Section 5 - Notes *@
+			<div class="row ">
+				<div class="col-sm-6">
+					<div class="panel" style="color: red; border-color: #ffffff; ">
+						<div class="panel-body">
+							<ul>
+								<li>The updated special rate is available today after change.</li>
+								<li>The rate will be overwritten by EUC overnight process.</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<ConfirmationBox Title="@Title"
+					 Message="@Message"
+					 YesButtonText="@YesButtonText"
+					 NoButtonText="@NoButtonText"
+					 InfoButtonText="@InfoButtonText"
+					 BtnClass="@BtnClass"
+					 ConfirmationChanged="Save"  
+					 InformationChanged="OkClick"
+					 IsVisible="IsVisible"
+					 IsInformationOnly="IsInformationOnly">
+	</ConfirmationBox>
+</div>
+
+
+@inject ISpecialRateHttpService _httpServiceRole ;
+@inject IHttpService<ExchRateView> _httpService ;
+@inject IJSRuntime IJSRuntime ;
+@inject NavigationManager NavigationManager ;
+@inject IJwtToken jwtToken ;
+
+@code {
+	[CascadingParameter]
+	private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+	public IEnumerable<ExchRateView> modelView { get; set; } = new List<ExchRateView>();
+
+	public string SelectedCcyCode { get; set; } = "AUD";
+	public string SelectedRate { get; set; } = "0.00";
+	public string SelectedAuthoriser { get; set; } = "";
+
+	// ** Variables for confirmation box
+	public string Title { get; set; }
+	public string Message { get; set; }
+	public string YesButtonText { get; set; }
+	public string NoButtonText { get; set; }
+	public string InfoButtonText { get; set; }
+	public bool IsVisible { get; set; }
+	public bool IsInformationOnly { get; set; }
+	public string BtnClass { get; set; }
+	// ** End
+	protected override async Task OnInitializedAsync()
+	{
+		Title = "MIZUHO Special Rates";
+		Message = "Do you want to save?";
+		YesButtonText = "Yes";
+		NoButtonText = "No";
+		InfoButtonText = "OK";
+		BtnClass = "btn btn-primary float-left";
+
+		var authenticationState = await authenticationStateTask;
+
+		if (authenticationState.User.Identity.IsAuthenticated)
+		{
+			SelectedAuthoriser = authenticationState.User.Identity.Name.ToUpper();
+		}
+	}
+
+	protected async Task SearchClick()
+	{
+		modelView = null;
+		//modelView = (await _httpService2.GetMizuhoRates()).ToList();
+		modelView = (await _httpService.GetAllAsync($"api/SpecialRates/GetMizuhoRates", null)).ToList();
+
+		if (modelView.Count() == 0)
+		{
+			IsVisible = true;
+			IsInformationOnly = true;
+			Message = "No MIZUHO Special Rates found.";
+			//ConfirmationComponent.Show();
+		}
+	}
+
+	// ** Add for confirmation box
+	protected async Task Confirmed()
+	{
+		Message = "Do you want to save?";
+		IsVisible = true;
+		IsInformationOnly = false;
+
+		StateHasChanged();
+
+		await Task.FromResult(true);
+	}
+
+	protected async Task Save(bool IsSave)
+	{
+		InputRate status = new()
+			{
+				CcyCode = SelectedCcyCode,
+				Rate = Decimal.Parse(SelectedRate),
+				AuthorizeBy = SelectedAuthoriser,
+			};
+
+		if (IsSave)
+		{
+			var result = await _httpServiceRole.UpdateStatus(status);
+
+			switch (result)
+			{
+				case 200:
+					Message = "Saved Successfully.";
+					IsInformationOnly = true;
+					IsVisible = true;
+
+					await SearchClick();
+					break;
+				case 404:
+					Message = "Unsuccessfully saved.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				case 401:
+					Message = "Bad internet request.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+				default:
+					Message = "Error retrieving data from the database.";
+					IsInformationOnly = true;
+					IsVisible = true;
+					break;
+			}
+		}
+		else
+		{
+			IsVisible = false;
+		}
+		StateHasChanged();
+	}
+
+	protected void OkClick() => IsVisible = false;
+	protected void BackClick() => NavigationManager.NavigateTo($"/ELCS");
+
+
+}
